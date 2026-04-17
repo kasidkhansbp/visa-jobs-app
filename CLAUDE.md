@@ -89,7 +89,7 @@ Phase A — Services/ Core data pipeline
 - Store the data into DB.
 
 Phase B - Gateway - API for Data access
-- 
+- test
 
 Phase C - Frontend - UI for data visualization
-- 
+- test

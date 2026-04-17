@@ -77,16 +77,11 @@ cd frontend
 npm run dev
 
 ## Current status / next tasks
-- [ ] Scaffold gateway FastAPI app with Google OAuth and JWT middleware
-- [ ] Implement jobs router with Adzuna + Reed integration
-- [ ] Seed sponsor register from Home Office CSV into SQLite
-- [ ] Build React frontend with job search page
-- [ ] Add visa situation onboarding screen
-- [ ] Add CV advisor microservice
-- [ ] Add docker-compose for all services
+- [ ] 
 
 
-##RoadMap
+## RoadMap
+
 Phase A — Services/ Core data pipeline
 - Build third party client to make API call and get data.
 - Build rescheduler - for schedule call to the third party, remove duplicates.

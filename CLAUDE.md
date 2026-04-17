@@ -1,16 +1,15 @@
 # Visa Jobs App — Claude Code Context
 
 ## What this project is
-A web application that helps international students in London find
-visa-sponsored jobs. It cross-references job listings from Adzuna and
+A web application that helps collects TPMs jobs in London with
+visa-sponsored. It cross-references job listings from Adzuna and
 Reed APIs against the UK Home Office register of licensed Skilled Worker
-sponsors, and provides AI-powered CV analysis against job descriptions.
+sponsors.
 
 ## Tech stack
 - **Frontend**: React + Vite (JavaScript), port 5173
 - **Gateway**: FastAPI (Python 3.12), port 8000 — only public-facing service
-- **Jobs service**: FastAPI (Python 3.12), port 8001 — internal only
-- **CV Advisor service**: FastAPI (Python 3.12), port 8002 — internal only
+- **Jobs service**: Clients which can make schedule call to third party.
 - **Auth**: Google OAuth 2.0 → JWT stored in httpOnly cookies
 - **Database**: TBD— sponsor register cache
 - **Rate limiting**: TBD
@@ -19,50 +18,11 @@ sponsors, and provides AI-powered CV analysis against job descriptions.
 ## Folder structure
 visa-jobs-app/
 frontend/              ← React + Vite
-src/
-pages/
-components/
-package.json
-.env.local
-gateway/               ← FastAPI entry point
-app/
-auth/
-jwt.py           ← token create/decode/dependency
-google.py        ← OAuth routes
-core/
-config.py        ← all settings from .env
-middleware/
-security.py      ← CORS, headers, trusted host
-rate_limit.py    ← slowapi per-user limiter
-models/
-jobs.py          ← Pydantic schemas
-routers/
-jobs.py          ← /api/jobs/* endpoints
+gateway/
 services/
-sponsor.py       ← UK sponsor register fuzzy matching
-jobs.py          ← Adzuna + Reed integration
-main.py            ← app factory, middleware wiring
-requirements.txt
-.env
-services/
-jobs/                ← job search microservice (port 8001)
-cv-advisor/          ← CV vs JD analysis microservice (port 8002)
-shared/                ← shared Pydantic models and utilities
-models/
-job.py
-user.py
-exceptions.py
-constants.py
 infra/
-docker-compose.yml
-nginx.conf
-.env.example
-CLAUDE.md              ← this file
-Makefile
-.gitignore
 
 ## Coding conventions
-- No business logic in route handlers — always use services/
 - All query params and request bodies validated by Pydantic v2 before
   the handler runs
 - All /api/* routes require Bearer JWT via get_current_user dependency
@@ -103,18 +63,8 @@ Makefile
 - Companies House API: developer.companieshouse.gov.uk (free, no auth
   needed for basic search) — used to resolve trading name vs legal name
 
-## Student-specific features to build
-1. Visa situation onboarding — user inputs visa type, expiry, degree
-   subject, age → app calculates their exact salary threshold and
-   eligible roles
-2. New entrant salary filter — students switching from Student/Graduate
-   visa qualify at £33,400 not £41,700 (July 2025 rules)
-3. A-rated sponsor filter only — B-rated companies cannot issue new CoS
-4. Salary eligibility check per job card — shown before applying
-5. Deadline calendar — graduate scheme deadlines by graduation year
-6. Visa clock dashboard — days remaining, applications per week target
-7. CV vs JD analysis — POST /api/cv/analyse via cv-advisor microservice - TBD ( A feature to be developed later)
-8. Sponsor register outreach list — A-rated London sponsors by sector
+## TPM-specific features to build
+- 
 
 ## Running locally
 # Terminal 1 — backend gateway
@@ -137,16 +87,13 @@ npm run dev
 
 
 ##RoadMap
-Phase A — Core data pipeline
-- Job ingestion service — fetch & store jobs
-- Jobs API — serve listings to the UI
+Phase A — Services/ Core data pipeline
+- Build third party client to make API call and get data.
+- Build rescheduler - for schedule call to the third party, remove duplicates.
+- Store the data into DB.
 
-Phase B — Enrichment pipeline
-- Sponsor enrichment — add visa metadata to jobs
-- Company intelligence — richer employer metadata
-- Apply button & click tracking
+Phase B — Gateway - API for Data access
+- 
 
-Phase C -  Student profile & personalisation
-- Student profile & visa situation onboarding
-- New entrant salary filter
-- Deadline calendar
+Phase C -  Frontend - UI for data visualization
+- 

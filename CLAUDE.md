@@ -67,12 +67,13 @@ infra/
 - 
 
 ## Running locally
-# Terminal 1 — backend gateway
+
+### Terminal 1 — backend gateway
 cd gateway
 venv\Scripts\activate
 uvicorn app.main:app --reload --port 8000
 
-# Terminal 2 — frontend
+### Terminal 2 — frontend
 cd frontend
 npm run dev
 

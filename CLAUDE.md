@@ -84,12 +84,13 @@ npm run dev
 ## RoadMap
 
 Phase A — Services/ Core data pipeline
+
 - Build third party client to make API call and get data.
 - Build rescheduler - for schedule call to the third party, remove duplicates.
 - Store the data into DB.
 
-Phase B — Gateway - API for Data access
+Phase B - Gateway - API for Data access
 - 
 
-Phase C -  Frontend - UI for data visualization
+Phase C - Frontend - UI for data visualization
 - 

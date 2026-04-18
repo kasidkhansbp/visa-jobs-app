@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from sqlalchemy.dialects.postgresql import insert
+
+from db.connection import AsyncSessionLocal
+from db.models.job import Job
 
 from .clients.adzuna import AdzunaClient
 from .clients.reed import ReedClient
@@ -77,6 +82,38 @@ async def _fetch_adzuna(config: JobsConfig) -> None:
 async def _store(jobs: list[JobListing]) -> None:
     """
     Persist jobs to the database.
-    TODO: implement once the DB layer is ready (Phase B).
+
+    Uses INSERT ... ON CONFLICT DO NOTHING so re-running the scheduler
+    never creates duplicate rows — existing jobs are silently skipped.
     """
-    logger.debug("_store called with %d jobs — DB layer not yet implemented", len(jobs))
+    if not jobs:
+        return
+
+    rows = [
+        {
+            "source": job.source,
+            "job_id": job.job_id,
+            "title": job.title,
+            "employer_name": job.employer_name,
+            "location": job.location,
+            "description": job.description,
+            "url": job.url,
+            "salary_min": job.salary_min,
+            "salary_max": job.salary_max,
+            "contract_type": job.contract_type,
+            "job_type": job.job_type,
+            "posted_at": job.created_at,
+            "fetched_at": datetime.now(timezone.utc),
+        }
+        for job in jobs
+    ]
+
+    stmt = insert(Job).values(rows).on_conflict_do_nothing(
+        index_elements=["source", "job_id"]
+    )
+
+    async with AsyncSessionLocal() as session:
+        await session.execute(stmt)
+        await session.commit()
+
+    logger.info("Stored %d jobs (duplicates skipped)", len(rows))

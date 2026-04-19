@@ -9,9 +9,9 @@ from __future__ import annotations
 import asyncio
 import json
 
-from config import JobsConfig
-from clients.reed import ReedClient
-from clients.adzuna import AdzunaClient
+from jobs.config import JobsConfig
+from jobs.clients.reed import ReedClient
+from jobs.clients.adzuna import AdzunaClient
 
 
 async def main() -> None:

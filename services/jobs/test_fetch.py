@@ -1,8 +1,10 @@
 """
-Quick local test — fetches one keyword from Reed and Adzuna and prints results.
-Run from the services/jobs directory:
+Quick local test — fetches one keyword from Reed and Adzuna, prints results,
+then stores them in the DB.
 
-    python test_fetch.py
+Run from the services/ directory:
+
+    python -m jobs.test_fetch
 """
 from __future__ import annotations
 
@@ -12,10 +14,11 @@ import json
 from jobs.config import JobsConfig
 from jobs.clients.reed import ReedClient
 from jobs.clients.adzuna import AdzunaClient
+from jobs.scheduler import _store
 
 
 async def main() -> None:
-    config = JobsConfig() # type: ignore[call-arg]
+    config = JobsConfig()  # type: ignore[call-arg]
 
     keywords = ["Technical Program Manager"]  # one keyword to keep it fast
 
@@ -34,6 +37,11 @@ async def main() -> None:
     if adzuna_jobs:
         print("First result:")
         print(json.dumps(adzuna_jobs[0].model_dump(), indent=2, default=str))
+
+    all_jobs = reed_jobs + adzuna_jobs
+    print(f"\n--- Storing {len(all_jobs)} jobs to DB ---")
+    await _store(all_jobs)
+    print("Done — check your DB for the results.")
 
 
 if __name__ == "__main__":

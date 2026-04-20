@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import uuid
 from datetime import datetime
@@ -14,7 +15,21 @@ from shared.db.models.job import Job
 
 logger = logging.getLogger(__name__)
 
+from sqlalchemy import text
+
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
+
+
+@router.get("/ping")
+async def ping_db(db: AsyncSession = Depends(get_session)):
+    try:
+        await asyncio.wait_for(db.execute(text("SELECT 1")), timeout=5.0)
+        return {"db": "ok"}
+    except asyncio.TimeoutError:
+        return {"db": "timeout - connection hanging"}
+    except Exception as e:
+        logger.error("DB ping failed: %s", e, exc_info=True)
+        return {"db": f"error: {e}"}
 
 
 # ── Response schema ────────────────────────────────────────────────────────────

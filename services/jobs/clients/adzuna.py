@@ -99,7 +99,7 @@ def _to_job_listing(job: AdzunaJob) -> JobListing:
         source="adzuna",
         job_id=job.id,
         title=job.title,
-        employer_name=job.company.display_name,
+        employer_name=job.company.display_name or "Unknown",
         location=job.location.display_name,
         description=job.description,
         url=job.redirect_url,

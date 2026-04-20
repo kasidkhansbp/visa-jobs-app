@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class AdzunaCompany(BaseModel):
-    display_name: str
+    display_name: Optional[str] = None
 
 
 class AdzunaCategory(BaseModel):

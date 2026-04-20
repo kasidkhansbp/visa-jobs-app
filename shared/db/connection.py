@@ -24,6 +24,9 @@ def _build_url() -> str:
         url = url.replace("postgres://", "postgresql+asyncpg://", 1)
     elif url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    # asyncpg doesn't understand sslmode= — strip it to avoid silent hangs
+    import re
+    url = re.sub(r"[?&]sslmode=[^&]*", "", url).rstrip("?")
     return url
 
 
@@ -44,7 +47,6 @@ def _get_session_factory() -> async_sessionmaker:
             echo=False,
             pool_size=5,
             max_overflow=10,
-            connect_args={"ssl": "require"},
         )
         _session_factory = async_sessionmaker(_engine, expire_on_commit=False)
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import datetime
 
@@ -10,6 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.db.connection import get_session
 from shared.db.models.job import Job
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -68,8 +71,12 @@ async def get_jobs(
         Job.fetched_at.desc(),              # fallback: latest fetched
     ).offset(offset).limit(limit)
 
-    result = await db.execute(stmt)
-    return list(result.scalars().all())
+    try:
+        result = await db.execute(stmt)
+        return list(result.scalars().all())
+    except Exception as e:
+        logger.error("DB query failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ── DELETE /api/jobs/{id} ──────────────────────────────────────────────────────

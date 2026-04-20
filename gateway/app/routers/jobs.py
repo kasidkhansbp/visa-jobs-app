@@ -35,7 +35,7 @@ class JobResponse(BaseModel):
 
 # ── GET /api/jobs ──────────────────────────────────────────────────────────────
 
-@router.get("/", response_model=list[JobResponse])
+@router.get("", response_model=list[JobResponse])
 async def get_jobs(
     source: str | None = Query(None, description="Filter by source: reed or adzuna"),
     title: str | None = Query(None, description="Filter by job title (partial match)"),

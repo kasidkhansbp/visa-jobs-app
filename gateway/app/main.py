@@ -4,6 +4,7 @@ import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .config import GatewayConfig
 from .routers import jobs
@@ -22,7 +23,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Visa Jobs Gateway",
     lifespan=lifespan,
-    docs_url="/docs" if config.debug else None,  # disable swagger in production
+    docs_url="/docs" if config.debug else None,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[config.frontend_origin],
+    allow_methods=["GET", "DELETE"],
+    allow_headers=["*"],
 )
 
 app.include_router(jobs.router)

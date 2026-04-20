@@ -11,6 +11,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
+import subprocess
+import sys
 
 from .clients.adzuna import AdzunaClient
 from .clients.reed import ReedClient
@@ -25,9 +28,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _run_migrations() -> None:
+    logger.info("Running DB migrations")
+    result = subprocess.run(
+        [sys.executable, "-m", "alembic", "-c", "/app/shared/alembic.ini", "upgrade", "head"],
+        env={**os.environ, "PYTHONPATH": "/app"},
+        capture_output=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Migrations failed with exit code {result.returncode}")
+    logger.info("Migrations complete")
+
+
 async def main() -> None:
     config = JobsConfig()  # type: ignore[call-arg]
 
+    _run_migrations()
     logger.info("Run-once fetch started")
 
     reed = ReedClient(api_key=config.reed_api_key)

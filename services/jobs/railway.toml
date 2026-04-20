@@ -5,5 +5,4 @@ dockerfilePath = "services/jobs/Dockerfile"
 [deploy]
 cronSchedule = "0 2 * * *"
 startCommand = "python -m jobs.run_once"
-preDeployCommand = "PYTHONPATH=/app python -m alembic -c /app/shared/alembic.ini upgrade head"
 restartPolicyType = "NEVER"

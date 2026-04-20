@@ -1,0 +1,12 @@
+export const Icon = {
+  search: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="9" r="5.5"/><path d="M13 13 L17 17"/></svg>,
+  pin: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 18 C10 18 15 12.5 15 8 A5 5 0 0 0 5 8 C5 12.5 10 18 10 18 Z"/><circle cx="10" cy="8" r="1.75"/></svg>,
+  briefcase: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="6" width="15" height="11" rx="1"/><path d="M7 6 L7 4 L13 4 L13 6"/><path d="M2.5 11 L17.5 11"/></svg>,
+  bookmark: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3 L15 3 L15 17 L10 13.5 L5 17 Z"/></svg>,
+  external: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 4 L4 4 L4 16 L16 16 L16 12"/><path d="M12 4 L16 4 L16 8"/><path d="M10 10 L16 4"/></svg>,
+  arrow: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10 L17 10"/><path d="M12 5 L17 10 L12 15"/></svg>,
+  check: (p) => <svg width={p.size||14} height={p.size||14} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10.5 L8 14.5 L16 6"/></svg>,
+  x: (p) => <svg width={p.size||12} height={p.size||12} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 5 L15 15"/><path d="M15 5 L5 15"/></svg>,
+  chev: (p) => <svg width={p.size||14} height={p.size||14} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8 L10 13 L15 8"/></svg>,
+  clock: (p) => <svg width={p.size||14} height={p.size||14} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 6 L10 10 L13 12"/></svg>,
+};

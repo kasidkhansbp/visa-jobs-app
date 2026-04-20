@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.connection import get_session
-from db.models.job import Job
+from shared.db.connection import get_session
+from shared.db.models.job import Job
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 

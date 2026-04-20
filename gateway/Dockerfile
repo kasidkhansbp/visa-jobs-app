@@ -16,4 +16,4 @@ COPY gateway/ /app/gateway/
 WORKDIR /app/gateway
 
 # Run migrations then start the server
-CMD ["sh", "-c", "PYTHONPATH=/app python -m alembic -c /app/shared/alembic.ini upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "cd /app/shared && PYTHONPATH=/app python -m alembic upgrade head && cd /app/gateway && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

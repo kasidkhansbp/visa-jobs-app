@@ -50,14 +50,24 @@ async def main() -> None:
     reed = ReedClient(api_key=config.reed_api_key)
     adzuna = AdzunaClient(app_id=config.adzuna_app_id, app_key=config.adzuna_app_key)
 
-    reed_jobs = await reed.fetch_all(config.search_keywords, config.search_location)
-    logger.info("Reed: %d jobs fetched", len(reed_jobs))
+    all_jobs = []
 
-    adzuna_jobs = await adzuna.fetch_all(config.search_keywords, config.search_location)
-    logger.info("Adzuna: %d jobs fetched", len(adzuna_jobs))
+    try:
+        reed_jobs = await reed.fetch_all(config.search_keywords, config.search_location)
+        logger.info("Reed: %d jobs fetched", len(reed_jobs))
+        all_jobs.extend(reed_jobs)
+    except Exception:
+        logger.exception("Reed fetch failed — skipping")
 
-    await _store(reed_jobs + adzuna_jobs)
-    logger.info("Run-once fetch complete")
+    try:
+        adzuna_jobs = await adzuna.fetch_all(config.search_keywords, config.search_location)
+        logger.info("Adzuna: %d jobs fetched", len(adzuna_jobs))
+        all_jobs.extend(adzuna_jobs)
+    except Exception:
+        logger.exception("Adzuna fetch failed — skipping")
+
+    await _store(all_jobs)
+    logger.info("Run-once fetch complete — %d jobs stored", len(all_jobs))
 
 
 if __name__ == "__main__":

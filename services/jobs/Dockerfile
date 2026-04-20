@@ -10,8 +10,8 @@ RUN pip install --no-cache-dir /app/shared
 COPY services/jobs/requirements.txt /app/service/requirements.txt
 RUN pip install --no-cache-dir -r /app/service/requirements.txt
 
-# Copy jobs service code
-COPY services/jobs/ /app/service/
+# Copy jobs service code into jobs/ package directory
+COPY services/jobs/ /app/service/jobs/
 
 WORKDIR /app/service
 

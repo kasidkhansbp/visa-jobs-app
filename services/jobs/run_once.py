@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 def _run_migrations() -> None:
     logger.info("Running DB migrations")
     result = subprocess.run(
-        [sys.executable, "-m", "alembic", "-c", "/app/shared/alembic.ini", "upgrade", "head"],
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        cwd="/app/shared",
         env={**os.environ, "PYTHONPATH": "/app"},
         capture_output=False,
     )

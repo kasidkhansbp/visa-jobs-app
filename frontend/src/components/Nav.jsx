@@ -22,7 +22,6 @@ export default function Nav({ view, setView }) {
         ))}
       </nav>
       <div className="spacer"/>
-      <button className="btn ghost sm"><Icon.bookmark size={14}/> Saved</button>
     </header>
   );
 }

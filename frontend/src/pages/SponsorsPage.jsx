@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useSponsorStats } from '../hooks/useSponsors';
 import StatCards from '../components/sponsors/StatCards';
+import ActiveSponsors from '../components/sponsors/ActiveSponsors';
 import CitiesChart from '../components/sponsors/CitiesChart';
 import RoutesDonut from '../components/sponsors/RoutesDonut';
 import SponsorTable from '../components/sponsors/SponsorTable';
@@ -7,6 +9,7 @@ import '../styles/sponsors.css';
 
 export default function SponsorsPage() {
   const { data: stats, isLoading } = useSponsorStats();
+  const [minRoutes, setMinRoutes] = useState(null);
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 56px' }}>
@@ -19,12 +22,17 @@ export default function SponsorsPage() {
 
       <StatCards stats={isLoading ? null : stats} />
 
+      <ActiveSponsors
+        active={stats?.active_sponsors}
+        onFilter={value => setMinRoutes(value)}
+      />
+
       <div className="sr-charts">
         <CitiesChart cities={stats?.by_city ?? []} />
         <RoutesDonut routes={stats?.by_route ?? []} />
       </div>
 
-      <SponsorTable />
+      <SponsorTable defaultMinRoutes={minRoutes} />
     </div>
   );
 }

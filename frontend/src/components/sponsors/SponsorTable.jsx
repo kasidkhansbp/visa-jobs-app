@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSponsors } from '../../hooks/useSponsors';
 
 function Icon({ name }) {
@@ -32,16 +32,28 @@ const ROUTES = [
 
 const PAGE_SIZE = 20;
 
-export default function SponsorTable() {
-  const [q, setQ]         = useState('');
-  const [route, setRoute] = useState('');
-  const [rating, setRating] = useState('');
-  const [page, setPage]   = useState(1);
+export default function SponsorTable({ defaultMinRoutes = null }) {
+  const sectionRef = useRef(null);
+  const [q, setQ]             = useState('');
+  const [search, setSearch]   = useState('');
+  const [route, setRoute]     = useState('');
+  const [rating, setRating]   = useState('');
+  const [minRoutes, setMinRoutes] = useState(defaultMinRoutes ?? '');
+  const [page, setPage]       = useState(1);
 
-  const [search, setSearch] = useState('');
+  // When parent sets defaultMinRoutes (card click), apply it and scroll
+  useEffect(() => {
+    if (defaultMinRoutes) {
+      setMinRoutes(defaultMinRoutes);
+      setPage(1);
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [defaultMinRoutes]);
 
   const { data, isLoading } = useSponsors({
-    q: search, route, rating, page, pageSize: PAGE_SIZE,
+    q: search, route, rating,
+    min_routes: minRoutes || undefined,
+    page, pageSize: PAGE_SIZE,
   });
 
   const handleSearch = useCallback(e => {
@@ -52,7 +64,7 @@ export default function SponsorTable() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <section style={{ marginTop: 32 }}>
+    <section ref={sectionRef} style={{ marginTop: 32 }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Search &amp; Browse Sponsors</div>
 
       <div className="sr-controls">
@@ -68,6 +80,17 @@ export default function SponsorTable() {
           <select value={route} onChange={e => { setRoute(e.target.value); setPage(1); }}>
             <option value="">All routes</option>
             {ROUTES.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <Icon name="chev" />
+        </div>
+        <div className="sr-select">
+          <select value={minRoutes} onChange={e => { setMinRoutes(e.target.value); setPage(1); }}>
+            <option value="">All sponsors</option>
+            <option value="2">2+ routes</option>
+            <option value="3">3+ routes</option>
+            <option value="4">4+ routes</option>
+            <option value="5">5+ routes</option>
+            <option value="6">6+ routes</option>
           </select>
           <Icon name="chev" />
         </div>
@@ -93,13 +116,9 @@ export default function SponsorTable() {
         </thead>
         <tbody>
           {isLoading ? (
-            <tr className="sr-empty-row">
-              <td colSpan="5">Loading sponsors...</td>
-            </tr>
+            <tr className="sr-empty-row"><td colSpan="5">Loading sponsors...</td></tr>
           ) : data?.results?.length === 0 ? (
-            <tr className="sr-empty-row">
-              <td colSpan="5">No sponsors match these filters.</td>
-            </tr>
+            <tr className="sr-empty-row"><td colSpan="5">No sponsors match these filters.</td></tr>
           ) : (
             data?.results?.map((s, i) => (
               <tr key={i}>
@@ -134,7 +153,7 @@ export default function SponsorTable() {
           Next <Icon name="next" />
         </button>
         <span className="sr-pager-total">
-          {data?.total?.toLocaleString() ?? '—'} results (register has {data?.total?.toLocaleString() ?? '—'} entries)
+          {data?.total?.toLocaleString() ?? '—'} results
         </span>
       </div>
     </section>

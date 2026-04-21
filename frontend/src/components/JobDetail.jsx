@@ -25,13 +25,15 @@ export default function JobDetail({ job }) {
           <div className="company">{job.employer_name} · {job.location}</div>
         </div>
       </div>
-      <div className="sponsor-note">
-        <Icon.check size={16}/>
-        <div>
-          <b>Sponsor-verified.</b> {job.employer_name} appears on the UK Home Office
-          register of licensed Skilled Worker sponsors.
+      {job.is_sponsor_verified && (
+        <div className="sponsor-note">
+          <Icon.check size={16}/>
+          <div>
+            <b>Sponsor-verified.</b> {job.employer_name} appears on the UK Home Office
+            register of licensed Skilled Worker sponsors.
+          </div>
         </div>
-      </div>
+      )}
       <div className="meta-grid">
         <div>
           <div className="k">Salary</div>

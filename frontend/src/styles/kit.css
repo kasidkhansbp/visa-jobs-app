@@ -199,10 +199,14 @@ body { margin: 0; }
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-size: 17px; font-weight: 600;
 }
-.jobrow .logo.warm { background: #1a4434; }
-.jobrow .logo.brick { background: #6b2a25; }
-.jobrow .logo.indigo { background: var(--accent); }
-.jobrow .logo.gold { background: #6b5518; }
+.jobrow .logo.warm    { background: #1a4434; }
+.jobrow .logo.brick   { background: #6b2a25; }
+.jobrow .logo.indigo  { background: var(--accent); }
+.jobrow .logo.gold    { background: #6b5518; }
+.jobrow .logo.slate   { background: #2e4057; }
+.jobrow .logo.plum    { background: #5a2d6e; }
+.jobrow .logo.teal    { background: #1a5c5a; }
+.jobrow .logo.rust    { background: #8b3a1e; }
 .jobrow h3 {
   font-family: var(--font-display); font-size: 19px; line-height: 1.25;
   letter-spacing: -0.005em; font-weight: 600; margin: 0 0 2px;

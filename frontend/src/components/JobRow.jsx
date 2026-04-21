@@ -1,6 +1,10 @@
 import Chip from './Chip';
 
-const LOGO_TONES = { reed: 'warm', adzuna: 'indigo' };
+const TONES = ['indigo', 'warm', 'brick', 'gold', 'slate', 'plum', 'teal', 'rust'];
+function toneFor(name) {
+  const code = (name ?? '').charCodeAt(0) || 0;
+  return TONES[code % TONES.length];
+}
 
 function formatSalary(min, max) {
   if (!min && !max) return null;
@@ -24,7 +28,7 @@ function formatPosted(postedAt) {
 
 export default function JobRow({ job, active, onClick }) {
   const logo = job.employer_name?.[0]?.toUpperCase() ?? '?';
-  const logoTone = LOGO_TONES[job.source] ?? 'indigo';
+  const logoTone = toneFor(job.employer_name);
   const salary = formatSalary(job.salary_min, job.salary_max);
   const posted = formatPosted(job.posted_at);
   const stale = job.posted_at

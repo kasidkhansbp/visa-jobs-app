@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import JobsPage from './pages/JobsPage';
+import SponsorsPage from './pages/SponsorsPage';
 import SourcesSection from './components/SourcesSection';
 
 function SourcesView() {
@@ -58,8 +59,9 @@ export default function App() {
   return (
     <div className="app">
       <Nav view={view} setView={setView}/>
-      {view === 'jobs'    && <JobsPage/>}
-      {view === 'sources' && <SourcesView/>}
+      {view === 'jobs'      && <JobsPage/>}
+      {view === 'sponsors'  && <SponsorsPage/>}
+      {view === 'sources'   && <SourcesView/>}
       {view === 'saved'   && <SavedView/>}
       {view === 'about'   && <AboutView/>}
       <Footer/>

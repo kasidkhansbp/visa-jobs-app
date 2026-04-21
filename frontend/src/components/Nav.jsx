@@ -1,10 +1,11 @@
 import { Icon } from './Icon';
 
 const NAV_ITEMS = [
-  { id: 'jobs', label: 'Jobs' },
-  { id: 'sources', label: 'Sources' },
-  { id: 'saved', label: 'Saved' },
-  { id: 'about', label: 'About' },
+  { id: 'jobs',      label: 'Jobs' },
+  { id: 'sponsors',  label: 'Sponsors' },
+  { id: 'sources',   label: 'Sources' },
+  { id: 'saved',     label: 'Saved' },
+  { id: 'about',     label: 'About' },
 ];
 
 export default function Nav({ view, setView }) {

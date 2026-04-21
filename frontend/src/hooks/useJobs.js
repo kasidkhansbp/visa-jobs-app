@@ -16,7 +16,7 @@ export function useJobs(filters = {}) {
   return useQuery({
     queryKey: ["jobs", filters],
     queryFn: () => fetchJobs(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes — data stays fresh, no unnecessary refetches
-    placeholderData: [],       // show empty table instead of blank screen while loading
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev ?? [],
   });
 }

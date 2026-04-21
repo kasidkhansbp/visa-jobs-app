@@ -22,6 +22,7 @@ from pathlib import Path
 
 from sqlalchemy import delete, text
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.engine import CursorResult
 
 from shared.db.connection import AsyncSessionLocal
 from shared.db.models.sponsor import Sponsor, SponsorStat
@@ -59,7 +60,7 @@ def _parse_rating(rating_raw: str | None) -> str | None:
 def _load_csv() -> list[dict]:
     """Read and clean all rows from the CSV."""
     rows = []
-    with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
+    with open(CSV_PATH, newline="", encoding="utf-8-sig") as f: # type: ignore
         reader = csv.DictReader(f)
         for raw in reader:
             org = _clean(raw.get("Organisation Name", ""))
@@ -107,7 +108,7 @@ async def _upsert_sponsors(rows: list[dict]) -> int:
                     index_elements=["organisation_name", "route"]
                 )
             )
-            result = await session.execute(stmt)
+            result: CursorResult = await session.execute(stmt)  # type: ignore[assignment]
             total_inserted += result.rowcount
             await session.commit()
             logger.info(

@@ -47,6 +47,9 @@ class Job(Base):
         default=lambda: datetime.now(timezone.utc),
     )
 
+    is_sponsor_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
+    is_frequent_sponsor: Mapped[bool] = mapped_column(default=False, nullable=False)
+
     __table_args__ = (
         UniqueConstraint("source", "job_id", name="uq_job_source_id"),
     )

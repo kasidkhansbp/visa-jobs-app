@@ -26,6 +26,7 @@ from sqlalchemy.engine import CursorResult
 
 from shared.db.connection import AsyncSessionLocal
 from shared.db.models.sponsor import Sponsor, SponsorStat
+from shared.db.models.job import Job
 
 logging.basicConfig(
     level=logging.INFO,
@@ -186,12 +187,36 @@ async def _rebuild_stats() -> None:
             )
         ).fetchall()
 
+        # Active sponsors by route coverage threshold
+        active_by_routes = {}
+        for threshold in [2, 3, 4, 5, 6]:
+            count = (
+                await session.execute(
+                    text(
+                        """
+                        SELECT COUNT(*) FROM (
+                            SELECT organisation_name
+                            FROM sponsors
+                            GROUP BY organisation_name
+                            HAVING COUNT(DISTINCT route) >= :threshold
+                        ) t
+                        """
+                    ),
+                    {"threshold": threshold},
+                )
+            ).scalar()
+            active_by_routes[threshold] = count
+
         # Build all stat rows
         stat_rows = [
             {"stat_key": "totals", "label": "total_entries",   "count": total,       "updated_at": now},
             {"stat_key": "totals", "label": "unique_orgs",     "count": unique_orgs, "updated_at": now},
             {"stat_key": "totals", "label": "a_rated_count",   "count": a_rated,     "updated_at": now},
             {"stat_key": "totals", "label": "b_rated_count",   "count": b_rated,     "updated_at": now},
+            *[
+                {"stat_key": "active_sponsors", "label": f"{t}plus", "count": active_by_routes[t], "updated_at": now}
+                for t in [2, 3, 4, 5, 6]
+            ],
             *[
                 {"stat_key": "by_city", "label": row.town, "count": row.cnt, "updated_at": now}
                 for row in city_rows
@@ -206,8 +231,96 @@ async def _rebuild_stats() -> None:
         await session.commit()
 
     logger.info(
-        "Stats rebuilt — total=%d, unique_orgs=%d, a_rated=%d, b_rated=%d, cities=%d, routes=%d",
+        "Stats rebuilt — total=%d, unique_orgs=%d, a_rated=%d, b_rated=%d, cities=%d, routes=%d, active(2+=%d 3+=%d 4+=%d 5+=%d 6+=%d)",
         total, unique_orgs, a_rated, b_rated, len(city_rows), len(route_rows),
+        active_by_routes[2], active_by_routes[3], active_by_routes[4], active_by_routes[5], active_by_routes[6],
+    )
+
+
+import re
+
+_STRIP = re.compile(
+    r'\b(ltd|limited|plc|llp|llc|inc|group|uk|holdings|services|solutions|global|international|the)\b',
+    re.IGNORECASE,
+)
+
+def _normalise(name: str) -> str:
+    """Lowercase, strip common suffixes, collapse whitespace."""
+    name = name.lower()
+    name = _STRIP.sub('', name)
+    name = re.sub(r'[^a-z0-9\s]', '', name)
+    return re.sub(r'\s+', ' ', name).strip()
+
+
+async def _match_jobs() -> None:
+    """
+    Cross-reference jobs.employer_name against sponsors.organisation_name
+    using normalised name matching.
+
+    Sets:
+      is_sponsor_verified = true  — employer found in sponsors table
+      is_frequent_sponsor = true  — employer sponsors 3+ routes
+    """
+    async with AsyncSessionLocal() as session:
+        # Build normalised lookup from sponsors
+        # {normalised_name: route_count}
+        sponsor_rows = (
+            await session.execute(
+                text(
+                    """
+                    SELECT organisation_name, COUNT(DISTINCT route) AS route_count
+                    FROM sponsors
+                    GROUP BY organisation_name
+                    """
+                )
+            )
+        ).fetchall()
+
+        sponsor_map: dict[str, int] = {
+            _normalise(row.organisation_name): row.route_count
+            for row in sponsor_rows
+        }
+
+        # Fetch all jobs
+        job_rows = (
+            await session.execute(
+                text("SELECT id, employer_name FROM jobs")
+            )
+        ).fetchall()
+
+        verified_ids = []
+        frequent_ids = []
+
+        for job in job_rows:
+            key = _normalise(job.employer_name)
+            route_count = sponsor_map.get(key)
+            if route_count is not None:
+                verified_ids.append(str(job.id))
+                if route_count >= 3:
+                    frequent_ids.append(str(job.id))
+
+        # Reset all flags first
+        await session.execute(
+            text("UPDATE jobs SET is_sponsor_verified = false, is_frequent_sponsor = false")
+        )
+
+        if verified_ids:
+            await session.execute(
+                text("UPDATE jobs SET is_sponsor_verified = true WHERE id = ANY(:ids)"),
+                {"ids": verified_ids},
+            )
+
+        if frequent_ids:
+            await session.execute(
+                text("UPDATE jobs SET is_frequent_sponsor = true WHERE id = ANY(:ids)"),
+                {"ids": frequent_ids},
+            )
+
+        await session.commit()
+
+    logger.info(
+        "Job matching complete — %d sponsor-verified, %d frequent sponsors",
+        len(verified_ids), len(frequent_ids),
     )
 
 
@@ -223,6 +336,7 @@ async def main() -> None:
     logger.info("Ingestion complete — %d new rows inserted, %d skipped as duplicates", inserted, len(rows) - inserted)
 
     await _rebuild_stats()
+    await _match_jobs()
     logger.info("Done.")
 
 

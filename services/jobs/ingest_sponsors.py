@@ -38,12 +38,12 @@ _csv_files = sorted(_DATA_DIR.glob("*.csv"))
 CSV_PATH = _csv_files[-1] if _csv_files else None
 
 
-def _clean(value: str) -> str | None:
+def _clean(value: str, title_case: bool = False) -> str | None:
     """Strip whitespace and convert empty strings or literal 'NULL' to None."""
     v = value.strip()
     if not v or v.upper() == "NULL":
         return None
-    return v
+    return v.title() if title_case else v
 
 
 def _parse_rating(rating_raw: str | None) -> str | None:
@@ -72,8 +72,8 @@ def _load_csv() -> list[dict]:
             rating_raw = _clean(raw.get("Type & Rating", ""))
             rows.append({
                 "id": uuid.uuid4(),
-                "organisation_name": org,
-                "town": _clean(raw.get("Town/City", "")),
+                "organisation_name": org.title(),
+                "town": _clean(raw.get("Town/City", ""), title_case=True),
                 "county": _clean(raw.get("County", "")),
                 "rating_raw": rating_raw,
                 "rating": _parse_rating(rating_raw),

@@ -8,7 +8,7 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from shared.db.base import Base
-from shared.db.models import job  # noqa: F401 — registers Job model with Base
+from shared.db.models import job, sponsor  # noqa: F401 — registers models with Base
 
 # Alembic config object
 config = context.config

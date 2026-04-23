@@ -64,7 +64,7 @@ export default function App() {
       {view === 'sources'   && <SourcesView/>}
       {view === 'saved'   && <SavedView/>}
       {view === 'about'   && <AboutView/>}
-      <Footer/>
+      <Footer setView={setView}/>
     </div>
   );
 }

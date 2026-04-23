@@ -1,4 +1,4 @@
-export default function Footer() {
+export default function Footer({ setView }) {
   return (
     <footer className="footer">
       <div className="inner">
@@ -15,7 +15,7 @@ export default function Footer() {
         <div>
           <h5>Product</h5>
           <ul>
-            <li>Jobs</li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('jobs'); }}>Jobs</a></li>
             <li>Sources</li>
             <li>Saved searches</li>
             <li>API</li>
@@ -24,10 +24,10 @@ export default function Footer() {
         <div>
           <h5>Data</h5>
           <ul>
-            <li>Sponsor register</li>
-            <li>Adzuna</li>
-            <li>Reed</li>
-            <li>Companies House</li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('sponsors'); }}>Sponsor register</a></li>
+            <li><a href="https://www.adzuna.co.uk" target="_blank" rel="noopener noreferrer">Adzuna</a></li>
+            <li><a href="https://www.reed.co.uk" target="_blank" rel="noopener noreferrer">Reed</a></li>
+            <li><a href="https://find-and-update.company-information.service.gov.uk" target="_blank" rel="noopener noreferrer">Companies House</a></li>
           </ul>
         </div>
         <div>
@@ -42,7 +42,7 @@ export default function Footer() {
       </div>
       <div className="colophon">
         <span>© 2026 TPMGUILD · NOT AFFILIATED WITH ADZUNA, REED, OR UKGOV</span>
-        <span>HELLO@TPMGUILD.COM</span>
+        <span>KASIDKHAN@TPMGUILD.COM</span>
       </div>
     </footer>
   );

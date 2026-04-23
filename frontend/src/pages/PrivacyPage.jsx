@@ -5,11 +5,11 @@ const SECTIONS = [
   },
   {
     title: 'Cookies',
-    body: 'We currently set a single session cookie to keep you authenticated if you are signed in. We plan to introduce Google Analytics in the near future, which will set analytics cookies (_ga, _gid) to collect anonymous usage data such as pages visited, time on site, and approximate location. When this is enabled, a cookie consent banner will be shown and analytics will only load with your explicit consent. We do not use advertising cookies.',
+    body: 'We use Google Analytics cookies (_ga, _gid) to collect anonymous usage data such as pages visited, time on site, and approximate location. We do not use advertising cookies. If you are signed in, a session cookie is set to keep you authenticated.',
   },
   {
     title: 'Analytics',
-    body: 'We plan to use Google Analytics 4 to understand how visitors use TPMguild. This includes which pages are visited, what searches are performed, and which features are used. This data is anonymous and aggregated. It is processed by Google on servers in the United States. When enabled, you will be able to opt out via the cookie consent banner.',
+    body: 'We use Google Analytics 4 to understand how visitors use TPMguild. This includes which pages are visited, what searches are performed, and which features are used. This data is anonymous and aggregated. It is processed by Google on servers in the United States.',
   },
   {
     title: 'Account data',
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Privacy</div>
       <h1 style={{ margin: '0 0 12px' }}>Privacy policy.</h1>
-      <p style={{ fontSize: 14, color: 'var(--ink-4)', marginBottom: 48 }}>Last updated: 23 April 2026</p>
+      <p style={{ fontSize: 14, color: 'var(--ink-4)', marginBottom: 48 }}>Last updated: 24 April 2026</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
         {SECTIONS.map(section => (

@@ -16,6 +16,8 @@ const DEFAULT_FILTERS = {
   posted_days: 30,
   contract_type: '',
   job_type: '',
+  sponsor_verified: false,
+  frequent_sponsor: false,
 };
 
 function buildApiFilters(filters) {
@@ -25,6 +27,8 @@ function buildApiFilters(filters) {
     source: filters.source || undefined,
     contract_type: filters.contract_type || undefined,
     job_type: filters.job_type || undefined,
+    sponsor_verified: filters.sponsor_verified || undefined,
+    frequent_sponsor: filters.frequent_sponsor || undefined,
   };
   if (filters.posted_days) {
     const d = new Date(Date.now() - filters.posted_days * 86400000);
@@ -116,6 +120,8 @@ export default function JobsPage() {
                 job={j}
                 active={activeId === j.id}
                 onClick={() => setActiveId(activeId === j.id ? null : j.id)}
+                filters={filters}
+                onFilterChange={handleFilterChange}
               />
             ))}
             {hasMore && (

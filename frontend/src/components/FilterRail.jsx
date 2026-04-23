@@ -22,6 +22,24 @@ export default function FilterRail({ filters, onChange }) {
   return (
     <aside className="rail">
       <div className="group">
+        <label className="opt">
+          <input
+            type="checkbox"
+            checked={filters.sponsor_verified}
+            onChange={e => onChange({ ...filters, sponsor_verified: e.target.checked })}
+          />
+          Sponsor-verified only
+        </label>
+        <label className="opt">
+          <input
+            type="checkbox"
+            checked={filters.frequent_sponsor}
+            onChange={e => onChange({ ...filters, frequent_sponsor: e.target.checked })}
+          />
+          Active sponsor only
+        </label>
+      </div>
+      <div className="group">
         <div className="heading">
           <span>Source</span>
           <a onClick={() => setSource('')}>clear</a>

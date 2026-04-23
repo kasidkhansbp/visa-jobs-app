@@ -64,6 +64,8 @@ async def get_jobs(
     posted_to: datetime | None = Query(None, description="Filter jobs posted up to this date (ISO 8601)"),
     contract_type: str | None = Query(None, description="Filter by contract type e.g. permanent, contract"),
     job_type: str | None = Query(None, description="Filter by job type e.g. full_time, part_time"),
+    sponsor_verified: bool | None = Query(None, description="Filter to sponsor-verified jobs only"),
+    frequent_sponsor: bool | None = Query(None, description="Filter to frequent sponsor jobs only"),
     limit: int = Query(50, le=200, description="Max results to return"),
     offset: int = Query(0, description="Number of results to skip"),
     db: AsyncSession = Depends(get_session),
@@ -88,6 +90,10 @@ async def get_jobs(
         stmt = stmt.where(Job.contract_type == contract_type)
     if job_type:
         stmt = stmt.where(Job.job_type == job_type)
+    if sponsor_verified:
+        stmt = stmt.where(Job.is_sponsor_verified == True)
+    if frequent_sponsor:
+        stmt = stmt.where(Job.is_frequent_sponsor == True)
 
     stmt = stmt.order_by(
         Job.posted_at.desc().nulls_last(),  # latest posted first, nulls at end

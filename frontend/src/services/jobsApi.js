@@ -19,8 +19,10 @@ export async function fetchJobs(filters = {}) {
   if (filters.location)      params.set("location", filters.location);
   if (filters.posted_from)   params.set("posted_from", filters.posted_from);
   if (filters.posted_to)     params.set("posted_to", filters.posted_to);
-  if (filters.contract_type) params.set("contract_type", filters.contract_type);
-  if (filters.job_type)      params.set("job_type", filters.job_type);
+  if (filters.contract_type)   params.set("contract_type", filters.contract_type);
+  if (filters.job_type)        params.set("job_type", filters.job_type);
+  if (filters.sponsor_verified)  params.set("sponsor_verified", "true");
+  if (filters.frequent_sponsor)  params.set("frequent_sponsor", "true");
 
   params.set("limit", filters.limit ?? 50);
   params.set("offset", filters.offset ?? 0);

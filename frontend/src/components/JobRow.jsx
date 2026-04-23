@@ -26,7 +26,7 @@ function formatPosted(postedAt) {
   return `${Math.floor(days / 30)} months ago`;
 }
 
-export default function JobRow({ job, active, onClick }) {
+export default function JobRow({ job, active, onClick, filters = {}, onFilterChange }) {
   const logo = job.employer_name?.[0]?.toUpperCase() ?? '?';
   const logoTone = toneFor(job.employer_name);
   const salary = formatSalary(job.salary_min, job.salary_max);
@@ -60,8 +60,28 @@ export default function JobRow({ job, active, onClick }) {
       </div>
       <div className="right">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
-          {job.is_sponsor_verified && <Chip tone="verified">Sponsor-verified</Chip>}
-          {job.is_frequent_sponsor && <Chip tone="warn">Active sponsor</Chip>}
+          {job.is_sponsor_verified && (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+              onClick={e => { e.stopPropagation(); onFilterChange?.({ ...filters, sponsor_verified: !filters.sponsor_verified }); }}
+            >
+              <Chip tone="verified">Sponsor-verified</Chip>
+              {filters.sponsor_verified && (
+                <span style={{ fontSize: 11, color: 'var(--ink-3)', lineHeight: 1 }}>✕</span>
+              )}
+            </span>
+          )}
+          {job.is_frequent_sponsor && (
+            <span
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+              onClick={e => { e.stopPropagation(); onFilterChange?.({ ...filters, frequent_sponsor: !filters.frequent_sponsor }); }}
+            >
+              <Chip tone="warn">Active sponsor</Chip>
+              {filters.frequent_sponsor && (
+                <span style={{ fontSize: 11, color: 'var(--ink-3)', lineHeight: 1 }}>✕</span>
+              )}
+            </span>
+          )}
         </div>
         {salary
           ? <span className="salary">{salary}</span>

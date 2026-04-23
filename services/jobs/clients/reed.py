@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 _BASE_URL = "https://www.reed.co.uk/api/1.0/search"
 _PAGE_SIZE = 100  # Reed max per request
+_MAX_REQUESTS = 249
 
 
 class ReedClient(BaseJobClient):
@@ -34,13 +35,17 @@ class ReedClient(BaseJobClient):
         """Fetch all pages for every keyword and return deduplicated results."""
         seen: set[int] = set()
         results: list[JobListing] = []
+        request_count = 0
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             for keyword in keywords:
-                jobs = await self._fetch_keyword(client, keyword, location, seen)
+                if request_count >= _MAX_REQUESTS:
+                    logger.warning("Reed: request limit of %d reached, stopping early", _MAX_REQUESTS)
+                    break
+                jobs, request_count = await self._fetch_keyword(client, keyword, location, seen, request_count)
                 results.extend(jobs)
 
-        logger.info("Reed: fetched %d jobs across %d keywords", len(results), len(keywords))
+        logger.info("Reed: fetched %d jobs across %d keywords in %d requests", len(results), len(keywords), request_count)
         return results
 
     async def _fetch_keyword(
@@ -49,11 +54,16 @@ class ReedClient(BaseJobClient):
         keyword: str,
         location: str,
         seen: set[int],
-    ) -> list[JobListing]:
+        request_count: int,
+    ) -> tuple[list[JobListing], int]:
         results: list[JobListing] = []
         skip = 0
 
         while True:
+            if request_count >= _MAX_REQUESTS:
+                logger.warning("Reed: request limit reached mid-keyword, stopping pagination")
+                break
+
             params = {
                 "keywords": keyword,
                 "locationName": location,
@@ -63,6 +73,7 @@ class ReedClient(BaseJobClient):
 
             response = await client.get(_BASE_URL, params=params, auth=self._auth)
             response.raise_for_status()
+            request_count += 1
 
             data = ReedSearchResponse.model_validate(response.json())
 
@@ -72,8 +83,8 @@ class ReedClient(BaseJobClient):
                     results.append(_to_job_listing(job))
 
             logger.debug(
-                "Reed keyword=%r skip=%d page_results=%d total=%d",
-                keyword, skip, len(data.results), data.totalResults,
+                "Reed keyword=%r skip=%d page_results=%d total=%d requests=%d",
+                keyword, skip, len(data.results), data.totalResults, request_count,
             )
 
             if len(data.results) < _PAGE_SIZE:
@@ -81,7 +92,7 @@ class ReedClient(BaseJobClient):
 
             skip += _PAGE_SIZE
 
-        return results
+        return results, request_count
 
 
 def _to_job_listing(job: ReedJob) -> JobListing:

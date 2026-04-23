@@ -63,7 +63,10 @@ function ToolCard({ tool }) {
   );
 }
 
+import useSEO from '../hooks/useSEO';
+
 export default function ResourcesPage() {
+  useSEO({ title: 'TPM Toolkit', description: 'AI-powered tools built for Technical Program Managers. Generate one-pagers, PR/FAQs, and get structured document feedback.' });
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>TPM Toolkit</div>

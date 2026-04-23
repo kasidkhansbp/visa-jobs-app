@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSponsorStats } from '../hooks/useSponsors';
+import useSEO from '../hooks/useSEO';
 import StatCards from '../components/sponsors/StatCards';
 import ActiveSponsors from '../components/sponsors/ActiveSponsors';
 import CitiesChart from '../components/sponsors/CitiesChart';
@@ -8,6 +9,7 @@ import SponsorTable from '../components/sponsors/SponsorTable';
 import '../styles/sponsors.css';
 
 export default function SponsorsPage() {
+  useSEO({ title: 'UK Skilled Worker Sponsor Register', description: 'Browse the UK Home Office register of licensed Skilled Worker sponsors. Filter by city, route, and activity status.' });
   const { data: stats, isLoading } = useSponsorStats();
   const [minRoutes, setMinRoutes] = useState(null);
 

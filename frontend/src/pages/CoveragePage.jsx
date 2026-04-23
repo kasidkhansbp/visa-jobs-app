@@ -50,7 +50,10 @@ function Table({ rows }) {
   );
 }
 
+import useSEO from '../hooks/useSEO';
+
 export default function CoveragePage() {
+  useSEO({ title: 'Coverage', description: 'What TPMguild covers: Technical Program Manager roles in the UK, sourced from Adzuna and Reed, verified against the sponsor register daily.' });
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Coverage</div>

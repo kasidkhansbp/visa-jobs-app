@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import useSEO from '../hooks/useSEO';
 
 const EMAIL = 'kasidkhan@tpmguild.com';
 
 export default function ContactPage() {
+  useSEO({ title: 'Contact', description: 'Get in touch with TPMguild.' });
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {

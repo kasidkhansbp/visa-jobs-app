@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useJobs } from '../hooks/useJobs';
+import useSEO from '../hooks/useSEO';
 import Hero from '../components/Hero';
 import FilterRail from '../components/FilterRail';
 import JobRow from '../components/JobRow';
@@ -38,6 +39,7 @@ function buildApiFilters(filters) {
 }
 
 export default function JobsPage() {
+  useSEO({ title: 'Sponsor-verified TPM jobs in the UK', description: 'Browse Technical Program Manager jobs from employers on the UK Home Office Skilled Worker sponsor register. Updated daily.' });
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [activeId, setActiveId] = useState(null);
   const [offset, setOffset] = useState(0);

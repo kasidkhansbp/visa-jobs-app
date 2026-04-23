@@ -7,7 +7,10 @@ const COVERAGE = [
   { label: 'Jobs retained', value: 'Last 90 days' },
 ];
 
+import useSEO from '../hooks/useSEO';
+
 export default function SourcesPage() {
+  useSEO({ title: 'Data Sources', description: 'TPMguild aggregates TPM jobs from Adzuna and Reed, cross-referenced daily against the UK Home Office Skilled Worker sponsor register.' });
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Sources</div>

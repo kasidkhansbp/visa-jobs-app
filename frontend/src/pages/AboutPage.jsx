@@ -1,3 +1,5 @@
+import useSEO from '../hooks/useSEO';
+
 function LinkPill({ href, label }) {
   return (
     <a
@@ -27,6 +29,7 @@ function LinkPill({ href, label }) {
 }
 
 export default function AboutPage() {
+  useSEO({ title: 'About', description: 'TPMguild was built by Md Kasid Khan, a Technical Program Manager at Amazon Prime Video in London, to help TPMs find visa-sponsored roles in the UK.' });
   return (
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '64px 56px 96px' }}>
 

@@ -1,4 +1,7 @@
+import useSEO from '../hooks/useSEO';
+
 export default function HowItWorksPage() {
+  useSEO({ title: 'How it works', description: 'TPMguild fetches TPM jobs daily from Adzuna and Reed, then cross-references every employer against the UK Home Office Skilled Worker sponsor register.' });
   const steps = [
     {
       number: '01',

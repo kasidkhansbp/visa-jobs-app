@@ -37,7 +37,10 @@ const SECTIONS = [
   },
 ];
 
+import useSEO from '../hooks/useSEO';
+
 export default function PrivacyPage() {
+  useSEO({ title: 'Privacy Policy', description: 'TPMguild privacy policy. How we collect, use, and protect your data.' });
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Privacy</div>

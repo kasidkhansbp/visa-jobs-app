@@ -4,7 +4,8 @@ const NAV_ITEMS = [
   { path: '/jobs',     label: 'Jobs' },
   { path: '/sponsors', label: 'Sponsors' },
   { path: '/sources',  label: 'Sources' },
-  { path: '/about',    label: 'About' },
+  { path: '/resources', label: 'Resources' },
+  { path: '/about',     label: 'About' },
 ];
 
 export default function Nav() {

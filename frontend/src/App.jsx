@@ -9,6 +9,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CoveragePage from './pages/CoveragePage';
 import ContactPage from './pages/ContactPage';
+import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
 
 function SavedView() {
@@ -67,6 +68,7 @@ function AppInner() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/saved" element={<SavedView />} />
         <Route path="/about" element={<AboutView />} />
+        <Route path="/resources" element={<ResourcesPage />} />
       </Routes>
       <Footer />
     </div>

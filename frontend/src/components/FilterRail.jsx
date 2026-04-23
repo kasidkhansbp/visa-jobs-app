@@ -1,10 +1,22 @@
 export default function FilterRail({ filters, onChange }) {
   function setSource(source) {
-    onChange({ ...filters, source });
+    if (source === 'reed') {
+      onChange({ ...filters, source, job_type: '', contract_type: '' });
+    } else {
+      onChange({ ...filters, source });
+    }
   }
 
   function setPostedDays(days) {
     onChange({ ...filters, posted_days: days });
+  }
+
+  function setJobType(job_type) {
+    onChange({ ...filters, job_type });
+  }
+
+  function setContractType(contract_type) {
+    onChange({ ...filters, contract_type });
   }
 
   return (
@@ -42,17 +54,41 @@ export default function FilterRail({ filters, onChange }) {
           Reed
         </label>
       </div>
-      <div className="group">
-        <div className="heading">Employment</div>
-        <label className="opt"><input type="checkbox" defaultChecked/> Full-time</label>
-        <label className="opt"><input type="checkbox"/> Contract</label>
-        <label className="opt"><input type="checkbox"/> Part-time</label>
+      <div className="group" style={{ opacity: filters.source === 'reed' ? 0.4 : 1, pointerEvents: filters.source === 'reed' ? 'none' : 'auto' }}>
+        <div className="heading">
+          <span>Employment</span>
+          <a onClick={() => setJobType('')}>clear</a>
+        </div>
+        <label className="opt">
+          <input type="radio" name="job_type" checked={filters.job_type === ''} onChange={() => setJobType('')}/>
+          All
+        </label>
+        <label className="opt">
+          <input type="radio" name="job_type" checked={filters.job_type === 'full_time'} onChange={() => setJobType('full_time')}/>
+          Full-time
+        </label>
+        <label className="opt">
+          <input type="radio" name="job_type" checked={filters.job_type === 'part_time'} onChange={() => setJobType('part_time')}/>
+          Part-time
+        </label>
       </div>
-      <div className="group">
-        <div className="heading">Work mode</div>
-        <label className="opt"><input type="checkbox"/> Remote</label>
-        <label className="opt"><input type="checkbox" defaultChecked/> Hybrid</label>
-        <label className="opt"><input type="checkbox"/> Office</label>
+      <div className="group" style={{ opacity: filters.source === 'reed' ? 0.4 : 1, pointerEvents: filters.source === 'reed' ? 'none' : 'auto' }}>
+        <div className="heading">
+          <span>Contract type</span>
+          <a onClick={() => setContractType('')}>clear</a>
+        </div>
+        <label className="opt">
+          <input type="radio" name="contract_type" checked={filters.contract_type === ''} onChange={() => setContractType('')}/>
+          All
+        </label>
+        <label className="opt">
+          <input type="radio" name="contract_type" checked={filters.contract_type === 'permanent'} onChange={() => setContractType('permanent')}/>
+          Permanent
+        </label>
+        <label className="opt">
+          <input type="radio" name="contract_type" checked={filters.contract_type === 'contract'} onChange={() => setContractType('contract')}/>
+          Contract
+        </label>
       </div>
       <div className="group">
         <div className="heading">Salary (£)</div>

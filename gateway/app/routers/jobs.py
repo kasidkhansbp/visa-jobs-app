@@ -62,6 +62,8 @@ async def get_jobs(
     location: str | None = Query(None, description="Filter by location (partial match)"),
     posted_from: datetime | None = Query(None, description="Filter jobs posted from this date (ISO 8601)"),
     posted_to: datetime | None = Query(None, description="Filter jobs posted up to this date (ISO 8601)"),
+    contract_type: str | None = Query(None, description="Filter by contract type e.g. permanent, contract"),
+    job_type: str | None = Query(None, description="Filter by job type e.g. full_time, part_time"),
     limit: int = Query(50, le=200, description="Max results to return"),
     offset: int = Query(0, description="Number of results to skip"),
     db: AsyncSession = Depends(get_session),
@@ -82,6 +84,10 @@ async def get_jobs(
         stmt = stmt.where(Job.posted_at >= posted_from)
     if posted_to:
         stmt = stmt.where(Job.posted_at <= posted_to)
+    if contract_type:
+        stmt = stmt.where(Job.contract_type == contract_type)
+    if job_type:
+        stmt = stmt.where(Job.job_type == job_type)
 
     stmt = stmt.order_by(
         Job.posted_at.desc().nulls_last(),  # latest posted first, nulls at end

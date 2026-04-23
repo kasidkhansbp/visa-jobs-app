@@ -14,11 +14,13 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 export async function fetchJobs(filters = {}) {
   const params = new URLSearchParams();
 
-  if (filters.source)      params.set("source", filters.source);
-  if (filters.title)       params.set("title", filters.title);
-  if (filters.location)    params.set("location", filters.location);
-  if (filters.posted_from) params.set("posted_from", filters.posted_from);
-  if (filters.posted_to)   params.set("posted_to", filters.posted_to);
+  if (filters.source)        params.set("source", filters.source);
+  if (filters.title)         params.set("title", filters.title);
+  if (filters.location)      params.set("location", filters.location);
+  if (filters.posted_from)   params.set("posted_from", filters.posted_from);
+  if (filters.posted_to)     params.set("posted_to", filters.posted_to);
+  if (filters.contract_type) params.set("contract_type", filters.contract_type);
+  if (filters.job_type)      params.set("job_type", filters.job_type);
 
   params.set("limit", filters.limit ?? 50);
   params.set("offset", filters.offset ?? 0);

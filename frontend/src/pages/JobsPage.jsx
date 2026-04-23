@@ -12,6 +12,8 @@ const DEFAULT_FILTERS = {
   location: 'London',
   source: '',
   posted_days: 30,
+  contract_type: '',
+  job_type: '',
 };
 
 function buildApiFilters(filters) {
@@ -19,6 +21,8 @@ function buildApiFilters(filters) {
     title: filters.title || undefined,
     location: filters.location || undefined,
     source: filters.source || undefined,
+    contract_type: filters.contract_type || undefined,
+    job_type: filters.job_type || undefined,
   };
   if (filters.posted_days) {
     const d = new Date(Date.now() - filters.posted_days * 86400000);

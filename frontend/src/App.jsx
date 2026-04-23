@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import JobsPage from './pages/JobsPage';
@@ -9,20 +10,6 @@ import PrivacyPage from './pages/PrivacyPage';
 import CoveragePage from './pages/CoveragePage';
 import ContactPage from './pages/ContactPage';
 import SourcesSection from './components/SourcesSection';
-
-function SourcesView() {
-  return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 56px' }}>
-      <div className="eyebrow">DATA SOURCES</div>
-      <h1 style={{ margin: '12px 0 16px' }}>Where the jobs come from.</h1>
-      <p style={{ fontSize: 18, color: 'var(--ink-2)', maxWidth: 640, marginBottom: 40 }}>
-        TPMguild aggregates from public jobs APIs and cross-references every result against
-        the UK Home Office register. Here's the full pipeline.
-      </p>
-      <SourcesSection/>
-    </div>
-  );
-}
 
 function SavedView() {
   return (
@@ -58,26 +45,38 @@ function AboutView() {
   );
 }
 
-export default function App() {
-  const [view, setView] = useState('jobs');
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [view]);
-
+function AppInner() {
   return (
     <div className="app">
-      <Nav view={view} setView={setView}/>
-      {view === 'jobs'         && <JobsPage/>}
-      {view === 'sponsors'     && <SponsorsPage/>}
-      {view === 'sources'      && <SourcesPage/>}
-      {view === 'saved'        && <SavedView/>}
-      {view === 'about'        && <AboutView/>}
-      {view === 'how-it-works' && <HowItWorksPage/>}
-      {view === 'privacy'      && <PrivacyPage/>}
-      {view === 'coverage'     && <CoveragePage/>}
-      {view === 'contact'      && <ContactPage/>}
-      <Footer setView={setView}/>
+      <Nav />
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<JobsPage />} />
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="/sponsors" element={<SponsorsPage />} />
+        <Route path="/sources" element={<SourcesPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/coverage" element={<CoveragePage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/saved" element={<SavedView />} />
+        <Route path="/about" element={<AboutView />} />
+      </Routes>
+      <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppInner />
+    </BrowserRouter>
   );
 }

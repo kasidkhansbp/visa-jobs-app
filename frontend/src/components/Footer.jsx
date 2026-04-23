@@ -1,4 +1,6 @@
-export default function Footer({ setView }) {
+import { Link } from 'react-router-dom';
+
+export default function Footer() {
   return (
     <footer className="footer">
       <div className="inner">
@@ -15,14 +17,14 @@ export default function Footer({ setView }) {
         <div>
           <h5>Product</h5>
           <ul>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('jobs'); }}>Jobs</a></li>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('sources'); }}>Sources</a></li>
+            <li><Link to="/jobs">Jobs</Link></li>
+            <li><Link to="/sources">Sources</Link></li>
           </ul>
         </div>
         <div>
           <h5>Data</h5>
           <ul>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('sponsors'); }}>Sponsor register</a></li>
+            <li><Link to="/sponsors">Sponsor register</Link></li>
             <li><a href="https://www.adzuna.co.uk" target="_blank" rel="noopener noreferrer">Adzuna</a></li>
             <li><a href="https://www.reed.co.uk" target="_blank" rel="noopener noreferrer">Reed</a></li>
             <li><a href="https://find-and-update.company-information.service.gov.uk" target="_blank" rel="noopener noreferrer">Companies House</a></li>
@@ -31,10 +33,10 @@ export default function Footer({ setView }) {
         <div>
           <h5>About</h5>
           <ul>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('how-it-works'); }}>How it works</a></li>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('coverage'); }}>Coverage</a></li>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('contact'); }}>Contact</a></li>
-            <li><a href="#" onClick={e => { e.preventDefault(); setView('privacy'); }}>Privacy</a></li>
+            <li><Link to="/how-it-works">How it works</Link></li>
+            <li><Link to="/coverage">Coverage</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/privacy">Privacy</Link></li>
           </ul>
         </div>
       </div>

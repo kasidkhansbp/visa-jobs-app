@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import JobsPage from './pages/JobsPage';
@@ -60,6 +60,10 @@ function AboutView() {
 
 export default function App() {
   const [view, setView] = useState('jobs');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
 
   return (
     <div className="app">

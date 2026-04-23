@@ -62,9 +62,6 @@ export default function JobRow({ job, active, onClick }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
           {job.is_sponsor_verified && <Chip tone="verified">Sponsor-verified</Chip>}
           {job.is_frequent_sponsor && <Chip tone="warn">Active sponsor</Chip>}
-          {!job.is_sponsor_verified && (
-            <Chip tone="outline">Unverified</Chip>
-          )}
         </div>
         {salary
           ? <span className="salary">{salary}</span>

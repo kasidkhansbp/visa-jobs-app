@@ -3,6 +3,11 @@ import Nav from './components/Nav';
 import Footer from './components/Footer';
 import JobsPage from './pages/JobsPage';
 import SponsorsPage from './pages/SponsorsPage';
+import SourcesPage from './pages/SourcesPage';
+import HowItWorksPage from './pages/HowItWorksPage';
+import PrivacyPage from './pages/PrivacyPage';
+import CoveragePage from './pages/CoveragePage';
+import ContactPage from './pages/ContactPage';
 import SourcesSection from './components/SourcesSection';
 
 function SourcesView() {
@@ -59,11 +64,15 @@ export default function App() {
   return (
     <div className="app">
       <Nav view={view} setView={setView}/>
-      {view === 'jobs'      && <JobsPage/>}
-      {view === 'sponsors'  && <SponsorsPage/>}
-      {view === 'sources'   && <SourcesView/>}
-      {view === 'saved'   && <SavedView/>}
-      {view === 'about'   && <AboutView/>}
+      {view === 'jobs'         && <JobsPage/>}
+      {view === 'sponsors'     && <SponsorsPage/>}
+      {view === 'sources'      && <SourcesPage/>}
+      {view === 'saved'        && <SavedView/>}
+      {view === 'about'        && <AboutView/>}
+      {view === 'how-it-works' && <HowItWorksPage/>}
+      {view === 'privacy'      && <PrivacyPage/>}
+      {view === 'coverage'     && <CoveragePage/>}
+      {view === 'contact'      && <ContactPage/>}
       <Footer setView={setView}/>
     </div>
   );

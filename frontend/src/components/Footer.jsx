@@ -16,9 +16,7 @@ export default function Footer({ setView }) {
           <h5>Product</h5>
           <ul>
             <li><a href="#" onClick={e => { e.preventDefault(); setView('jobs'); }}>Jobs</a></li>
-            <li>Sources</li>
-            <li>Saved searches</li>
-            <li>API</li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('sources'); }}>Sources</a></li>
           </ul>
         </div>
         <div>
@@ -33,10 +31,10 @@ export default function Footer({ setView }) {
         <div>
           <h5>About</h5>
           <ul>
-            <li>How it works</li>
-            <li>Coverage</li>
-            <li>Contact</li>
-            <li>Privacy</li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('how-it-works'); }}>How it works</a></li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('coverage'); }}>Coverage</a></li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('contact'); }}>Contact</a></li>
+            <li><a href="#" onClick={e => { e.preventDefault(); setView('privacy'); }}>Privacy</a></li>
           </ul>
         </div>
       </div>

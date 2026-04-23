@@ -311,6 +311,8 @@ body { margin: 0; }
 .footer ul { list-style: none; padding: 0; margin: 0; }
 .footer li { font-family: var(--font-ui); font-size: 14px; color: #C3C0CC; padding: 4px 0; cursor: pointer; }
 .footer li:hover { color: var(--paper); }
+.footer li a { color: inherit; text-decoration: none; }
+.footer li a:hover { color: var(--paper); }
 .footer .brand-col .wordmark { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--paper); margin-bottom: var(--s-3); letter-spacing: -0.01em; display: flex; align-items: center; gap: var(--s-2); }
 .footer .brand-col p { font-family: var(--font-body); font-size: 14px; line-height: 1.55; color: #8A8690; max-width: 320px; }
 .footer .colophon { max-width: var(--max-w); margin: var(--s-9) auto 0; padding-top: var(--s-5); border-top: 1px solid #2A2830; font-family: var(--font-mono); font-size: 11px; color: #8A8690; letter-spacing: .04em; display: flex; justify-content: space-between; }

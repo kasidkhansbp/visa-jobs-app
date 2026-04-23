@@ -47,6 +47,7 @@ class JobResponse(BaseModel):
     salary_max: float | None
     contract_type: str | None
     job_type: str | None
+    posted_at: datetime | None
     is_sponsor_verified: bool = False
     is_frequent_sponsor: bool = False
 

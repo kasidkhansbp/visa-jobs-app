@@ -2,6 +2,19 @@ import { Icon } from './Icon';
 
 const LOGO_TONES = { reed: 'warm', adzuna: 'indigo' };
 
+function formatPosted(postedAt) {
+  if (!postedAt) return null;
+  const days = Math.floor((Date.now() - new Date(postedAt)) / 86400000);
+  const date = new Date(postedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  if (days === 0) return `Today (${date})`;
+  if (days === 1) return `1 day ago (${date})`;
+  if (days < 7) return `${days} days ago (${date})`;
+  if (days < 14) return `1 week ago (${date})`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks} weeks ago (${date})`;
+  return `${Math.floor(days / 30)} months ago (${date})`;
+}
+
 function formatSalary(min, max) {
   if (!min && !max) return 'Not listed';
   const fmt = n => `£${Math.round(n / 1000)}k`;
@@ -51,6 +64,12 @@ export default function JobDetail({ job }) {
           <div className="k">Source</div>
           <div className="v mono">{job.source}</div>
         </div>
+        {formatPosted(job.posted_at) && (
+          <div>
+            <div className="k">Posted</div>
+            <div className="v">{formatPosted(job.posted_at)}</div>
+          </div>
+        )}
       </div>
       {job.description && (
         <div

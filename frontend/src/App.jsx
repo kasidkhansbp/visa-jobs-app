@@ -11,6 +11,7 @@ import CoveragePage from './pages/CoveragePage';
 import ContactPage from './pages/ContactPage';
 import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
+import AboutPage from './pages/AboutPage';
 
 function SavedView() {
   return (
@@ -22,29 +23,6 @@ function SavedView() {
   );
 }
 
-function AboutView() {
-  return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '80px 56px' }}>
-      <div className="eyebrow">ABOUT</div>
-      <h1 style={{ margin: '12px 0 24px' }}>A guild, not a feed.</h1>
-      <div style={{ fontSize: 17, lineHeight: 1.65, color: 'var(--ink-2)' }}>
-        <p>
-          TPMguild is a focused job board for Technical Program Managers searching UK roles.
-          We aggregate listings from Adzuna and Reed, then cross-reference every result against
-          the UK Home Office register of licensed Skilled Worker sponsors.
-        </p>
-        <p>
-          The product has one job: if it shows you a role, that employer can sponsor your visa.
-          No dead ends, no filtering your own way through 200 listings a week.
-        </p>
-        <p>
-          We don't take recruiter money. We don't rank jobs. We don't use AI to rewrite
-          descriptions. We do one thing: sponsor-verify every role, every day.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -67,7 +45,7 @@ function AppInner() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/saved" element={<SavedView />} />
-        <Route path="/about" element={<AboutView />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/resources" element={<ResourcesPage />} />
       </Routes>
       <Footer />

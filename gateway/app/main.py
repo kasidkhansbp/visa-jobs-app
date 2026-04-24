@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import GatewayConfig
-from .routers import jobs, sponsors
+from .routers import jobs, sponsors, auth
 
 config = GatewayConfig()  # type: ignore[call-arg]
 
@@ -29,10 +29,12 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[config.frontend_origin],
-    allow_methods=["GET", "DELETE"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(jobs.router)
 app.include_router(sponsors.router)
 

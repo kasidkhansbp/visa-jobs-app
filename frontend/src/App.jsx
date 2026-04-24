@@ -13,6 +13,7 @@ import ContactPage from './pages/ContactPage';
 import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
 import AboutPage from './pages/AboutPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function SavedView() {
   return (
@@ -39,7 +40,7 @@ function AppInner() {
       <Routes>
         <Route path="/" element={<JobsPage />} />
         <Route path="/jobs" element={<JobsPage />} />
-        <Route path="/sponsors" element={<SponsorsPage />} />
+        <Route path="/sponsors" element={<ProtectedRoute><SponsorsPage /></ProtectedRoute>} />
         <Route path="/sources" element={<SourcesPage />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/coverage" element={<CoveragePage />} />
@@ -47,7 +48,7 @@ function AppInner() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/saved" element={<SavedView />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
       </Routes>
       <Footer />
     </div>

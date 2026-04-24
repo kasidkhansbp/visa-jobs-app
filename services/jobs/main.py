@@ -10,6 +10,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)-8s %(name)s — %(message)s",
 )
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 

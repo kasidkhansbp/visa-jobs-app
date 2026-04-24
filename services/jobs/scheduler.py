@@ -79,13 +79,10 @@ async def _fetch_adzuna(config: JobsConfig) -> None:
         logger.exception("Adzuna fetch failed")
 
 
-async def _store(jobs: list[JobListing]) -> None:
-    """
-    Persist jobs to the database.
+_CHUNK_SIZE = 500  # stays well under PostgreSQL's 65535 parameter limit
 
-    Uses INSERT ... ON CONFLICT DO NOTHING so re-running the scheduler
-    never creates duplicate rows — existing jobs are silently skipped.
-    """
+
+async def _store(jobs: list[JobListing]) -> None:
     if not jobs:
         return
 
@@ -108,12 +105,13 @@ async def _store(jobs: list[JobListing]) -> None:
         for job in jobs
     ]
 
-    stmt = insert(Job).values(rows).on_conflict_do_nothing(
-        index_elements=["source", "job_id"]
-    )
-
     async with AsyncSessionLocal() as session:
-        await session.execute(stmt)
+        for i in range(0, len(rows), _CHUNK_SIZE):
+            chunk = rows[i: i + _CHUNK_SIZE]
+            stmt = insert(Job).values(chunk).on_conflict_do_nothing(
+                index_elements=["source", "job_id"]
+            )
+            await session.execute(stmt)
         await session.commit()
 
     logger.info("Stored %d jobs (duplicates skipped)", len(rows))

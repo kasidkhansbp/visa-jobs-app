@@ -1,3 +1,5 @@
+import useSEO from '../hooks/useSEO';
+
 const GPT_TOOLS = [
   {
     name: 'TPM One-Pager',
@@ -19,7 +21,52 @@ const GPT_TOOLS = [
   },
 ];
 
-function ToolCard({ tool }) {
+const TEMPLATES = [
+  {
+    name: 'RAID Log',
+    description: 'Track Risks, Assumptions, Issues, and Dependencies across your programme in one structured log.',
+    url: 'https://docs.google.com/spreadsheets/d/1ImiTPpkbnn-9STVUnIkhRDdLaqSZO-ukcewFVxq9Us8/edit?gid=0#gid=0',
+    tag: 'Spreadsheet',
+  },
+  {
+    name: 'Weekly Report',
+    description: 'A consistent weekly status report template to keep stakeholders informed and aligned.',
+    url: 'https://docs.google.com/document/d/1jijavUjNwD0G0pg83GJu8LoMBbRG2fhvmqr213A9smU/edit?tab=t.0',
+    tag: 'Document',
+  },
+  {
+    name: 'Program Plan',
+    description: 'Structure your programme timeline, milestones, and ownership in a shareable plan.',
+    url: 'https://docs.google.com/document/d/1b22vogSfE5ZKdhRE79SM2jmKDSWwbkLRhIjPPoDG1ZE/edit?tab=t.0',
+    tag: 'Document',
+  },
+  {
+    name: 'Program Alignment',
+    description: 'Capture programme goals, stakeholders, and decisions to drive alignment across teams.',
+    url: 'https://docs.google.com/document/d/18Sw8XNElqvbFjaWrKtbZa5PI4mPBQp1Jg9CKVh53STw/edit?tab=t.0',
+    tag: 'Document',
+  },
+  {
+    name: 'Monthly CPR Report',
+    description: 'Monthly Cost, Progress, and Risk report template for executive and leadership reporting.',
+    url: 'https://docs.google.com/document/d/1R4_2GVyQ59MZYZuFTsEu2Um-UemMxzYUZu-oSqy1ExU/edit?tab=t.0',
+    tag: 'Document',
+  },
+  {
+    name: 'Change Management Log',
+    description: 'Log and track scope or process changes with impact, owner, and approval status.',
+    url: 'https://docs.google.com/spreadsheets/d/1US2kxRm4HXzXX8_cKkT92xGzYvxw8UxizEwBegHao1I/edit?gid=0#gid=0',
+    tag: 'Spreadsheet',
+  },
+  {
+    name: 'Issue Log',
+    description: 'Track open issues, owners, priority, and resolution status across your programme.',
+    url: 'https://docs.google.com/spreadsheets/d/1oWUJf7uk773N04ln-q4lwP2lEHOCVY8k0W7kruDTBKA/edit?gid=0#gid=0',
+    tag: 'Spreadsheet',
+  },
+];
+
+function ToolCard({ tool, cta }) {
   return (
     <a
       href={tool.url}
@@ -56,23 +103,21 @@ function ToolCard({ tool }) {
           {tool.description}
         </p>
         <div style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500 }}>
-          Open in ChatGPT →
+          {cta}
         </div>
       </div>
     </a>
   );
 }
 
-import useSEO from '../hooks/useSEO';
-
 export default function ResourcesPage() {
-  useSEO({ title: 'TPM Toolkit', description: 'AI-powered tools built for Technical Program Managers. Generate one-pagers, PR/FAQs, and get structured document feedback.' });
+  useSEO({ title: 'TPM Toolkit', description: 'AI-powered tools and document templates built for Technical Program Managers.' });
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '64px 56px' }}>
       <div className="eyebrow" style={{ marginBottom: 10 }}>TPM Toolkit</div>
       <h1 style={{ margin: '0 0 16px' }}>Tools built for TPMs.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 48 }}>
-        A collection of AI-powered tools to help you write better documents,
+        A collection of AI-powered tools and document templates to help you write better,
         communicate more clearly, and move faster.
       </p>
 
@@ -81,7 +126,16 @@ export default function ResourcesPage() {
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
         {GPT_TOOLS.map(tool => (
-          <ToolCard key={tool.name} tool={tool} />
+          <ToolCard key={tool.name} tool={tool} cta="Open in ChatGPT →" />
+        ))}
+      </div>
+
+      <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
+        Document Templates
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
+        {TEMPLATES.map(tool => (
+          <ToolCard key={tool.name} tool={tool} cta="Open template →" />
         ))}
       </div>
 

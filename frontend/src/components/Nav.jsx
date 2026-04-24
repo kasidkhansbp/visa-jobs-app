@@ -55,7 +55,7 @@ export default function Nav() {
             Sign in with Google
           </a>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {user.picture && (
               <img
                 src={user.picture}
@@ -63,6 +63,9 @@ export default function Nav() {
                 style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
               />
             )}
+            <span style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+              Welcome, {user.name.split(' ')[0]}
+            </span>
             <button
               onClick={logout}
               style={{

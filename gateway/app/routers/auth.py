@@ -116,6 +116,7 @@ async def callback(
         samesite="lax",
         max_age=config.jwt_expiry_minutes * 60,
         path="/",
+        domain=None if config.debug else ".tpmguild.com",
     )
     return redirect
 

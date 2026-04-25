@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+import uuid
 from datetime import datetime, timezone
 
 import httpx
@@ -17,6 +19,20 @@ from ..config import GatewayConfig
 config = GatewayConfig()  # type: ignore[call-arg]
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _slugify(name: str) -> str:
+    slug = re.sub(r'[^a-zA-Z0-9]+', '-', name.lower()).strip('-')
+    return re.sub(r'-+', '-', slug)
+
+
+async def _unique_username(base: str, session: AsyncSession) -> str:
+    candidate = base
+    result = await session.execute(select(User).where(User.username == candidate))
+    if result.scalar_one_or_none() is None:
+        return candidate
+    # collision — append first 6 chars of a fresh uuid
+    return f"{base}-{str(uuid.uuid4())[:6]}"
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -85,10 +101,12 @@ async def callback(
     user = result.scalar_one_or_none()
 
     if user is None:
+        username = await _unique_username(_slugify(name), session)
         user = User(
             google_id=google_id,
             email=email,
             name=name,
+            username=username,
             picture=picture,
         )
         session.add(user)

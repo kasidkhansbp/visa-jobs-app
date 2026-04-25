@@ -21,7 +21,6 @@ class PublicCvShareOut(BaseModel):
     cv_label: str
     owner_name: str
     username: str
-    expires_at: datetime
     view_count: int
 
 
@@ -36,7 +35,6 @@ async def get_share_info(
         cv_label=cv.label,
         owner_name=user.name,
         username=user.username,
-        expires_at=share.expires_at,
         view_count=share.view_count,
     )
 
@@ -82,9 +80,6 @@ async def _resolve_share(
     share = share_result.scalar_one_or_none()
     if share is None:
         raise HTTPException(status_code=404, detail="Link not found")
-
-    if share.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
-        raise HTTPException(status_code=410, detail="Link has expired")
 
     cv_result = await session.execute(
         select(CvFile).where(CvFile.id == share.cv_file_id)

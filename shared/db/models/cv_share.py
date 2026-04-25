@@ -31,9 +31,9 @@ class CvShare(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
-    expires_at: Mapped[datetime] = mapped_column(
+    expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
-        nullable=False,
+        nullable=True,
     )
     view_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     last_viewed_at: Mapped[datetime | None] = mapped_column(

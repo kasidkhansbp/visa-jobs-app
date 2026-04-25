@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import Response
@@ -22,7 +22,6 @@ router = APIRouter(prefix="/api/cv", tags=["cv"])
 
 config = GatewayConfig()  # type: ignore[call-arg]
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
-SHARE_EXPIRY_DAYS = 30
 
 
 class CvFileOut(BaseModel):
@@ -37,7 +36,6 @@ class CvShareOut(BaseModel):
     token: str
     url: str
     created_at: datetime
-    expires_at: datetime
     view_count: int
     last_viewed_at: datetime | None
 
@@ -187,14 +185,12 @@ async def create_share(
 
     token = secrets.token_urlsafe(24)
     now = datetime.now(timezone.utc)
-    expires_at = now + timedelta(days=SHARE_EXPIRY_DAYS)
 
     share = CvShare(
         id=token,
         cv_file_id=cv.id,
         user_id=user_id,
         created_at=now,
-        expires_at=expires_at,
         view_count=0,
     )
     session.add(share)
@@ -206,7 +202,6 @@ async def create_share(
         token=token,
         url=url,
         created_at=share.created_at,
-        expires_at=share.expires_at,
         view_count=share.view_count,
         last_viewed_at=share.last_viewed_at,
     )
@@ -244,7 +239,6 @@ async def list_shares(
             token=s.id,
             url=f"{config.frontend_origin}/cv/share/{user.username}/{s.id}",
             created_at=s.created_at,
-            expires_at=s.expires_at,
             view_count=s.view_count,
             last_viewed_at=s.last_viewed_at,
         )

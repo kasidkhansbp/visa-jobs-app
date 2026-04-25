@@ -150,7 +150,6 @@ function EditableLabel({ value, cvId, onRenamed }) {
 
 function ShareRow({ share, onRevoke }) {
   const [revoking, setRevoking] = useState(false);
-  const isExpired = new Date(share.expires_at) < new Date();
 
   async function handleRevoke() {
     setRevoking(true);
@@ -174,15 +173,17 @@ function ShareRow({ share, onRevoke }) {
           title="Open share link"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            color: isExpired ? 'var(--danger)' : 'var(--accent)',
+            color: 'var(--accent)',
             textDecoration: 'none', fontWeight: 500,
           }}
         >
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
             <path d="M10 2h4v4M14 2l-7 7M6 4H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
           </svg>
-          {isExpired ? 'Expired' : `Expires ${formatDate(share.expires_at)}`}
+          Open link
         </a>
+        <span style={{ color: 'var(--ink-4)' }}>·</span>
+        <span style={{ color: 'var(--ink-4)' }}>Created {formatDate(share.created_at)}</span>
         <span style={{ color: 'var(--ink-4)' }}>·</span>
         <span style={{ color: 'var(--ink-4)' }}>
           {share.view_count === 0

@@ -212,10 +212,17 @@ function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
   const [deleting, setDeleting] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [sharing, setSharing] = useState(false);
-  const [shares, setShares] = useState(null);
-  const [loadingShares, setLoadingShares] = useState(false);
+  const [shares, setShares] = useState([]);
+  const [loadingShares, setLoadingShares] = useState(true);
   const [showShares, setShowShares] = useState(false);
   const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    listShares(cv.id)
+      .then(setShares)
+      .catch(() => {})
+      .finally(() => setLoadingShares(false));
+  }, [cv.id]);
 
   async function handleDelete() {
     if (!confirming) { setConfirming(true); return; }
@@ -244,18 +251,8 @@ function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
     }
   }
 
-  async function toggleShares() {
-    if (showShares) { setShowShares(false); return; }
-    setShowShares(true);
-    if (shares === null) {
-      setLoadingShares(true);
-      try {
-        const data = await listShares(cv.id);
-        setShares(data);
-      } finally {
-        setLoadingShares(false);
-      }
-    }
+  function toggleShares() {
+    setShowShares(prev => !prev);
   }
 
   async function handleRevoke(token) {

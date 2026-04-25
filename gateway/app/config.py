@@ -19,3 +19,8 @@ class GatewayConfig(BaseSettings):
     google_client_id: str
     google_client_secret: str
     google_redirect_uri: str
+    r2_account_id: str
+    r2_access_key_id: str
+    r2_secret_access_key: str
+    r2_bucket_name: str
+    r2_endpoint_url: str

@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import GatewayConfig
-from .routers import jobs, sponsors, auth, cv
+from .routers import jobs, sponsors, auth, cv, public
 
 config = GatewayConfig()  # type: ignore[call-arg]
 
@@ -38,6 +38,7 @@ app.include_router(auth.router)
 app.include_router(jobs.router)
 app.include_router(sponsors.router)
 app.include_router(cv.router)
+app.include_router(public.router)
 
 
 @app.get("/health")

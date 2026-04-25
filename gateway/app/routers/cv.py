@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import secrets
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import Response
@@ -11,12 +12,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.db.connection import get_session
 from shared.db.models.cv_file import CvFile
+from shared.db.models.cv_share import CvShare
+from shared.db.models.user import User
 from ..auth import get_current_user
+from ..config import GatewayConfig
 from ..storage import upload_file, download_file, delete_file
 
 router = APIRouter(prefix="/api/cv", tags=["cv"])
 
+config = GatewayConfig()  # type: ignore[call-arg]
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+SHARE_EXPIRY_DAYS = 30
 
 
 class CvFileOut(BaseModel):
@@ -25,6 +31,15 @@ class CvFileOut(BaseModel):
     filename: str
     file_size: int
     uploaded_at: datetime
+
+
+class CvShareOut(BaseModel):
+    token: str
+    url: str
+    created_at: datetime
+    expires_at: datetime
+    view_count: int
+    last_viewed_at: datetime | None
 
 
 @router.get("", response_model=list[CvFileOut])
@@ -145,6 +160,117 @@ async def rename_cv(
         file_size=cv.file_size,
         uploaded_at=cv.uploaded_at,
     )
+
+
+@router.post("/{cv_id}/share", response_model=CvShareOut, status_code=status.HTTP_201_CREATED)
+async def create_share(
+    cv_id: str,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> CvShareOut:
+    user_id = uuid.UUID(current_user["sub"])
+
+    result = await session.execute(
+        select(CvFile).where(
+            CvFile.id == uuid.UUID(cv_id),
+            CvFile.user_id == user_id,
+        )
+    )
+    cv = result.scalar_one_or_none()
+    if cv is None:
+        raise HTTPException(status_code=404, detail="CV not found")
+
+    user_result = await session.execute(select(User).where(User.id == user_id))
+    user = user_result.scalar_one_or_none()
+    if user is None or user.username is None:
+        raise HTTPException(status_code=400, detail="User profile incomplete")
+
+    token = secrets.token_urlsafe(24)
+    now = datetime.now(timezone.utc)
+    expires_at = now + timedelta(days=SHARE_EXPIRY_DAYS)
+
+    share = CvShare(
+        id=token,
+        cv_file_id=cv.id,
+        user_id=user_id,
+        created_at=now,
+        expires_at=expires_at,
+        view_count=0,
+    )
+    session.add(share)
+    await session.commit()
+    await session.refresh(share)
+
+    url = f"{config.frontend_origin}/cv/share/{user.username}/{token}"
+    return CvShareOut(
+        token=token,
+        url=url,
+        created_at=share.created_at,
+        expires_at=share.expires_at,
+        view_count=share.view_count,
+        last_viewed_at=share.last_viewed_at,
+    )
+
+
+@router.get("/{cv_id}/shares", response_model=list[CvShareOut])
+async def list_shares(
+    cv_id: str,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> list[CvShareOut]:
+    user_id = uuid.UUID(current_user["sub"])
+
+    result = await session.execute(
+        select(CvFile).where(
+            CvFile.id == uuid.UUID(cv_id),
+            CvFile.user_id == user_id,
+        )
+    )
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail="CV not found")
+
+    user_result = await session.execute(select(User).where(User.id == user_id))
+    user = user_result.scalar_one_or_none()
+
+    shares_result = await session.execute(
+        select(CvShare)
+        .where(CvShare.cv_file_id == uuid.UUID(cv_id))
+        .order_by(CvShare.created_at.desc())
+    )
+    shares = shares_result.scalars().all()
+
+    return [
+        CvShareOut(
+            token=s.id,
+            url=f"{config.frontend_origin}/cv/share/{user.username}/{s.id}",
+            created_at=s.created_at,
+            expires_at=s.expires_at,
+            view_count=s.view_count,
+            last_viewed_at=s.last_viewed_at,
+        )
+        for s in shares
+    ]
+
+
+@router.delete("/shares/{token}")
+async def revoke_share(
+    token: str,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    result = await session.execute(
+        select(CvShare).where(
+            CvShare.id == token,
+            CvShare.user_id == uuid.UUID(current_user["sub"]),
+        )
+    )
+    share = result.scalar_one_or_none()
+    if share is None:
+        raise HTTPException(status_code=404, detail="Share not found")
+
+    await session.execute(delete(CvShare).where(CvShare.id == token))
+    await session.commit()
+    return Response(status_code=204)
 
 
 @router.delete("/{cv_id}")

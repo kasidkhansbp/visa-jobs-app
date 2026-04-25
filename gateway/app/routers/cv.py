@@ -147,12 +147,12 @@ async def rename_cv(
     )
 
 
-@router.delete("/{cv_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{cv_id}")
 async def delete_cv(
     cv_id: str,
     current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
-) -> None:
+) -> Response:
     result = await session.execute(
         select(CvFile).where(
             CvFile.id == uuid.UUID(cv_id),
@@ -169,3 +169,4 @@ async def delete_cv(
         delete(CvFile).where(CvFile.id == uuid.UUID(cv_id))
     )
     await session.commit()
+    return Response(status_code=204)

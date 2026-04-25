@@ -112,15 +112,11 @@ async def get_jobs(
 
 # ── DELETE /api/jobs/{id} ──────────────────────────────────────────────────────
 
-@router.delete("/{job_id}", status_code=204, response_class=Response)
+@router.delete("/{job_id}")
 async def delete_job(
     job_id: uuid.UUID,
     db: AsyncSession = Depends(get_session),
-) -> None:
-    """
-    Delete a single job by its UUID.
-    Returns 404 if the job does not exist.
-    """
+) -> Response:
     result = await db.execute(select(Job).where(Job.id == job_id))
     job = result.scalar_one_or_none()
 
@@ -129,3 +125,4 @@ async def delete_job(
 
     await db.execute(delete(Job).where(Job.id == job_id))
     await db.commit()
+    return Response(status_code=204)

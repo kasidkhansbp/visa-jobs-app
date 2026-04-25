@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { loginUrl } from '../services/authApi';
-import { listCvs, uploadCv, downloadCv, deleteCv, renameCv } from '../services/cvApi';
+import { listCvs, uploadCv, downloadCv, deleteCv, renameCv, createShare, listShares, revokeShare } from '../services/cvApi';
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -148,10 +148,63 @@ function EditableLabel({ value, cvId, onRenamed }) {
 
 // ─── CV card ──────────────────────────────────────────────────────────────────
 
-function CvCard({ cv, onDelete, onDownload, onRenamed }) {
+function ShareRow({ share, onRevoke }) {
+  const [revoking, setRevoking] = useState(false);
+  const isExpired = new Date(share.expires_at) < new Date();
+
+  async function handleRevoke() {
+    setRevoking(true);
+    await onRevoke(share.token);
+    setRevoking(false);
+  }
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '8px 12px',
+      background: 'var(--paper-2)',
+      borderRadius: 'var(--radius)',
+      fontSize: 12,
+    }}>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: 'var(--ink-4)', flexShrink: 0 }}>
+        <path d="M10 2h4v4M14 2l-6 6M7 4H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ color: isExpired ? 'var(--danger)' : 'var(--ink-3)' }}>
+          {isExpired ? 'Expired' : `Expires ${formatDate(share.expires_at)}`}
+        </span>
+        <span style={{ color: 'var(--ink-4)', margin: '0 6px' }}>·</span>
+        <span style={{ color: 'var(--ink-4)' }}>
+          {share.view_count === 0
+            ? 'Not viewed yet'
+            : `Viewed ${share.view_count} time${share.view_count > 1 ? 's' : ''}${share.last_viewed_at ? ` · Last opened ${formatDate(share.last_viewed_at)}` : ''}`
+          }
+        </span>
+      </div>
+      <button
+        onClick={handleRevoke}
+        disabled={revoking}
+        style={{
+          fontSize: 11, padding: '3px 10px',
+          borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+          color: 'var(--ink-4)', background: 'var(--paper)', cursor: 'pointer',
+          flexShrink: 0,
+        }}
+      >
+        {revoking ? 'Revoking…' : 'Revoke'}
+      </button>
+    </div>
+  );
+}
+
+function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [shares, setShares] = useState(null);
+  const [loadingShares, setLoadingShares] = useState(false);
+  const [showShares, setShowShares] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   async function handleDelete() {
@@ -166,6 +219,45 @@ function CvCard({ cv, onDelete, onDownload, onRenamed }) {
     setDownloading(false);
   }
 
+  async function handleShare() {
+    setSharing(true);
+    try {
+      const share = await createShare(cv.id);
+      await navigator.clipboard.writeText(share.url);
+      pushToast('Link copied to clipboard');
+      setShares(prev => prev ? [share, ...prev] : [share]);
+      setShowShares(true);
+    } catch {
+      pushToast('Failed to create share link', 'error');
+    } finally {
+      setSharing(false);
+    }
+  }
+
+  async function toggleShares() {
+    if (showShares) { setShowShares(false); return; }
+    setShowShares(true);
+    if (shares === null) {
+      setLoadingShares(true);
+      try {
+        const data = await listShares(cv.id);
+        setShares(data);
+      } finally {
+        setLoadingShares(false);
+      }
+    }
+  }
+
+  async function handleRevoke(token) {
+    try {
+      await revokeShare(token);
+      setShares(prev => prev.filter(s => s.token !== token));
+      pushToast('Share link revoked');
+    } catch {
+      pushToast('Failed to revoke link', 'error');
+    }
+  }
+
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -173,63 +265,113 @@ function CvCard({ cv, onDelete, onDownload, onRenamed }) {
       style={{
         border: `1px solid ${hovered ? 'var(--line-2)' : 'var(--line)'}`,
         borderRadius: 'var(--radius-md)',
-        padding: '14px 18px',
         background: 'var(--paper)',
-        display: 'flex', alignItems: 'center', gap: 14,
         transition: 'border-color 120ms ease',
+        overflow: 'hidden',
       }}
     >
-      <PdfIcon />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <EditableLabel value={cv.label} cvId={cv.id} onRenamed={onRenamed} />
-        <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>
-          {cv.filename} · {formatSize(cv.file_size)} · Uploaded {formatDate(cv.uploaded_at)}
+      {/* Main row */}
+      <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <PdfIcon />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <EditableLabel value={cv.label} cvId={cv.id} onRenamed={onRenamed} />
+          <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>
+            {cv.filename} · {formatSize(cv.file_size)} · Uploaded {formatDate(cv.uploaded_at)}
+          </div>
         </div>
-      </div>
-      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          style={{
-            fontSize: 12, fontWeight: 500, padding: '5px 12px',
-            borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
-            color: 'var(--ink-2)', background: 'var(--paper)', cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-            <path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          {downloading ? 'Downloading…' : 'Download'}
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          style={{
-            fontSize: 12, fontWeight: 500, padding: '5px 12px',
-            borderRadius: 'var(--radius-full)', border: '1px solid',
-            borderColor: confirming ? 'var(--danger)' : 'var(--line)',
-            color: confirming ? 'var(--danger)' : 'var(--ink-4)',
-            background: confirming ? '#fff0ef' : 'var(--paper)', cursor: 'pointer',
-            transition: 'all 120ms ease',
-          }}
-        >
-          {deleting ? 'Deleting…' : confirming ? 'Confirm delete' : 'Delete'}
-        </button>
-        {confirming && (
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button
-            onClick={() => setConfirming(false)}
+            onClick={handleDownload}
+            disabled={downloading}
+            style={{
+              fontSize: 12, fontWeight: 500, padding: '5px 12px',
+              borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+              color: 'var(--ink-2)', background: 'var(--paper)', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            {downloading ? 'Downloading…' : 'Download'}
+          </button>
+          <button
+            onClick={handleShare}
+            disabled={sharing}
+            style={{
+              fontSize: 12, fontWeight: 500, padding: '5px 12px',
+              borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+              color: 'var(--accent)', background: 'var(--accent-wash)', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <circle cx="12" cy="3" r="2" stroke="currentColor" strokeWidth="1.3"/>
+              <circle cx="12" cy="13" r="2" stroke="currentColor" strokeWidth="1.3"/>
+              <circle cx="4" cy="8" r="2" stroke="currentColor" strokeWidth="1.3"/>
+              <path d="M10.5 3.9L5.5 7.1M10.5 12.1L5.5 8.9" stroke="currentColor" strokeWidth="1.3"/>
+            </svg>
+            {sharing ? 'Creating…' : 'Share'}
+          </button>
+          <button
+            onClick={toggleShares}
             style={{
               fontSize: 12, padding: '5px 10px',
               borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
               color: 'var(--ink-4)', background: 'var(--paper)', cursor: 'pointer',
             }}
           >
-            Cancel
+            Links {shares ? `(${shares.length})` : ''}
           </button>
-        )}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            style={{
+              fontSize: 12, fontWeight: 500, padding: '5px 12px',
+              borderRadius: 'var(--radius-full)', border: '1px solid',
+              borderColor: confirming ? 'var(--danger)' : 'var(--line)',
+              color: confirming ? 'var(--danger)' : 'var(--ink-4)',
+              background: confirming ? '#fff0ef' : 'var(--paper)', cursor: 'pointer',
+              transition: 'all 120ms ease',
+            }}
+          >
+            {deleting ? 'Deleting…' : confirming ? 'Confirm delete' : 'Delete'}
+          </button>
+          {confirming && (
+            <button
+              onClick={() => setConfirming(false)}
+              style={{
+                fontSize: 12, padding: '5px 10px',
+                borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+                color: 'var(--ink-4)', background: 'var(--paper)', cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Share links panel */}
+      {showShares && (
+        <div style={{
+          borderTop: '1px solid var(--line)',
+          padding: '12px 18px',
+          display: 'flex', flexDirection: 'column', gap: 6,
+          background: 'var(--paper-2)',
+        }}>
+          {loadingShares ? (
+            <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>Loading links…</div>
+          ) : shares && shares.length === 0 ? (
+            <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>No active share links. Click Share to create one.</div>
+          ) : (
+            shares?.map(s => (
+              <ShareRow key={s.token} share={s} onRevoke={handleRevoke} />
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -578,6 +720,7 @@ export default function CvBoxPage() {
                       onDelete={handleDelete}
                       onDownload={handleDownload}
                       onRenamed={handleRenamed}
+                      pushToast={pushToast}
                     />
                   ))}
                 </div>

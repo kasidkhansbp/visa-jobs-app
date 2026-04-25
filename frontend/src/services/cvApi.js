@@ -53,3 +53,34 @@ export async function deleteCv(cvId) {
   });
   if (!res.ok) throw new Error('Delete failed');
 }
+
+export async function createShare(cvId) {
+  const res = await fetch(`${BASE}/api/cv/${cvId}/share`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to create share link');
+  return res.json();
+}
+
+export async function listShares(cvId) {
+  const res = await fetch(`${BASE}/api/cv/${cvId}/shares`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to fetch share links');
+  return res.json();
+}
+
+export async function revokeShare(token) {
+  const res = await fetch(`${BASE}/api/cv/shares/${token}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to revoke share link');
+}
+
+export async function getShareInfo(username, token) {
+  const res = await fetch(`${BASE}/public/cv/${username}/${token}/info`);
+  if (!res.ok) throw new Error('Link not found or expired');
+  return res.json();
+}

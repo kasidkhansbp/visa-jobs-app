@@ -14,6 +14,7 @@ import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
 import AboutPage from './pages/AboutPage';
 import CvBoxPage from './pages/CvBoxPage';
+import CvSharePage from './pages/CvSharePage';
 import ChangelogPage from './pages/ChangelogPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -52,6 +53,7 @@ function AppInner() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
         <Route path="/cv" element={<CvBoxPage />} />
+        <Route path="/cv/share/:username/:token" element={<CvSharePage />} />
         <Route path="/changelog" element={<ChangelogPage />} />
       </Routes>
       <Footer />

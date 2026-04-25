@@ -38,6 +38,7 @@ export default function Footer() {
             <li><Link to="/coverage">Coverage</Link></li>
             <li><Link to="/contact">Contact</Link></li>
             <li><Link to="/privacy">Privacy</Link></li>
+            <li><Link to="/changelog">Changelog</Link></li>
           </ul>
         </div>
       </div>

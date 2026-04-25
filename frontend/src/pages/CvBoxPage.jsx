@@ -328,7 +328,7 @@ function UploadSection({ onUploaded, pushToast }) {
         <div style={{ display: 'flex', gap: 10 }}>
           <input
             type="text"
-            placeholder="Label — e.g. TPM Finance, TPM Data Science"
+            placeholder="Label, e.g. TPM Finance, TPM Data Science"
             value={label}
             onChange={e => setLabel(e.target.value)}
             required
@@ -553,7 +553,7 @@ export default function CvBoxPage() {
         <div className="eyebrow" style={{ marginBottom: 10 }}>CV BOX</div>
         <h1 style={{ margin: '0 0 8px' }}>One career, many CVs.</h1>
         <p style={{ fontSize: 15, color: 'var(--ink-3)', marginBottom: 40 }}>
-          A single CV rarely wins across different industries. Store tailored versions here — one per role type — and share the right one with every recruiter.
+          A single CV rarely wins across different industries. Store tailored versions here, one per role type, and share the right one with every recruiter.
         </p>
 
         {user ? (

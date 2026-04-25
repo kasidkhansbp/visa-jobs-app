@@ -13,6 +13,7 @@ import ContactPage from './pages/ContactPage';
 import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
 import AboutPage from './pages/AboutPage';
+import CvBoxPage from './pages/CvBoxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function SavedView() {
@@ -49,6 +50,7 @@ function AppInner() {
         <Route path="/saved" element={<SavedView />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
+        <Route path="/cv" element={<CvBoxPage />} />
       </Routes>
       <Footer />
     </div>

@@ -66,6 +66,21 @@ export default function Nav() {
             <span style={{ fontSize: 13, color: 'var(--ink-2)' }}>
               Welcome, {user.name.split(' ')[0]}
             </span>
+            <Link
+              to="/cv"
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--line)',
+                color: pathname === '/cv' ? 'var(--accent)' : 'var(--ink-2)',
+                textDecoration: 'none',
+                background: 'var(--paper)',
+              }}
+            >
+              CV Box
+            </Link>
             <button
               onClick={logout}
               style={{

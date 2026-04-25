@@ -166,14 +166,24 @@ function ShareRow({ share, onRevoke }) {
       borderRadius: 'var(--radius)',
       fontSize: 12,
     }}>
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: 'var(--ink-4)', flexShrink: 0 }}>
-        <path d="M10 2h4v4M14 2l-6 6M7 4H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-      </svg>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ color: isExpired ? 'var(--danger)' : 'var(--ink-3)' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <a
+          href={share.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open share link"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            color: isExpired ? 'var(--danger)' : 'var(--accent)',
+            textDecoration: 'none', fontWeight: 500,
+          }}
+        >
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+            <path d="M10 2h4v4M14 2l-7 7M6 4H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+          </svg>
           {isExpired ? 'Expired' : `Expires ${formatDate(share.expires_at)}`}
-        </span>
-        <span style={{ color: 'var(--ink-4)', margin: '0 6px' }}>·</span>
+        </a>
+        <span style={{ color: 'var(--ink-4)' }}>·</span>
         <span style={{ color: 'var(--ink-4)' }}>
           {share.view_count === 0
             ? 'Not viewed yet'

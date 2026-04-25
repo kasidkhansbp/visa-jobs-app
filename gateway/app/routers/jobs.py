@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from pydantic import BaseModel
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -111,7 +112,7 @@ async def get_jobs(
 
 # ── DELETE /api/jobs/{id} ──────────────────────────────────────────────────────
 
-@router.delete("/{job_id}", status_code=204)
+@router.delete("/{job_id}", status_code=204, response_class=Response)
 async def delete_job(
     job_id: uuid.UUID,
     db: AsyncSession = Depends(get_session),

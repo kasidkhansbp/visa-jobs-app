@@ -35,11 +35,24 @@ function ScrollToTop() {
   return null;
 }
 
+function Analytics() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', 'page_view', {
+      page_path: pathname,
+      page_location: window.location.href,
+    });
+  }, [pathname]);
+  return null;
+}
+
 function AppInner() {
   return (
     <div className="app">
       <Nav />
       <ScrollToTop />
+      <Analytics />
       <Routes>
         <Route path="/" element={<JobsPage />} />
         <Route path="/jobs" element={<JobsPage />} />

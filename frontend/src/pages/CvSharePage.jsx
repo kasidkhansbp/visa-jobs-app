@@ -16,7 +16,7 @@ function useIsMobile() {
 }
 
 export default function CvSharePage() {
-  useSEO({ title: 'CV Share', description: 'View and download a shared CV.' });
+  useSEO({ title: 'CV Share', description: 'View and download a CV shared via TPMguild.' });
   const { username, token } = useParams();
   const [info, setInfo] = useState(null);
   const [error, setError] = useState(null);

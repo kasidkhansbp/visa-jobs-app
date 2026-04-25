@@ -653,7 +653,7 @@ function SignInWall() {
 }
 
 export default function CvBoxPage() {
-  useSEO({ title: 'CV Box', description: 'Upload and manage your CV versions.' });
+  useSEO({ title: 'CV Box', description: 'Store and share tailored CV versions for TPM roles in the UK. One CV per role type — infrastructure, fintech, data, and more.' });
   const { user } = useAuth();
   const [cvs, setCvs] = useState([]);
   const [loading, setLoading] = useState(true);

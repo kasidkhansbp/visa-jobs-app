@@ -2,6 +2,31 @@ import useSEO from '../hooks/useSEO';
 
 const ENTRIES = [
   {
+    date: '26 Apr 2026',
+    items: [
+      {
+        title: 'Shareable CV links',
+        tag: 'NEW',
+        description: 'Generate a shareable link for any CV version. Links never expire — revoke them at any time. View count and last opened date tracked per link.',
+      },
+      {
+        title: 'Sponsor verification — automated',
+        tag: 'IMPROVED',
+        description: 'Sponsor verification now runs automatically. Daily cron matches new jobs against the 140K sponsor register. Monthly full rematch when the Home Office register is refreshed.',
+      },
+      {
+        title: 'SEO & analytics',
+        tag: 'IMPROVED',
+        description: 'GA4 page_view events now fire on every route change — not just the initial page load. Canonical and og:url tags updated per page.',
+      },
+      {
+        title: 'Admin stats',
+        tag: 'NEW',
+        description: 'Internal admin page showing total users, new signups, job counts by source, sponsor verification stats, and CV Box usage.',
+      },
+    ],
+  },
+  {
     date: '25 Apr 2026',
     items: [
       {

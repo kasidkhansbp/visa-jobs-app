@@ -15,4 +15,6 @@ COPY services/jobs/ /app/service/jobs/
 
 WORKDIR /app/service
 
+ENV PYTHONPATH=/app
+
 CMD ["python", "-m", "jobs.main"]

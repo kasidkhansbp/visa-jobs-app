@@ -85,10 +85,13 @@
 - Recent funding rounds
 - Job market signals
 
-### Application Tracking / Agentic Loop (Phase 2 candidate)
+### Application Tracking / Agentic Loop — PRIORITY 1
 - Triggered when user marks "Already Applied"
-- Agent tracks application status over time
-- Agent decides next action — follow up, move on, etc.
+- Outlook/Gmail MCP monitors email inbox for replies from the applied company
+- Agent detects: interview invite, rejection, no response, follow-up needed
+- Agent decides next action — follow up, move on, escalate, etc.
+- Application status updated in DB and surfaced on the personalised jobs page
+- Decision logged: 2026-04-26 — elevated to Priority 1
 
 ---
 

@@ -18,6 +18,7 @@ import sys
 from .clients.adzuna import AdzunaClient
 from .clients.reed import ReedClient
 from .config import JobsConfig
+from .ingest_sponsors import _match_jobs
 from .scheduler import _store
 
 logging.basicConfig(
@@ -68,6 +69,9 @@ async def main() -> None:
 
     await _store(all_jobs)
     logger.info("Run-once fetch complete — %d jobs stored", len(all_jobs))
+
+    await _match_jobs(full_reset=False)
+    logger.info("Sponsor matching complete")
 
 
 if __name__ == "__main__":

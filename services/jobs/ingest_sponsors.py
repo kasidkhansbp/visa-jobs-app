@@ -252,7 +252,7 @@ def _normalise(name: str) -> str:
     return re.sub(r'\s+', ' ', name).strip()
 
 
-async def _match_jobs() -> None:
+async def _match_jobs(full_reset: bool = False) -> None:
     """
     Cross-reference jobs.employer_name against sponsors.organisation_name
     using normalised name matching.
@@ -260,10 +260,12 @@ async def _match_jobs() -> None:
     Sets:
       is_sponsor_verified = true  — employer found in sponsors table
       is_frequent_sponsor = true  — employer sponsors 3+ routes
+
+    full_reset=True  — wipe all flags first, rematch every job (monthly run)
+    full_reset=False — only process jobs not yet matched (daily run)
     """
     async with AsyncSessionLocal() as session:
-        # Build normalised lookup from sponsors
-        # {normalised_name: route_count}
+        # Build normalised sponsor lookup: {normalised_name: route_count}
         sponsor_rows = (
             await session.execute(
                 text(
@@ -281,12 +283,29 @@ async def _match_jobs() -> None:
             for row in sponsor_rows
         }
 
-        # Fetch all jobs
-        job_rows = (
+        if full_reset:
+            # Monthly: wipe all flags and rematch every job
             await session.execute(
-                text("SELECT id, employer_name FROM jobs")
+                text("UPDATE jobs SET is_sponsor_verified = false, is_frequent_sponsor = false")
             )
-        ).fetchall()
+            job_rows = (
+                await session.execute(
+                    text("SELECT id, employer_name FROM jobs")
+                )
+            ).fetchall()
+        else:
+            # Daily: only process jobs that have never been matched
+            job_rows = (
+                await session.execute(
+                    text(
+                        """
+                        SELECT id, employer_name FROM jobs
+                        WHERE is_sponsor_verified = false
+                        AND is_frequent_sponsor = false
+                        """
+                    )
+                )
+            ).fetchall()
 
         verified_ids = []
         frequent_ids = []
@@ -298,11 +317,6 @@ async def _match_jobs() -> None:
                 verified_ids.append(str(job.id))
                 if route_count >= 3:
                     frequent_ids.append(str(job.id))
-
-        # Reset all flags first
-        await session.execute(
-            text("UPDATE jobs SET is_sponsor_verified = false, is_frequent_sponsor = false")
-        )
 
         if verified_ids:
             await session.execute(
@@ -319,8 +333,8 @@ async def _match_jobs() -> None:
         await session.commit()
 
     logger.info(
-        "Job matching complete — %d sponsor-verified, %d frequent sponsors",
-        len(verified_ids), len(frequent_ids),
+        "Job matching complete — %d sponsor-verified, %d frequent sponsors (full_reset=%s)",
+        len(verified_ids), len(frequent_ids), full_reset,
     )
 
 
@@ -336,7 +350,7 @@ async def main() -> None:
     logger.info("Ingestion complete — %d new rows inserted, %d skipped as duplicates", inserted, len(rows) - inserted)
 
     await _rebuild_stats()
-    await _match_jobs()
+    await _match_jobs(full_reset=True)
     logger.info("Done.")
 
 

@@ -45,6 +45,12 @@ class AdminStatsOut(BaseModel):
     cvs: CvStats
 
 
+class UserRow(BaseModel):
+    name: str
+    email: str
+    created_at: datetime
+
+
 @router.get("/stats", response_model=AdminStatsOut)
 async def get_stats(
     current_user: dict = Depends(get_current_user),
@@ -93,7 +99,9 @@ async def get_stats(
 
     active_shares = await session.scalar(select(func.count(CvShare.id))) or 0
 
-    total_views = await session.scalar(select(func.coalesce(func.sum(CvShare.view_count), 0))) or 0
+    total_views = await session.scalar(
+        select(func.coalesce(func.sum(CvShare.view_count), 0))
+    ) or 0
 
     return AdminStatsOut(
         users=UserStats(
@@ -114,3 +122,17 @@ async def get_stats(
             total_cv_views=total_views,
         ),
     )
+
+
+@router.get("/users", response_model=list[UserRow])
+async def list_users(
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> list[UserRow]:
+    if current_user.get("email") != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    result = await session.execute(
+        select(User.name, User.email, User.created_at).order_by(User.created_at.desc())
+    )
+    return [UserRow(name=row[0], email=row[1], created_at=row[2]) for row in result]

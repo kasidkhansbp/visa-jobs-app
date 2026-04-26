@@ -27,6 +27,11 @@ export default function Nav() {
             {i.label}
           </Link>
         ))}
+        {user?.email === 'kasidkhan@gmail.com' && (
+          <Link to="/admin" className={pathname === '/admin' ? 'active' : ''}>
+            Admin
+          </Link>
+        )}
       </nav>
       <div className="spacer"/>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

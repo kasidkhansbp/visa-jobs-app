@@ -15,6 +15,7 @@ import SourcesSection from './components/SourcesSection';
 import AboutPage from './pages/AboutPage';
 import CvBoxPage from './pages/CvBoxPage';
 import CvSharePage from './pages/CvSharePage';
+import AdminPage from './pages/AdminPage';
 import ChangelogPage from './pages/ChangelogPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -68,6 +69,7 @@ function AppInner() {
         <Route path="/cv" element={<CvBoxPage />} />
         <Route path="/cv/share/:username/:token" element={<CvSharePage />} />
         <Route path="/changelog" element={<ChangelogPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
       <Footer />
     </div>

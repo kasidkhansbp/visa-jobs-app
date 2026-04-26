@@ -84,3 +84,15 @@ export async function getShareInfo(username, token) {
   if (!res.ok) throw new Error('Link not found or expired');
   return res.json();
 }
+
+export async function getAdminStats() {
+  const res = await fetch(`${BASE}/api/admin/stats`, { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to fetch stats');
+  return res.json();
+}
+
+export async function getAdminUsers() {
+  const res = await fetch(`${BASE}/api/admin/users`, { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}

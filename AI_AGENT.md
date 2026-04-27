@@ -124,6 +124,88 @@
 
 ---
 
+### 2026-04-27 — Implementation Sequence — Confirmed
+
+Same discipline as previous services (DB → clients → API → UI), adapted for agent architecture. Finish one agent end to end before starting the next. Profile agent first — no external OAuth dependency.
+
+**Step 1 — DB**
+Create Alembic migrations for new tables: `user_skills_profile`, `user_job_matches`, `user_applied_jobs`, `user_gmail_tokens`.
+Test: connect to DB, confirm tables exist.
+
+**Step 2 — Tools**
+Build reusable tools in isolation — no LLM involved:
+- `pdf_extractor.py` — pass a PDF, get text back
+- `gmail.py` — authenticate, search, read emails
+Test each tool independently.
+
+**Step 3 — LLM Factory + Prompts**
+Build `factory.py` — returns Claude/GPT-4/Gemini based on config.
+Write prompts for each task.
+Test: call factory, send prompt, confirm structured Pydantic response is returned and schema is enforced.
+
+**Step 4 — Nodes**
+Build each node one at a time in graph order. Test each node independently with hardcoded input before wiring into the graph.
+- Profile agent: cv_reader → profile_builder → job_ranker → gap_analyser → result_writer
+- Email tracker: gmail_reader → email_classifier → status_writer
+
+**Step 5 — Graph**
+Wire nodes into `graph.py` using LangGraph. Define edges and conditional routing.
+Test: run full graph end to end for one user. Confirm DB has expected output.
+
+**Step 6 — Scheduler**
+Build `runner.py` — fetches eligible users, calls graph per user.
+Build `cron.py` — wires APScheduler schedules.
+Test: trigger manually first, confirm correct users are picked. Then enable schedule.
+
+**Step 7 — Gateway API**
+Add routes so frontend can: read job matches, read application statuses, connect Gmail (OAuth), trigger on-demand refresh.
+Test via DevTools console.
+
+**Step 8 — UI**
+Build personalised jobs page and job tracker page.
+
+**Key difference from previous services:** Steps 2-6 repeat per agent. Profile agent first, email tracker second.
+
+**2026-04-27 16:30 — Gmail OAuth & Token Storage — Confirmed**
+
+- User gives one-time consent via "Connect Gmail" button → Google OAuth `gmail.readonly` scope
+- Consent is permanent — refresh token never expires unless user revokes
+- Refresh token encrypted before storing in DB (encryption key in Railway env vars)
+- Access token (1 hour) generated silently from refresh token — user never sees another consent screen
+- Token becomes invalid if: user revokes, unused for 6 months, or new scopes requested
+- Agent detects invalid token → marks user as disconnected → UI prompts reconnect
+
+**Gmail columns added to existing `users` table (all nullable — no impact on existing users):**
+- `gmail_refresh_token` — encrypted, long-lived token
+- `gmail_connected_at` — timestamp of when user gave consent
+- `gmail_last_checked_at` — timestamp of last agent inbox check
+- `gmail_scope` — scope granted, for audit trail
+
+**User can revoke access via "Disconnect Gmail" button:**
+- Gateway calls `POST https://oauth2.googleapis.com/revoke?token={refresh_token}`
+- Gmail columns cleared to NULL in DB
+- Agent skips user on next run
+
+**Two gateway endpoints required:**
+- `POST /api/gmail/connect` — OAuth callback, encrypt + store refresh token
+- `DELETE /api/gmail/disconnect` — revoke with Google, clear from DB
+
+**UI on Job Tracker page:**
+- Not connected → "Connect Gmail" button
+- Connected → "Gmail Connected ✓" + "Disconnect" button + last checked timestamp
+
+---
+
+**2026-04-27 — Agent build order — Confirmed**
+Isolate one agent, complete end to end (Steps 1-8), then move to the next.
+- Agent 1: Email Tracker — first to build completely
+- Agent 2: Profile Agent — second
+- Agent 3: Company Research — Phase 2
+
+Starting with Email Tracker Step 1 — DB tables.
+
+---
+
 ## Open Questions
 > Must be resolved before implementation begins.
 

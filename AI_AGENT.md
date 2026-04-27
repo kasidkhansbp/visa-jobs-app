@@ -166,6 +166,11 @@ Build personalised jobs page and job tracker page.
 
 **Key difference from previous services:** Steps 2-6 repeat per agent. Profile agent first, email tracker second.
 
+**2026-04-27 — Runner concurrency strategy — Confirmed**
+- Phase 1 (admin only): sequential processing — one user at a time. Simple, no risk.
+- Phase 2 (all users): batch concurrency — process 50 users simultaneously using `asyncio.gather`. 1000 users at 2s each = 40 seconds instead of 33 minutes.
+- Switch triggered before general rollout — not before.
+
 **2026-04-27 16:30 — Gmail OAuth & Token Storage — Confirmed**
 
 - User gives one-time consent via "Connect Gmail" button → Google OAuth `gmail.readonly` scope

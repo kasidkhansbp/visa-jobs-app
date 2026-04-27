@@ -1,0 +1,5 @@
+[build]
+dockerfilePath = "services/agent/Dockerfile"
+
+[deploy]
+startCommand = "python -m agent.main"

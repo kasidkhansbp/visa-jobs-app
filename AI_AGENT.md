@@ -86,12 +86,41 @@
 - Job market signals
 
 ### Application Tracking / Agentic Loop — PRIORITY 1
-- Triggered when user marks "Already Applied"
-- Outlook/Gmail MCP monitors email inbox for replies from the applied company
-- Agent detects: interview invite, rejection, no response, follow-up needed
-- Agent decides next action — follow up, move on, escalate, etc.
-- Application status updated in DB and surfaced on the personalised jobs page
+- Separate Job Tracker page — not the personalised jobs page
+- No manual input from user — agent discovers applications automatically from Gmail
+- User connects Gmail once via OAuth consent (`gmail.readonly` scope)
+- Refresh token stored per user in DB — agent accesses inbox silently going forward
+- Agent runs hourly + on-demand (user can hit "Refresh" on Job Tracker page)
 - Decision logged: 2026-04-26 — elevated to Priority 1
+
+**Gmail search strategy — 2026-04-27**
+- Single `messages.list` call per check (5 units) using OR query:
+  ```
+  subject:("thank you for applying" OR "thanks for applying" OR "your application" OR
+           "we received your application" OR "application received" OR
+           "application confirmation") after:YYYY/MM/DD
+  ```
+- `after:` filter scoped to emails since last check — avoids re-reading old emails
+- Each matched email read via `messages.get` (5 units each)
+- Cost per user per check: 5 units (no new emails) to ~15-25 units (2-4 new emails)
+- Gmail API quota: 1 billion units/day per project — safe at any realistic scale for TPMguild
+
+**Email classification — Claude reads each matched email and extracts:**
+- Company name
+- Role title
+- Status: `Applied` / `Interview Scheduled` / `Rejected` / `Offer Received` / `No Response`
+
+**Application statuses:**
+- `Applied` — confirmation email received
+- `Interview Scheduled` — interview invite detected
+- `Rejected` — rejection email detected
+- `Offer Received` — offer email detected
+- `No Response` — no reply after X days
+
+**Separate OAuth from site login:**
+- Site login uses `openid profile email` scopes
+- Gmail monitoring requires `gmail.readonly` — separate OAuth client
+- Admin/test mode first (kasidkhan@gmail.com) — Google app verification required before public rollout
 
 ---
 
@@ -124,35 +153,62 @@
 | `user_applied_jobs` | Jobs user has marked as applied |
 | `user_rag_documents` | Per-user knowledge base for RAG |
 
-Structure in the package:
+### 2026-04-27
+
+**Project structure — Confirmed**
+
+Agreed principle: `agents/` contains business logic per agent. Everything else at the same level is shared infrastructure any agent can use.
+
+Maps to the 5-component agent model:
+- `agents/*/graph.py` → **Planner** (LangGraph nodes + edges)
+- `llm/` → **Brain** (LangChain LLM factory, prompts)
+- `tools/` → **Tools** (what the brain can call)
+- `db/` → **Memory** (long-term persistence, short-term in AgentState)
+- `scheduler/` → **Orchestrator** (schedules, eligibility, error handling)
+
+```
 services/agent/
-│
-├── agent/
-│   ├── graph.py                   # LangGraph graph definition — nodes + edges
-│   ├── state.py                   # AgentState TypedDict
-│   └── nodes/
-│       ├── cv_reader.py           # PDF → text for all user CVs
-│       ├── profile_builder.py     # Builds consolidated skills profile
-│       ├── job_ranker.py          # Scores jobs → top 10
-│       ├── gap_analyser.py        # Per-job: missing skills, ATS gaps, best CV
-│       └── result_writer.py       # Persists results to DB via shared/
-│
+├── agents/
+│   ├── profile/               ← fixed sequence graph
+│   │   ├── graph.py
+│   │   ├── state.py
+│   │   └── nodes/
+│   │       ├── cv_reader.py
+│   │       ├── profile_builder.py
+│   │       ├── job_ranker.py
+│   │       ├── gap_analyser.py
+│   │       └── result_writer.py
+│   ├── email_tracker/         ← conditional routing graph
+│   │   ├── graph.py
+│   │   ├── state.py
+│   │   └── nodes/
+│   │       ├── gmail_reader.py
+│   │       ├── email_classifier.py
+│   │       └── status_writer.py
+│   └── company_research/      ← Phase 2, placeholder only
+│       ├── graph.py
+│       └── state.py
 ├── llm/
-│   ├── factory.py                 # Returns Claude / GPT-4 / Gemini based on config
+│   ├── factory.py             ← returns Claude/GPT-4/Gemini based on config
 │   └── prompts/
 │       ├── profile_building.py
 │       ├── job_ranking.py
-│       └── gap_analysis.py
-│
+│       ├── gap_analysis.py
+│       └── email_classification.py
+├── tools/
+│   ├── pdf_extractor.py
+│   ├── gmail.py
+│   └── web_search.py          ← Phase 2 placeholder
 ├── scheduler/
-│   ├── cron.py                    # APScheduler — every 6 hours
-│   └── trigger.py                 # Fetches eligible users, kicks off agent runs
-│
-├── main.py                        # Entry point — starts scheduler
-├── config.py                      # Env vars, model selection
+│   ├── cron.py                ← APScheduler, all schedules
+│   └── runner.py              ← eligible users, error handling, logging
+├── db/
+│   └── queries.py             ← all DB reads/writes centralised here
+├── main.py
+├── config.py
 ├── Dockerfile
-├── railway.toml
-└── requirements.txt
+└── railway.toml
+```
 
 Expectation from Agent:
 From the decision log and our discussion, here's what the agent does:

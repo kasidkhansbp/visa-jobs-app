@@ -12,7 +12,7 @@ const SECTIONS = [
   },
   {
     title: 'Eligibility',
-    body: 'You must be at least 18 years old to use this Service. By using TPMguild you confirm that you meet this requirement.',
+    body: 'You must be at least 16 years old to use this Service. By using TPMguild you confirm that you meet this requirement.',
   },
   {
     title: 'User accounts',

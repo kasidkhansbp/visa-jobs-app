@@ -37,7 +37,7 @@ async def _run_email_tracker() -> None:
         try:
             logger.info("email_tracker runner — starting for user_id=%s", user["user_id"])
 
-            email_tracker_graph.invoke({
+            await email_tracker_graph.ainvoke({
                 "user_id": str(user["user_id"]),
                 "encrypted_refresh_token": user["encrypted_refresh_token"],
                 "last_checked_at": user["last_checked_at"],

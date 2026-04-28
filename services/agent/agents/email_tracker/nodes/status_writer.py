@@ -6,7 +6,6 @@ records in DB via db/queries.py.
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 
 from shared.db.connection import AsyncSessionLocal
@@ -16,15 +15,11 @@ from ..state import EmailTrackerState
 logger = logging.getLogger(__name__)
 
 
-def status_writer(state: EmailTrackerState) -> dict:
+async def status_writer(state: EmailTrackerState) -> dict:
     """
     Writes each classified job email to the user_applications table.
     Updates last_checked_at after all writes are complete.
     """
-    return asyncio.run(_write(state))
-
-
-async def _write(state: EmailTrackerState) -> dict:
     classified_emails = state["classified_emails"]
     user_id = state["user_id"]
     count = 0

@@ -8,9 +8,10 @@ const NAV_ITEMS = [
   { path: '/sources',   label: 'Sources' },
   { path: '/resources', label: 'Resources' },
   { path: '/cv',        label: 'CV Box' },
-  { path: '/tracker',   label: 'Tracker' },
   { path: '/about',     label: 'About' },
 ];
+
+const TRACKER_ALLOWLIST = ['kasidkhan@gmail.com', 'kasidkhan@tpmguild.com'];
 
 export default function Nav() {
   const { pathname } = useLocation();
@@ -28,6 +29,11 @@ export default function Nav() {
             {i.label}
           </Link>
         ))}
+        {user?.email && TRACKER_ALLOWLIST.includes(user.email) && (
+          <Link to="/tracker" className={pathname === '/tracker' ? 'active' : ''}>
+            Tracker
+          </Link>
+        )}
         {user?.email === 'kasidkhan@gmail.com' && (
           <Link to="/admin" className={pathname === '/admin' ? 'active' : ''}>
             Admin

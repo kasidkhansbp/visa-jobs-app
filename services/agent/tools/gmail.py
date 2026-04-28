@@ -101,12 +101,20 @@ def fetch_new_emails(
         logger.info("No new job emails found")
         return []
 
+    # Normalise since to UTC for comparison
+    since_utc = since.replace(tzinfo=timezone.utc) if since and since.tzinfo is None else since
+
     emails = []
     for msg in messages:
         try:
             email = _read_email(service, msg["id"])
-            if email:
-                emails.append(email)
+            if not email:
+                continue
+            # Gmail after: has date-only precision — filter by full datetime
+            if since_utc and email.received_at <= since_utc:
+                logger.info("Skipping email %s — received before last check", msg["id"])
+                continue
+            emails.append(email)
         except Exception:
             logger.exception("Failed to read email %s — skipping", msg["id"])
 

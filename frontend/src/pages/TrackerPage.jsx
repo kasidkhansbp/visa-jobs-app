@@ -113,6 +113,7 @@ export default function TrackerPage() {
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [notAllowed, setNotAllowed] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -270,19 +271,63 @@ export default function TrackerPage() {
                   : 'Connect Gmail above to start tracking your applications.'}
               </div>
             </div>
-          ) : (
-            <>
-              <div style={{ fontSize: 12, color: 'var(--ink-4)', marginBottom: 10 }}>
-                <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{applications.length}</span>{' '}
-                {applications.length === 1 ? 'application' : 'applications'} tracked
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {applications.map(app => (
-                  <ApplicationCard key={app.id} app={app} />
-                ))}
-              </div>
-            </>
-          )}
+          ) : (() => {
+            const TABS = [
+              { key: 'all', label: 'All' },
+              { key: 'applied', label: 'Applied' },
+              { key: 'interview_scheduled', label: 'Interview' },
+              { key: 'rejected', label: 'Rejected' },
+              { key: 'offer_received', label: 'Offer' },
+            ];
+            const filtered = activeTab === 'all'
+              ? applications
+              : applications.filter(a => a.status === activeTab);
+
+            return (
+              <>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
+                  {TABS.map(tab => {
+                    const count = tab.key === 'all'
+                      ? applications.length
+                      : applications.filter(a => a.status === tab.key).length;
+                    const isActive = activeTab === tab.key;
+                    return (
+                      <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        style={{
+                          fontSize: 12, fontWeight: 500,
+                          padding: '5px 14px',
+                          borderRadius: 'var(--radius-full)',
+                          border: `1px solid ${isActive ? 'var(--accent)' : 'var(--line)'}`,
+                          color: isActive ? 'var(--accent)' : 'var(--ink-3)',
+                          background: isActive ? 'var(--accent-wash)' : 'var(--paper)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {tab.label} {count > 0 && <span style={{ opacity: 0.7 }}>({count})</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+                {filtered.length === 0 ? (
+                  <div style={{
+                    textAlign: 'center', padding: '40px 24px',
+                    border: '1px dashed var(--line-2)', borderRadius: 'var(--radius-md)',
+                    fontSize: 13, color: 'var(--ink-4)',
+                  }}>
+                    No {activeTab === 'all' ? '' : activeTab.replace('_', ' ')} applications.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {filtered.map(app => (
+                      <ApplicationCard key={app.id} app={app} />
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </>
       )}
     </div>

@@ -6,7 +6,6 @@ Handles errors per user — one user failing does not stop others.
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 
 from shared.db.connection import AsyncSessionLocal
@@ -14,11 +13,6 @@ from ..agents.email_tracker.graph import email_tracker_graph
 from ..db.queries import get_eligible_gmail_users, mark_gmail_token_invalid
 
 logger = logging.getLogger(__name__)
-
-
-def run_email_tracker() -> None:
-    """Entry point called by cron.py every hour."""
-    asyncio.run(_run_email_tracker())
 
 
 async def _run_email_tracker() -> None:

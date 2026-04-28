@@ -1,43 +1,54 @@
 """
 Orchestrator — Cron.
 
-Wires up all agent schedules using APScheduler.
-- Email tracker: every 1 hour
+Wires up all agent schedules using APScheduler AsyncIOScheduler.
+All jobs run within one shared event loop — avoids asyncpg connection pool issues.
+- Email tracker: runs immediately on startup, then every N hours
 - Profile agent: every 6 hours (Phase 2)
 """
 from __future__ import annotations
 
+import asyncio
 import logging
+from datetime import datetime, timezone
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from ..config import AgentConfig
-from .runner import run_email_tracker
+from .runner import _run_email_tracker
 
 logger = logging.getLogger(__name__)
 config = AgentConfig()  # type: ignore[call-arg]
 
 
 def start_scheduler() -> None:
-    """Start the blocking scheduler — runs until the process is stopped."""
-    scheduler = BlockingScheduler()
+    """Start the async scheduler — runs until the process is stopped."""
+    asyncio.run(_start())
+
+
+async def _start() -> None:
+    scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
-        func=run_email_tracker,
+        func=_run_email_tracker,
         trigger=IntervalTrigger(hours=config.email_tracker_interval_hours),
         id="email_tracker",
         name="Email Tracker Agent",
-        max_instances=1,        # prevent overlap if a run takes longer than 1 hour
+        max_instances=1,
         replace_existing=True,
+        next_run_time=datetime.now(timezone.utc),  # run immediately on startup
     )
 
+    scheduler.start()
     logger.info(
-        "Scheduler started — email_tracker every %d hour(s)",
+        "Scheduler started — email_tracker runs now then every %d hour(s)",
         config.email_tracker_interval_hours,
     )
 
     try:
-        scheduler.start()
+        while True:
+            await asyncio.sleep(3600)
     except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
         logger.info("Scheduler stopped")

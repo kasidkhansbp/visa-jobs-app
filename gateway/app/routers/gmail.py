@@ -194,7 +194,7 @@ async def get_applications(
     result = await session.execute(
         select(UserApplication)
         .where(UserApplication.user_id == current_user["sub"])
-        .order_by(UserApplication.updated_at.desc())
+        .order_by(UserApplication.applied_at.desc().nullslast(), UserApplication.created_at.desc())
     )
     applications = result.scalars().all()
 

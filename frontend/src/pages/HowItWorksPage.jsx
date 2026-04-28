@@ -1,4 +1,5 @@
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 export default function HowItWorksPage() {
   useSEO({ title: 'How it works', description: 'TPMguild fetches TPM jobs daily from Adzuna and Reed, then cross-references every employer against the UK Home Office Skilled Worker sponsor register.' });
@@ -26,7 +27,7 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '64px 56px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>How it works</div>
       <h1 style={{ margin: '0 0 16px' }}>From job board to visa confidence.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 56 }}>
@@ -67,6 +68,6 @@ export default function HowItWorksPage() {
           for every role. Always confirm sponsorship availability directly with the employer.
         </p>
       </div>
-    </div>
+    </PageLayout>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 const EMAIL = 'kasidkhan@tpmguild.com';
 
@@ -14,7 +15,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '64px 56px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Contact</div>
       <h1 style={{ margin: '0 0 16px' }}>Get in touch.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', marginBottom: 48 }}>
@@ -50,6 +51,6 @@ export default function ContactPage() {
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
-    </div>
+    </PageLayout>
   );
 }

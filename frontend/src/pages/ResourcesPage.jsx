@@ -1,4 +1,5 @@
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 const GPT_TOOLS = [
   {
@@ -113,7 +114,7 @@ function ToolCard({ tool, cta }) {
 export default function ResourcesPage() {
   useSEO({ title: 'TPM Toolkit', description: 'AI-powered tools and document templates built for Technical Program Managers.' });
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '64px 56px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>TPM Toolkit</div>
       <h1 style={{ margin: '0 0 16px' }}>Tools built for TPMs.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 48 }}>
@@ -149,6 +150,6 @@ export default function ResourcesPage() {
       }}>
         More tools coming soon. Have a suggestion? Email <a href="mailto:kasidkhan@tpmguild.com" style={{ color: 'var(--accent)' }}>kasidkhan@tpmguild.com</a>
       </div>
-    </div>
+    </PageLayout>
   );
 }

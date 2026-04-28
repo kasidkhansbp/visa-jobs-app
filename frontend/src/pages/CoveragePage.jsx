@@ -51,11 +51,12 @@ function Table({ rows }) {
 }
 
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 export default function CoveragePage() {
   useSEO({ title: 'Coverage', description: 'What TPMguild covers: Technical Program Manager roles in the UK, sourced from Adzuna and Reed, verified against the sponsor register daily.' });
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto', padding: '64px 56px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Coverage</div>
       <h1 style={{ margin: '0 0 16px' }}>What we cover and what we do not.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 48 }}>
@@ -80,6 +81,6 @@ export default function CoveragePage() {
           </div>
         ))}
       </div>
-    </div>
+    </PageLayout>
   );
 }

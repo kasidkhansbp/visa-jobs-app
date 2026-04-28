@@ -1,4 +1,5 @@
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 function LinkPill({ href, label }) {
   return (
@@ -31,7 +32,7 @@ function LinkPill({ href, label }) {
 export default function AboutPage() {
   useSEO({ title: 'About', description: 'TPMguild was built by Md Kasid Khan, a Technical Program Manager at Amazon Prime Video in London, to help TPMs find visa-sponsored roles in the UK.' });
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: '64px 56px 96px' }}>
+    <PageLayout>
 
       <div className="eyebrow" style={{ marginBottom: 10 }}>CREATOR</div>
       <h1 style={{ margin: '0 0 8px', fontSize: 36 }}>Md Kasid Khan</h1>
@@ -150,6 +151,6 @@ export default function AboutPage() {
         </p>
       </div>
 
-    </div>
+    </PageLayout>
   );
 }

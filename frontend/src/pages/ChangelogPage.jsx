@@ -1,4 +1,5 @@
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
@@ -127,7 +128,7 @@ export default function ChangelogPage() {
   useSEO({ title: 'Changelog', description: 'What has shipped on TPMguild and when.' });
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>CHANGELOG</div>
       <h1 style={{ margin: '0 0 8px' }}>What's new.</h1>
       <p style={{ fontSize: 15, color: 'var(--ink-3)', marginBottom: 56 }}>
@@ -176,6 +177,6 @@ export default function ChangelogPage() {
           </div>
         ))}
       </div>
-    </div>
+    </PageLayout>
   );
 }

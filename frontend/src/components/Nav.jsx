@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { path: '/sources',   label: 'Sources' },
   { path: '/resources', label: 'Resources' },
   { path: '/cv',        label: 'CV Box' },
+  { path: '/tracker',   label: 'Tracker' },
   { path: '/about',     label: 'About' },
 ];
 

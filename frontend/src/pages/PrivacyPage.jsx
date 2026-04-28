@@ -38,11 +38,12 @@ const SECTIONS = [
 ];
 
 import useSEO from '../hooks/useSEO';
+import PageLayout from '../components/PageLayout';
 
 export default function PrivacyPage() {
   useSEO({ title: 'Privacy Policy', description: 'TPMguild privacy policy. How we collect, use, and protect your data.' });
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '64px 56px' }}>
+    <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Privacy</div>
       <h1 style={{ margin: '0 0 12px' }}>Privacy policy.</h1>
       <p style={{ fontSize: 14, color: 'var(--ink-4)', marginBottom: 48 }}>Last updated: 24 April 2026</p>
@@ -59,6 +60,6 @@ export default function PrivacyPage() {
       <div style={{ marginTop: 56, paddingTop: 24, borderTop: '1px solid var(--line)', fontSize: 13, color: 'var(--ink-4)' }}>
         Questions? Email <a href="mailto:kasidkhan@tpmguild.com" style={{ color: 'var(--accent)' }}>kasidkhan@tpmguild.com</a>
       </div>
-    </div>
+    </PageLayout>
   );
 }

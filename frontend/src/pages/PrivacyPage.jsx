@@ -1,7 +1,7 @@
 const SECTIONS = [
   {
     title: 'What we collect',
-    body: 'TPMguild does not currently require an account to use. Browsing job listings is anonymous and no personal data is collected. If you contact us by email, we receive your email address and the content of your message. When account sign-in is introduced (via Google), we will collect your name, email address, and profile picture as provided by Google.',
+    body: 'Browsing job listings is anonymous and no personal data is collected. If you contact us by email, we receive your email address and the content of your message. If you sign in via Google, we collect your name, email address, and profile picture as provided by Google. If you connect Gmail, we access your inbox read-only to detect job application emails — see the Gmail data section below.',
   },
   {
     title: 'Cookies',
@@ -14,6 +14,10 @@ const SECTIONS = [
   {
     title: 'Account data',
     body: 'When sign-in is introduced, creating an account via Google OAuth will allow us to store your saved searches and preferences. We will store your name and email address. We will not sell or share your personal data with third parties. You may request deletion of your account and associated data at any time by contacting kasidkhan@tpmguild.com.',
+  },
+  {
+    title: 'Gmail data',
+    body: 'If you choose to connect your Gmail account, TPMguild requests read-only access (gmail.readonly) to your inbox. We use this access solely to detect job application-related emails (such as application confirmations, interview invites, and rejections) and to update your job application tracker automatically. We do not read, store, or process any emails unrelated to job applications. Email content is never stored — only the extracted structured data (company name, role, and application status) is saved. We do not share your Gmail data with any third parties. You can revoke Gmail access at any time from the Job Tracker page.',
   },
   {
     title: 'Third-party data sources',
@@ -46,7 +50,7 @@ export default function PrivacyPage() {
     <PageLayout>
       <div className="eyebrow" style={{ marginBottom: 10 }}>Privacy</div>
       <h1 style={{ margin: '0 0 12px' }}>Privacy policy.</h1>
-      <p style={{ fontSize: 14, color: 'var(--ink-4)', marginBottom: 48 }}>Last updated: 24 April 2026</p>
+      <p style={{ fontSize: 14, color: 'var(--ink-4)', marginBottom: 48 }}>Last updated: 28 April 2026</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
         {SECTIONS.map(section => (

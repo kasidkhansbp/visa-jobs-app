@@ -17,6 +17,7 @@ import CvBoxPage from './pages/CvBoxPage';
 import CvSharePage from './pages/CvSharePage';
 import AdminPage from './pages/AdminPage';
 import TrackerPage from './pages/TrackerPage';
+import TermsPage from './pages/TermsPage';
 import ChangelogPage from './pages/ChangelogPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -72,6 +73,7 @@ function AppInner() {
         <Route path="/changelog" element={<ChangelogPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/tracker" element={<TrackerPage />} />
+        <Route path="/terms" element={<TermsPage />} />
       </Routes>
       <Footer />
     </div>

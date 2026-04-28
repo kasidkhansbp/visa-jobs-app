@@ -3,6 +3,36 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '28 Apr 2026',
+    items: [
+      {
+        title: 'Job Tracker',
+        tag: 'NEW',
+        description: 'Connect your Gmail and the agent automatically tracks your job applications. Detects application confirmations, interview invites, and rejections. Applications organised by status tabs — Applied, Interview, Rejected, Offer — sorted by most recent.',
+      },
+      {
+        title: 'AI Email Agent',
+        tag: 'NEW',
+        description: 'LangGraph-powered agent monitors your Gmail inbox hourly. Uses Claude to classify job-related emails and update application statuses automatically. No manual input required.',
+      },
+      {
+        title: 'Terms of Service',
+        tag: 'NEW',
+        description: 'Added Terms of Service page covering acceptable use, Gmail integration, intellectual property, and governing law.',
+      },
+      {
+        title: 'Privacy policy',
+        tag: 'IMPROVED',
+        description: 'Updated to include Gmail data usage — read-only access, what is extracted, what is never stored, and how to revoke access.',
+      },
+      {
+        title: 'Consistent page layout',
+        tag: 'IMPROVED',
+        description: 'All content pages now share a common layout component — consistent width and spacing across About, Changelog, Coverage, Privacy, Resources, and more.',
+      },
+    ],
+  },
+  {
     date: '26 Apr 2026',
     items: [
       {

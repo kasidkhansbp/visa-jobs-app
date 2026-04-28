@@ -45,6 +45,7 @@ class ApplicationOut(BaseModel):
     roles: list[str]
     status: str
     job_id: str | None
+    applied_at: datetime | None
     last_email_at: datetime | None
     created_at: datetime
     updated_at: datetime
@@ -204,6 +205,7 @@ async def get_applications(
             roles=app.role if isinstance(app.role, list) else ([app.role] if app.role else []),
             status=app.status,
             job_id=str(app.job_id) if app.job_id else None,
+            applied_at=app.applied_at,
             last_email_at=app.last_email_at,
             created_at=app.created_at,
             updated_at=app.updated_at,

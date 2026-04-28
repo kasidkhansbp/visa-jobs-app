@@ -29,6 +29,9 @@ class UserApplication(Base):
     role: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="applied")
     source_email_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    applied_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     last_email_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

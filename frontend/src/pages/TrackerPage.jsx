@@ -59,8 +59,7 @@ function ApplicationCard({ app }) {
         </div>
       )}
       <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
-        Applied {formatDate(app.created_at)}
-        {app.last_email_at && ` · Last email ${formatDate(app.last_email_at)}`}
+        Applied {formatDate(app.applied_at ?? app.last_email_at ?? app.created_at)}
       </div>
     </div>
   );

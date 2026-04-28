@@ -115,7 +115,7 @@ async def upsert_application(
         if role and role not in application.role:
             application.role = application.role + [role]
     else:
-        # Create new application record
+        # Create new application record — applied_at set once, never updated
         session.add(UserApplication(
             id=secrets.token_hex(16),
             user_id=user_id,
@@ -123,6 +123,7 @@ async def upsert_application(
             role=[role] if role else [],
             status=status,
             source_email_id=source_email_id,
+            applied_at=last_email_at,
             last_email_at=last_email_at,
             created_at=now,
             updated_at=now,

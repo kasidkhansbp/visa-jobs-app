@@ -42,7 +42,7 @@ class GmailStatusOut(BaseModel):
 class ApplicationOut(BaseModel):
     id: str
     company: str
-    role: str
+    roles: list[str]
     status: str
     job_id: str | None
     last_email_at: datetime | None
@@ -201,7 +201,7 @@ async def get_applications(
         ApplicationOut(
             id=app.id,
             company=app.company,
-            role=app.role,
+            roles=app.role if isinstance(app.role, list) else ([app.role] if app.role else []),
             status=app.status,
             job_id=str(app.job_id) if app.job_id else None,
             last_email_at=app.last_email_at,

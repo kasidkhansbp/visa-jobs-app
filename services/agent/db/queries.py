@@ -79,9 +79,11 @@ async def upsert_application(
 ) -> None:
     """
     Create a new application or update status if one already exists
-    for the same user + company + role combination.
+    for the same user + company combination.
 
-    Uses source_email_id to prevent duplicate processing of the same email.
+    - Matches on user_id + company only
+    - role is stored as a JSON list — each email's extracted role is appended
+    - Uses source_email_id to prevent duplicate processing of the same email
     """
     # Check if this email has already been processed
     existing_by_email = await session.execute(
@@ -95,28 +97,30 @@ async def upsert_application(
 
     now = datetime.now(timezone.utc)
 
-    # Check if an application for this company+role already exists
+    # Check if an application for this company already exists
     existing = await session.execute(
         select(UserApplication).where(
             UserApplication.user_id == user_id,
             UserApplication.company == company,
-            UserApplication.role == role,
         )
     )
     application = existing.scalar_one_or_none()
 
     if application:
-        # Update status and last email timestamp
+        # Update status
         application.status = status
         application.last_email_at = last_email_at
         application.updated_at = now
+        # Append role if extracted and not already in the list
+        if role and role not in application.role:
+            application.role = application.role + [role]
     else:
         # Create new application record
         session.add(UserApplication(
             id=secrets.token_hex(16),
             user_id=user_id,
             company=company,
-            role=role,
+            role=[role] if role else [],
             status=status,
             source_email_id=source_email_id,
             last_email_at=last_email_at,

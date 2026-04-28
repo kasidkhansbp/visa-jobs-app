@@ -39,18 +39,28 @@ function ApplicationCard({ app }) {
       borderRadius: 'var(--radius-md)',
       padding: '16px 20px',
       background: 'var(--paper)',
-      display: 'flex', alignItems: 'center', gap: 16,
     }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>{app.role}</div>
-          <StatusBadge status={app.status} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>{app.company}</div>
+        <StatusBadge status={app.status} />
+      </div>
+      {app.roles.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
+          {app.roles.map((role, i) => (
+            <span key={i} style={{
+              fontSize: 11, padding: '2px 8px',
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid var(--line)',
+              color: 'var(--ink-3)', background: 'var(--paper-2)',
+            }}>
+              {role}
+            </span>
+          ))}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-3)' }}>{app.company}</div>
-        <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 4 }}>
-          Applied {formatDate(app.created_at)}
-          {app.last_email_at && ` · Last email ${formatDate(app.last_email_at)}`}
-        </div>
+      )}
+      <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
+        Applied {formatDate(app.created_at)}
+        {app.last_email_at && ` · Last email ${formatDate(app.last_email_at)}`}
       </div>
     </div>
   );

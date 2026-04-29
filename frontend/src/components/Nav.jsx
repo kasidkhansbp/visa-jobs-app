@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { path: '/about',     label: 'About' },
 ];
 
-const TRACKER_ALLOWLIST = ['kasidkhan@gmail.com', 'kasidkhan@tpmguild.com'];
+const TRACKER_ALLOWLIST = ['kasidkhan@gmail.com', 'kasidkhan@tpmguild.com', 'abhaykhetlani066@gmail.com'];
 
 export default function Nav() {
   const { pathname } = useLocation();

@@ -3,6 +3,21 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '02 May 2026',
+    items: [
+      {
+        title: 'Career Stories',
+        tag: 'NEW',
+        description: 'Write and sharpen your TPM career stories for interviews. Capture the raw narrative, then answer 8 structured prompts covering what was broken, urgency, ownership, technical/organisational/decision challenges, hardest moment, and real impact. Multiple stories supported — one per program or initiative.',
+      },
+      {
+        title: 'Auto DB migrations on deploy',
+        tag: 'IMPROVED',
+        description: 'Database migrations now run automatically on every gateway deployment. New tables and schema changes are applied to production without manual intervention.',
+      },
+    ],
+  },
+  {
     date: '28 Apr 2026',
     items: [
       {

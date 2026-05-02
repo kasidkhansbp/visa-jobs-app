@@ -17,7 +17,7 @@ os.environ.setdefault("DATABASE_URL", config.database_url)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield  # auth hooks go here later
+    yield
 
 
 app = FastAPI(

@@ -174,7 +174,7 @@ function StoryBody({ story, onSaved, onDeleted }) {
             </div>
           </>
         ) : (
-          <div style={{ fontSize: 16, lineHeight: 1.65, color: 'var(--ink)', whiteSpace: 'pre-wrap' }}>
+          <div style={{ fontSize: 16, lineHeight: 1.65, color: 'var(--ink)', whiteSpace: 'pre-wrap', textAlign: 'justify' }}>
             {story.narrative || <span style={{ color: 'var(--ink-4)', fontStyle: 'italic' }}>No story written yet. Click Edit to start.</span>}
           </div>
         )}
@@ -338,7 +338,7 @@ function StoriesView() {
       <div className="st-head">
         <div>
           <div className="eyebrow">STORIES</div>
-          <h1>Behavioral stories, sharpened.</h1>
+          <h1>Career stories, sharpened.</h1>
           <p>Capture the messy real version, then break it into the beats interviewers ask for.</p>
         </div>
         <div className="st-head-meta">
@@ -349,7 +349,7 @@ function StoriesView() {
       <section className="st-primer">
         <div>
           <div className="eyebrow">HOW THIS WORKS</div>
-          <h2>Two passes. The story stays yours.</h2>
+          <h2>Your career story, structured for interviews.</h2>
           <p>Most TPMs walk into interviews with three good stories and freeze when the panel probes for specifics. Write the raw version once — then answer eight short prompts.</p>
         </div>
         <div className="st-primer-tracks">
@@ -363,7 +363,7 @@ function StoriesView() {
           </div>
           <div className="st-track">
             <div className="st-track-num">03</div>
-            <div className="st-track-body"><b>Reuse anywhere</b><span>Referenced from your CV and profile automatically.</span></div>
+            <div className="st-track-body"><b>Reuse across applications</b><span>Keep your stories here and pull the right one for each role you apply to.</span></div>
           </div>
         </div>
       </section>

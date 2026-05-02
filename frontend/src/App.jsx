@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { StoriesProvider } from './context/StoriesContext';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import JobsPage from './pages/JobsPage';
@@ -18,6 +19,7 @@ import CvSharePage from './pages/CvSharePage';
 import AdminPage from './pages/AdminPage';
 import TrackerPage from './pages/TrackerPage';
 import TermsPage from './pages/TermsPage';
+import StoriesPage from './pages/StoriesPage';
 import ChangelogPage from './pages/ChangelogPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -74,6 +76,7 @@ function AppInner() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/tracker" element={<TrackerPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/stories" element={<StoriesPage />} />
       </Routes>
       <Footer />
     </div>
@@ -84,7 +87,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppInner />
+        <StoriesProvider>
+          <AppInner />
+        </StoriesProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useStories } from '../context/StoriesContext';
 import { loginUrl } from '../services/authApi';
 
 const NAV_ITEMS = [
@@ -8,6 +9,7 @@ const NAV_ITEMS = [
   { path: '/sources',   label: 'Sources' },
   { path: '/resources', label: 'Resources' },
   { path: '/cv',        label: 'CV Box' },
+  { path: '/stories',   label: 'Stories' },
   { path: '/about',     label: 'About' },
 ];
 
@@ -16,6 +18,12 @@ const TRACKER_ALLOWLIST = ['kasidkhan@gmail.com', 'kasidkhan@tpmguild.com', 'abh
 export default function Nav() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
+  const { clearCache } = useStories();
+
+  function handleLogout() {
+    clearCache();
+    logout();
+  }
 
   return (
     <header className="nav">
@@ -80,7 +88,7 @@ export default function Nav() {
               Welcome, {user.name.split(' ')[0]}
             </span>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               style={{
                 fontSize: 13,
                 fontWeight: 500,

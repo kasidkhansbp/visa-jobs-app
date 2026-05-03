@@ -11,7 +11,7 @@ class AgentConfig(BaseSettings):
     openai_api_key: str = ""
     google_api_key: str = ""
     profile_agent_model: str = "claude-sonnet-4-6"
-    email_tracker_model: str = "claude-sonnet-4-6"
+    email_tracker_model: str = "claude-haiku-4-5-20251001"
     company_research_model: str = "claude-sonnet-4-6"
 
     # Gmail OAuth

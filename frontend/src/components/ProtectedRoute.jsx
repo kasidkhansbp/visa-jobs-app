@@ -1,8 +1,7 @@
 import { useAuth } from '../context/AuthContext';
-import { loginUrl } from '../services/authApi';
 
 export default function ProtectedRoute({ children }) {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
 
   if (user === undefined) return null; // still loading
 
@@ -14,8 +13,8 @@ export default function ProtectedRoute({ children }) {
         <p style={{ fontSize: 15, color: 'var(--ink-3)', lineHeight: 1.65, marginBottom: 32 }}>
           Sign in with your Google account to access this page. It's free.
         </p>
-        <a
-          href={loginUrl()}
+        <button
+          onClick={login}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -26,8 +25,8 @@ export default function ProtectedRoute({ children }) {
             borderRadius: 'var(--radius-full)',
             border: '1px solid var(--line)',
             color: 'var(--ink-2)',
-            textDecoration: 'none',
             background: 'var(--paper)',
+            cursor: 'pointer',
           }}
         >
           <svg width="16" height="16" viewBox="0 0 48 48">
@@ -37,7 +36,7 @@ export default function ProtectedRoute({ children }) {
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
           Sign in with Google
-        </a>
+        </button>
       </div>
     );
   }

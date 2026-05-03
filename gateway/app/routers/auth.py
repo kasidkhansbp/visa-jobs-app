@@ -125,7 +125,7 @@ async def callback(
         picture=user.picture,
     )
 
-    redirect = RedirectResponse(url=config.frontend_origin, status_code=302)
+    redirect = RedirectResponse(url=f"{config.frontend_origin}/?auth=success", status_code=302)
     redirect.set_cookie(
         key=COOKIE_NAME,
         value=jwt_token,

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
-import { loginUrl } from '../services/authApi';
+
 import { listCvs, uploadCv, downloadCv, deleteCv, renameCv, createShare, listShares, revokeShare } from '../services/cvApi';
 
 function formatSize(bytes) {
@@ -619,6 +619,7 @@ const GOOGLE_SVG = (
 );
 
 function SignInWall() {
+  const { login } = useAuth();
   return (
     <div style={{
       border: '1px solid var(--line)',
@@ -636,18 +637,18 @@ function SignInWall() {
       <p style={{ fontSize: 13, color: 'var(--ink-4)', margin: '0 0 20px' }}>
         Upload and manage your tailored CV versions. Free with a Google account.
       </p>
-      <a
-        href={loginUrl()}
+      <button
+        onClick={login}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           fontSize: 13, fontWeight: 500, padding: '9px 20px',
           borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
-          color: 'var(--ink-2)', textDecoration: 'none', background: 'var(--paper)',
+          color: 'var(--ink-2)', background: 'var(--paper)', cursor: 'pointer',
         }}
       >
         {GOOGLE_SVG}
         Sign in with Google
-      </a>
+      </button>
     </div>
   );
 }

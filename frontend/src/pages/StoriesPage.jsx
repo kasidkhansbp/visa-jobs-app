@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { useStories } from '../context/StoriesContext';
-import { loginUrl } from '../services/authApi';
+
 import { createStory, updateStory, deleteStory } from '../services/storiesApi';
 import '../styles/stories.css';
 
@@ -405,7 +405,7 @@ function StoriesView() {
 
 export default function StoriesPage() {
   useSEO({ title: 'Stories', description: 'Build and sharpen your TPM behavioral interview stories.' });
-  const { user } = useAuth();
+  const { user, login } = useAuth();
 
   if (user === undefined) return null;
 
@@ -416,14 +416,14 @@ export default function StoriesPage() {
         <p style={{ fontSize: 13, color: 'var(--ink-4)', margin: '0 0 20px' }}>
           Build and sharpen your behavioral interview stories. Free with a Google account.
         </p>
-        <a href={loginUrl()} style={{
+        <button onClick={login} style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           fontSize: 13, fontWeight: 500, padding: '9px 20px',
           borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
-          color: 'var(--ink-2)', textDecoration: 'none', background: 'var(--paper)',
+          color: 'var(--ink-2)', background: 'var(--paper)', cursor: 'pointer',
         }}>
           {GOOGLE_SVG} Sign in with Google
-        </a>
+        </button>
       </div>
     );
   }

@@ -11,6 +11,30 @@ export function loginUrl() {
   return `${BASE}/auth/login`;
 }
 
+export function openLoginPopup(onSuccess) {
+  const popup = window.open(
+    loginUrl(),
+    'google-auth',
+    'width=520,height=680,left=400,top=100',
+  );
+
+  const timer = setInterval(() => {
+    try {
+      if (!popup || popup.closed) {
+        clearInterval(timer);
+        return;
+      }
+      if (popup.location.href.includes('auth=success')) {
+        clearInterval(timer);
+        popup.close();
+        onSuccess();
+      }
+    } catch {
+      // cross-origin while on Google — ignore
+    }
+  }, 500);
+}
+
 export async function logout() {
   await fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
 }

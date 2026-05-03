@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
-import { loginUrl } from '../services/authApi';
+
 import { getGmailStatus, getGmailAuthUrl, disconnectGmail, getApplications } from '../services/trackerApi';
 
 function formatDate(iso) {
@@ -104,7 +104,7 @@ function GmailConnectBanner({ onConnect, connecting }) {
 
 export default function TrackerPage() {
   useSEO({ title: 'Job Tracker', description: 'Track your job applications automatically via Gmail.' });
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const location = useLocation();
 
   const [gmailStatus, setGmailStatus] = useState(null);
@@ -201,14 +201,14 @@ export default function TrackerPage() {
         <p style={{ fontSize: 15, color: 'var(--ink-3)', marginBottom: 40 }}>
           Sign in to connect Gmail and automatically track your job applications.
         </p>
-        <a href={loginUrl()} style={{
+        <button onClick={login} style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           fontSize: 13, fontWeight: 500, padding: '9px 20px',
           borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
-          color: 'var(--ink-2)', textDecoration: 'none', background: 'var(--paper)',
+          color: 'var(--ink-2)', background: 'var(--paper)', cursor: 'pointer',
         }}>
           Sign in with Google
-        </a>
+        </button>
       </div>
     );
   }

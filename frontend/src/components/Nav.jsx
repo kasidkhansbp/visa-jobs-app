@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useStories } from '../context/StoriesContext';
-import { loginUrl } from '../services/authApi';
 
 const NAV_ITEMS = [
   { path: '/jobs',      label: 'Jobs' },
@@ -17,7 +16,7 @@ const TRACKER_ALLOWLIST = ['kasidkhan@gmail.com', 'kasidkhan@tpmguild.com', 'abh
 
 export default function Nav() {
   const { pathname } = useLocation();
-  const { user, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const { clearCache } = useStories();
 
   function handleLogout() {
@@ -51,8 +50,8 @@ export default function Nav() {
       <div className="spacer"/>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {user === undefined ? null : user === null ? (
-          <a
-            href={loginUrl()}
+          <button
+            onClick={login}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -63,8 +62,8 @@ export default function Nav() {
               borderRadius: 'var(--radius-full)',
               border: '1px solid var(--line)',
               color: 'var(--ink-2)',
-              textDecoration: 'none',
               background: 'var(--paper)',
+              cursor: 'pointer',
             }}
           >
             <svg width="16" height="16" viewBox="0 0 48 48">
@@ -74,7 +73,7 @@ export default function Nav() {
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
             Sign in with Google
-          </a>
+          </button>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {user.picture && (

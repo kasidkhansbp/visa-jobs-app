@@ -4,6 +4,68 @@ Decisions recorded with date. If a decision changes, a new entry is added below 
 
 ---
 
+## Jobs Sector Classification
+
+### 2026-05-03 — Sector classification approach — Under discussion
+
+**Decision:** Use keyword-based classification (not LLM) to assign sectors to jobs.
+
+**Why keyword-based:**
+- Deterministic — same job always gets same sector, no LLM variability
+- Free — no API cost for 6K+ jobs
+- Fast — classify all jobs in seconds
+- Auditable — rules are readable and understandable
+- Easy to fix — update keyword list, re-run
+
+**Production data available:**
+- Week of Apr 13: 295 jobs
+- Week of Apr 20: 3,967 jobs
+- Week of Apr 27: 1,751 jobs
+- Total: 6,013 jobs across 3 weeks
+
+**Draft sectors and keywords:**
+
+| Sector | Keywords |
+|---|---|
+| Software Delivery | platform eng, delivery, SWE, agile, scrum, software engineering |
+| Infrastructure | cloud, AWS, GCP, Azure, infrastructure, DC, networks, SRE, reliability |
+| Cybersecurity | security, SecOps, GRC, identity, compliance, cyber, SOC |
+| AI / ML | AI, ML, machine learning, LLM, MLOps, data science, GenAI |
+| Data platforms | data, analytics, data mesh, data warehouse, BI, pipeline |
+| Fintech / Payments | fintech, payments, PSD2, banking, financial, FCA, fraud |
+| DevOps | DevOps, platform engineering, release, CI/CD, SRE |
+| E-commerce | e-commerce, retail, marketplace, logistics, fulfilment |
+| Product | product management, product delivery, roadmap |
+| Other | anything that doesn't match above |
+
+**Confirmed decisions — 2026-05-03:**
+
+- Sector list confirmed as above ✓
+- Single sector per job — first match in priority order wins ✓
+- Priority order (highest to lowest):
+  1. Infrastructure
+  2. Cybersecurity
+  3. AI / ML
+  4. Data platforms
+  5. Fintech / Payments
+  6. Software Delivery
+  7. DevOps
+  8. E-commerce
+  9. Product
+  10. Other (default if no match)
+
+**Open questions (pending decision):**
+- [ ] Where classification runs: at ingest time in jobs-services, or as a separate backfill script?
+- [ ] Store sector as a column on `jobs` table or separate `job_sectors` table?
+
+**Reports to build once classification is done:**
+- Sector heat map with 3-4 week trend
+- Total TPM jobs in London over time
+- Frequent sponsors — companies sponsoring most consistently
+- Top hiring employers for TPMs
+
+---
+
 ## Stories Feature
 
 ### 2026-05-02 — DB Table Design

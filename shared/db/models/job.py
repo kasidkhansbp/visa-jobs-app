@@ -49,6 +49,7 @@ class Job(Base):
 
     is_sponsor_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_frequent_sponsor: Mapped[bool] = mapped_column(default=False, nullable=False)
+    sector: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("source", "job_id", name="uq_job_source_id"),

@@ -29,7 +29,9 @@ GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 SEARCH_QUERY = (
     'subject:("thank you for applying" OR "thanks for applying" OR '
     '"your application" OR "we received your application" OR '
-    '"application received" OR "application confirmation")'
+    '"application received" OR "application confirmation" OR '
+    '"received your application" OR "confirm your interview" OR '
+    '"recruiter prescreen" OR "recruiter")'
 )
 
 

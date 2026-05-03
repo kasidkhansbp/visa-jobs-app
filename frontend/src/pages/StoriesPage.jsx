@@ -120,7 +120,7 @@ function StoryBody({ story, onSaved, onDeleted }) {
   const current = editing ? draft : story;
 
   return (
-    <div className="st-body">
+    <div className="st-body" style={{ padding: '32px 36px' }}>
       {/* Title row */}
       <div className="st-title-row">
         {editing ? (
@@ -334,19 +334,19 @@ function StoriesView() {
   }
 
   return (
-    <div className="st-shell">
-      <div className="st-head">
-        <div>
-          <div className="eyebrow">STORIES</div>
-          <h1>Career stories, sharpened.</h1>
-          <p>Capture the messy real version, then break it into the beats interviewers ask for.</p>
-        </div>
-        <div className="st-head-meta">
-          <span><b>{storyList?.length ?? 0}</b> stor{storyList?.length === 1 ? 'y' : 'ies'}</span>
-        </div>
+    <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
+
+      {/* Page header */}
+      <div style={{ marginBottom: 40 }}>
+        <div className="eyebrow" style={{ marginBottom: 10 }}>STORIES</div>
+        <h1 style={{ margin: '0 0 8px' }}>Career stories, sharpened.</h1>
+        <p style={{ fontSize: 15, color: 'var(--ink-3)', margin: 0 }}>
+          Capture the messy real version, then break it into the beats interviewers ask for.
+        </p>
       </div>
 
-      <section className="st-primer">
+      {/* How this works primer */}
+      <section className="st-primer" style={{ marginBottom: 40 }}>
         <div>
           <div className="eyebrow">HOW THIS WORKS</div>
           <h2>Your career story, structured for interviews.</h2>
@@ -368,37 +368,93 @@ function StoriesView() {
         </div>
       </section>
 
-      {/* Tabs */}
-      <div className="st-tabs" role="tablist">
-        {(storyList ?? []).map((s, i) => (
-          <button
-            key={s.id}
-            role="tab"
-            aria-selected={s.id === activeId}
-            className={`st-tab ${s.id === activeId ? 'on' : ''}`}
-            onClick={() => setActiveId(s.id)}
-          >
-            <span className="st-tab-num">{String(i + 1).padStart(2, '0')}</span>
-            <span>{s.title || 'Untitled'}</span>
-            {s.filled_count === PROMPTS.length && <span className="st-tab-dot" title="All prompts filled"/>}
-          </button>
-        ))}
-        <button className="st-tab-add" onClick={handleAdd} disabled={adding}>
-          <IPlus size={14}/> {adding ? 'Adding…' : 'Add story'}
-        </button>
-      </div>
+      {/* Two-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 0, border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', overflow: 'hidden', minHeight: 600 }}>
 
-      {/* Content */}
-      {loadingStory ? (
-        <div style={{ padding: '64px 0', textAlign: 'center', fontSize: 14, color: 'var(--ink-4)' }}>Loading…</div>
-      ) : activeStory ? (
-        <StoryBody
-          key={activeStory.id}
-          story={activeStory}
-          onSaved={handleSaved}
-          onDeleted={handleDeleted}
-        />
-      ) : null}
+        {/* Left sidebar — story list */}
+        <div style={{ borderRight: '1px solid var(--line)', background: 'var(--paper-2)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>
+              YOUR STORIES
+            </span>
+            <span style={{ fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
+              {storyList?.length ?? 0}
+            </span>
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {(storyList ?? []).map((s, i) => {
+              const isActive = s.id === activeId;
+              const progress = (s.filled_count / PROMPTS.length) * 100;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveId(s.id)}
+                  style={{
+                    width: '100%', textAlign: 'left',
+                    padding: '14px 20px',
+                    background: isActive ? 'var(--paper)' : 'transparent',
+                    border: 'none',
+                    borderLeft: `3px solid ${isActive ? 'var(--accent)' : 'transparent'}`,
+                    borderBottom: '1px solid var(--line)',
+                    cursor: 'pointer',
+                    transition: 'background 120ms ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--ink-4)', letterSpacing: '0.06em' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {s.title || 'Untitled'}
+                    </span>
+                    {s.filled_count === PROMPTS.length && (
+                      <ICheck size={12} style={{ color: 'var(--verified)', flexShrink: 0 }} />
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 2, background: 'var(--line)', borderRadius: 2, overflow: 'hidden' }}>
+                      <div style={{ width: `${progress}%`, height: '100%', background: isActive ? 'var(--accent)' : 'var(--ink-4)', borderRadius: 2 }} />
+                    </div>
+                    <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--ink-4)', flexShrink: 0 }}>
+                      {s.filled_count}/{PROMPTS.length}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ padding: '12px 20px', borderTop: '1px solid var(--line)' }}>
+            <button
+              onClick={handleAdd}
+              disabled={adding}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                fontSize: 13, fontWeight: 500, padding: '8px 0',
+                border: '1px dashed var(--line-2)', borderRadius: 'var(--radius)',
+                color: 'var(--accent)', background: 'transparent', cursor: 'pointer',
+              }}
+            >
+              <IPlus size={13}/> {adding ? 'Adding…' : 'Add story'}
+            </button>
+          </div>
+        </div>
+
+        {/* Right — story content */}
+        <div style={{ background: 'var(--paper)', overflowY: 'auto' }}>
+          {loadingStory ? (
+            <div style={{ padding: '64px 0', textAlign: 'center', fontSize: 14, color: 'var(--ink-4)' }}>Loading…</div>
+          ) : activeStory ? (
+            <StoryBody
+              key={activeStory.id}
+              story={activeStory}
+              onSaved={handleSaved}
+              onDeleted={handleDeleted}
+            />
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,21 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '03 May 2026',
+    items: [
+      {
+        title: 'Google sign-in as popup',
+        tag: 'IMPROVED',
+        description: 'Signing in with Google now opens a popup window instead of redirecting the page. After approving, the popup closes automatically and the page updates — no full page reload or navigation away.',
+      },
+      {
+        title: 'Email tracker — broader detection',
+        tag: 'IMPROVED',
+        description: 'Added more email subject patterns to the job application detector: "received your application", "confirm your interview", "recruiter prescreen", and "recruiter". More application emails are now picked up automatically.',
+      },
+    ],
+  },
+  {
     date: '02 May 2026',
     items: [
       {

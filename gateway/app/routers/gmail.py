@@ -9,7 +9,7 @@ from cryptography.fernet import Fernet
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.db.connection import get_session
@@ -39,6 +39,12 @@ class GmailStatusOut(BaseModel):
     last_checked_at: datetime | None
 
 
+VALID_STATUSES = {
+    "applied", "interview_scheduled", "rejected",
+    "offer_received", "withdrawn", "no_response"
+}
+
+
 class ApplicationOut(BaseModel):
     id: str
     company: str
@@ -47,8 +53,19 @@ class ApplicationOut(BaseModel):
     job_id: str | None
     applied_at: datetime | None
     last_email_at: datetime | None
+    manually_added: bool
     created_at: datetime
     updated_at: datetime
+
+
+class ApplicationCreate(BaseModel):
+    company: str
+    role: str = ""
+    status: str = "applied"
+
+
+class ApplicationStatusUpdate(BaseModel):
+    status: str
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -207,8 +224,90 @@ async def get_applications(
             job_id=str(app.job_id) if app.job_id else None,
             applied_at=app.applied_at,
             last_email_at=app.last_email_at,
+            manually_added=app.manually_added,
             created_at=app.created_at,
             updated_at=app.updated_at,
         )
         for app in applications
     ]
+
+
+@router.post("/applications", response_model=ApplicationOut)
+async def create_application(
+    body: ApplicationCreate,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> ApplicationOut:
+    """Manually add a job application."""
+    if body.status not in VALID_STATUSES:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(VALID_STATUSES)}")
+
+    now = datetime.now(timezone.utc)
+    app = UserApplication(
+        id=secrets.token_hex(16),
+        user_id=current_user["sub"],
+        company=body.company,
+        role=[body.role] if body.role else [],
+        status=body.status,
+        manually_added=True,
+        applied_at=now,
+        last_email_at=None,
+        created_at=now,
+        updated_at=now,
+    )
+    session.add(app)
+    await session.commit()
+    await session.refresh(app)
+
+    return ApplicationOut(
+        id=app.id,
+        company=app.company,
+        roles=app.role if isinstance(app.role, list) else ([app.role] if app.role else []),
+        status=app.status,
+        job_id=None,
+        applied_at=app.applied_at,
+        last_email_at=app.last_email_at,
+        manually_added=app.manually_added,
+        created_at=app.created_at,
+        updated_at=app.updated_at,
+    )
+
+
+@router.patch("/applications/{application_id}", response_model=ApplicationOut)
+async def update_application_status(
+    application_id: str,
+    body: ApplicationStatusUpdate,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> ApplicationOut:
+    """Update the status of an application."""
+    if body.status not in VALID_STATUSES:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(VALID_STATUSES)}")
+
+    result = await session.execute(
+        select(UserApplication).where(
+            UserApplication.id == application_id,
+            UserApplication.user_id == current_user["sub"],
+        )
+    )
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    app.status = body.status
+    app.updated_at = datetime.now(timezone.utc)
+    await session.commit()
+    await session.refresh(app)
+
+    return ApplicationOut(
+        id=app.id,
+        company=app.company,
+        roles=app.role if isinstance(app.role, list) else ([app.role] if app.role else []),
+        status=app.status,
+        job_id=str(app.job_id) if app.job_id else None,
+        applied_at=app.applied_at,
+        last_email_at=app.last_email_at,
+        manually_added=app.manually_added,
+        created_at=app.created_at,
+        updated_at=app.updated_at,
+    )

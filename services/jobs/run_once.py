@@ -19,6 +19,7 @@ from .clients.adzuna import AdzunaClient
 from .clients.reed import ReedClient
 from .config import JobsConfig
 from .ingest_sponsors import _match_jobs
+from .classify_sectors import main as classify_sectors
 from .scheduler import _store
 
 logging.basicConfig(
@@ -72,6 +73,9 @@ async def main() -> None:
 
     await _match_jobs(full_reset=False)
     logger.info("Sponsor matching complete")
+
+    await classify_sectors()
+    logger.info("Sector classification complete")
 
 
 if __name__ == "__main__":

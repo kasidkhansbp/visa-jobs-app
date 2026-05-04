@@ -10,9 +10,9 @@ class AgentConfig(BaseSettings):
     anthropic_api_key: str = ""
     openai_api_key: str = ""
     google_api_key: str = ""
-    profile_agent_model: str = "claude-sonnet-4-6"
+    profile_agent_model: str = "claude-haiku-4-5-20251001"
     email_tracker_model: str = "claude-haiku-4-5-20251001"
-    company_research_model: str = "claude-sonnet-4-6"
+    company_research_model: str = "claude-haiku-4-5-20251001"
 
     # Gmail OAuth
     gmail_client_id: str = ""

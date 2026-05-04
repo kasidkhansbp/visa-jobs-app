@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, JSON, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, JSON, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -28,6 +28,7 @@ class UserApplication(Base):
     company: Mapped[str] = mapped_column(String(500), nullable=False)
     role: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="applied")
+    manually_added: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     source_email_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     applied_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True

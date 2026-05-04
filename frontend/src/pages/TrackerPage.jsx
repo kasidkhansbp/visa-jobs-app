@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 
-import { getGmailStatus, getGmailAuthUrl, disconnectGmail, getApplications } from '../services/trackerApi';
+import { getGmailStatus, getGmailAuthUrl, disconnectGmail, getApplications, createApplication, updateApplicationStatus } from '../services/trackerApi';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -32,35 +32,81 @@ function StatusBadge({ status }) {
   );
 }
 
-function ApplicationCard({ app }) {
+const STATUS_LABELS = {
+  applied:              'Applied',
+  interview_scheduled:  'Interview',
+  rejected:             'Rejected',
+  offer_received:       'Offer Received',
+  withdrawn:            'Withdrawn',
+  no_response:          'No Response',
+};
+
+function ApplicationCard({ app, onStatusChange }) {
+  const [updating, setUpdating] = useState(false);
+
+  async function handleStatusChange(e) {
+    const newStatus = e.target.value;
+    if (newStatus === app.status) return;
+    setUpdating(true);
+    try {
+      const updated = await updateApplicationStatus(app.id, newStatus);
+      onStatusChange(updated);
+    } catch {
+      // silently ignore — status reverts
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  const cfg = STATUS_CONFIG[app.status] ?? { bg: 'var(--paper-2)', color: 'var(--ink-3)' };
+
   return (
     <div style={{
       border: '1px solid var(--line)',
       borderRadius: 'var(--radius-md)',
       padding: '16px 20px',
       background: 'var(--paper)',
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>{app.company}</div>
-        <StatusBadge status={app.status} />
-      </div>
-      {app.roles.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
-          {app.roles.map((role, i) => (
-            <span key={i} style={{
-              fontSize: 11, padding: '2px 8px',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--line)',
-              color: 'var(--ink-3)', background: 'var(--paper-2)',
-            }}>
-              {role}
-            </span>
-          ))}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>{app.company}</div>
+        {app.roles.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
+            {app.roles.map((role, i) => (
+              <span key={i} style={{
+                fontSize: 11, padding: '2px 8px',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--line)',
+                color: 'var(--ink-3)', background: 'var(--paper-2)',
+              }}>
+                {role}
+              </span>
+            ))}
+          </div>
+        )}
+        <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
+          Applied {formatDate(app.applied_at ?? app.last_email_at ?? app.created_at)}
+          {app.manually_added && <span style={{ marginLeft: 8, color: 'var(--ink-4)' }}>· Manual</span>}
         </div>
-      )}
-      <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
-        Applied {formatDate(app.applied_at ?? app.last_email_at ?? app.created_at)}
       </div>
+      <select
+        value={app.status}
+        onChange={handleStatusChange}
+        disabled={updating}
+        style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
+          textTransform: 'uppercase', padding: '3px 10px',
+          borderRadius: 'var(--radius-full)',
+          background: cfg.bg, color: cfg.color,
+          border: 'none', cursor: 'pointer',
+          opacity: updating ? 0.5 : 1,
+          flexShrink: 0,
+        }}
+      >
+        {Object.entries(STATUS_LABELS).map(([value, label]) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
     </div>
   );
 }
@@ -114,6 +160,11 @@ export default function TrackerPage() {
   const [disconnecting, setDisconnecting] = useState(false);
   const [notAllowed, setNotAllowed] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addCompany, setAddCompany] = useState('');
+  const [addRole, setAddRole] = useState('');
+  const [addStatus, setAddStatus] = useState('applied');
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -163,6 +214,28 @@ export default function TrackerPage() {
 
     } catch {
       setConnecting(false);
+    }
+  }
+
+  function handleStatusChange(updated) {
+    setApplications(prev => prev.map(a => a.id === updated.id ? updated : a));
+  }
+
+  async function handleAddApplication(e) {
+    e.preventDefault();
+    if (!addCompany.trim()) return;
+    setAdding(true);
+    try {
+      const created = await createApplication(addCompany.trim(), addRole.trim(), addStatus);
+      setApplications(prev => [created, ...prev]);
+      setShowAddForm(false);
+      setAddCompany('');
+      setAddRole('');
+      setAddStatus('applied');
+      setActiveTab(addStatus);
+    } catch {
+    } finally {
+      setAdding(false);
     }
   }
 
@@ -257,6 +330,79 @@ export default function TrackerPage() {
             <GmailConnectBanner onConnect={handleConnect} connecting={connecting} />
           )}
 
+          {/* Add application button — always visible */}
+          <div style={{ marginBottom: 20 }}>
+            {!showAddForm ? (
+              <button
+                onClick={() => setShowAddForm(true)}
+                style={{
+                  fontSize: 12, fontWeight: 500, padding: '6px 16px',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid var(--accent)',
+                  color: 'var(--accent)', background: 'var(--accent-wash)',
+                  cursor: 'pointer',
+                }}
+              >
+                + Add application
+              </button>
+            ) : (
+              <form onSubmit={handleAddApplication} style={{
+                border: '1px solid var(--line)', borderRadius: 'var(--radius-md)',
+                padding: '16px 20px', background: 'var(--paper)',
+                display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end',
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 180px' }}>
+                  <label style={{ fontSize: 11, color: 'var(--ink-4)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Company *</label>
+                  <input
+                    value={addCompany}
+                    onChange={e => setAddCompany(e.target.value)}
+                    placeholder="e.g. Google"
+                    required
+                    style={{ padding: '7px 12px', fontSize: 13, border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--paper)', color: 'var(--ink)', outline: 'none' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 180px' }}>
+                  <label style={{ fontSize: 11, color: 'var(--ink-4)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</label>
+                  <input
+                    value={addRole}
+                    onChange={e => setAddRole(e.target.value)}
+                    placeholder="e.g. Senior TPM"
+                    style={{ padding: '7px 12px', fontSize: 13, border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--paper)', color: 'var(--ink)', outline: 'none' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 140px' }}>
+                  <label style={{ fontSize: 11, color: 'var(--ink-4)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</label>
+                  <select
+                    value={addStatus}
+                    onChange={e => setAddStatus(e.target.value)}
+                    style={{ padding: '7px 12px', fontSize: 13, border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--paper)', color: 'var(--ink)', outline: 'none' }}
+                  >
+                    {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="submit" disabled={adding} style={{
+                    fontSize: 13, fontWeight: 500, padding: '7px 18px',
+                    borderRadius: 'var(--radius-full)', border: '1px solid var(--accent)',
+                    color: 'white', background: 'var(--accent)', cursor: 'pointer',
+                    opacity: adding ? 0.5 : 1,
+                  }}>
+                    {adding ? 'Saving…' : 'Save'}
+                  </button>
+                  <button type="button" onClick={() => setShowAddForm(false)} style={{
+                    fontSize: 13, padding: '7px 18px',
+                    borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+                    color: 'var(--ink-3)', background: 'var(--paper)', cursor: 'pointer',
+                  }}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
           {applications.length === 0 ? (
             <div style={{
               textAlign: 'center', padding: '52px 24px',
@@ -276,8 +422,10 @@ export default function TrackerPage() {
               { key: 'all', label: 'All' },
               { key: 'applied', label: 'Applied' },
               { key: 'interview_scheduled', label: 'Interview' },
-              { key: 'rejected', label: 'Rejected' },
               { key: 'offer_received', label: 'Offer' },
+              { key: 'rejected', label: 'Rejected' },
+              { key: 'withdrawn', label: 'Withdrawn' },
+              { key: 'no_response', label: 'No Response' },
             ];
             const filtered = activeTab === 'all'
               ? applications
@@ -285,6 +433,7 @@ export default function TrackerPage() {
 
             return (
               <>
+                {/* Tabs */}
                 <div style={{ display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
                   {TABS.map(tab => {
                     const count = tab.key === 'all'
@@ -310,6 +459,7 @@ export default function TrackerPage() {
                     );
                   })}
                 </div>
+
                 {filtered.length === 0 ? (
                   <div style={{
                     textAlign: 'center', padding: '40px 24px',
@@ -321,7 +471,7 @@ export default function TrackerPage() {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {filtered.map(app => (
-                      <ApplicationCard key={app.id} app={app} />
+                      <ApplicationCard key={app.id} app={app} onStatusChange={handleStatusChange} />
                     ))}
                   </div>
                 )}

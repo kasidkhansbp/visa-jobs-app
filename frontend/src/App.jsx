@@ -19,6 +19,7 @@ import CvSharePage from './pages/CvSharePage';
 import AdminPage from './pages/AdminPage';
 import TrackerPage from './pages/TrackerPage';
 import TermsPage from './pages/TermsPage';
+import MarketInsightsPage from './pages/MarketInsightsPage';
 import StoriesPage from './pages/StoriesPage';
 import ChangelogPage from './pages/ChangelogPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -77,6 +78,7 @@ function AppInner() {
         <Route path="/tracker" element={<TrackerPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/stories" element={<StoriesPage />} />
+        <Route path="/insights" element={<MarketInsightsPage />} />
       </Routes>
       <Footer />
     </div>

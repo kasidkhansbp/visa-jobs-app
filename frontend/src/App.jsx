@@ -78,7 +78,7 @@ function AppInner() {
         <Route path="/tracker" element={<TrackerPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/stories" element={<StoriesPage />} />
-        <Route path="/insights" element={<MarketInsightsPage />} />
+        <Route path="/insights" element={<ProtectedRoute><MarketInsightsPage /></ProtectedRoute>} />
       </Routes>
       <Footer />
     </div>

@@ -37,7 +37,7 @@ export default function Nav() {
             {i.label}
           </Link>
         ))}
-        {user?.email && TRACKER_ALLOWLIST.includes(user.email) && (
+        {user && (
           <Link to="/tracker" className={pathname === '/tracker' ? 'active' : ''}>
             Tracker
           </Link>

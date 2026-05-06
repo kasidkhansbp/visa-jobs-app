@@ -74,9 +74,10 @@ class ApplicationStatusUpdate(BaseModel):
 async def get_auth_url(
     current_user: dict = Depends(get_current_user),
 ) -> dict:
-    """Generate Gmail OAuth URL. Only available to users on the allowlist."""
-    if not config.is_gmail_allowed(current_user["email"]):
-        raise HTTPException(status_code=403, detail="Gmail feature not available for your account")
+    """Generate Gmail OAuth URL. Available to all logged-in users."""
+    # Allowlist check — re-enable next week when ready to restrict access
+    # if not config.is_gmail_allowed(current_user["email"]):
+    #     raise HTTPException(status_code=403, detail="Gmail feature not available for your account")
 
     params = {
         "client_id": config.gmail_client_id,

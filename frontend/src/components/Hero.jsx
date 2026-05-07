@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from './Icon';
+import Globe from './Globe';
 
 export default function Hero({ initialTitle = '', initialLocation = '', onSearch }) {
   const [title, setTitle] = useState(initialTitle || 'Technical program manager');
@@ -20,7 +21,7 @@ export default function Hero({ initialTitle = '', initialLocation = '', onSearch
         <div className="divider"/>
         <div className="eyebrow">Updated daily · sponsor-verified roles</div>
       </div>
-      <h1>Jobs that will sponsor <em>your visa.</em></h1>
+      <h1>Jobs that will sponsor<br /><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><em>your visa.</em><Globe size={52} /></span></h1>
       <p className="sub">
         Every listing cross-referenced against the UK Home Office register of licensed
         Skilled Worker sponsors. No dead ends.

@@ -345,10 +345,10 @@ function HeatmapTable({ rows, loading }) {
               <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: dir.color }}>
                 {row.overall_trend_pct > 0 ? '+' : ''}{row.overall_trend_pct}% {dir.label}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', paddingRight: 16 }}>
                 <Sparkline data={row.weekly_data} color={dir.color} delay={rowDelay + 150} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', paddingLeft: 16 }}>
                 <DemandBar pct={row.demand_pct} color={dir.color} />
               </div>
             </div>

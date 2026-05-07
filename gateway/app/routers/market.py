@@ -70,7 +70,7 @@ async def _get_weekly_counts(session: AsyncSession) -> dict[str, list[tuple[str,
                 DATE_TRUNC('week', fetched_at)::date AS week,
                 COUNT(*) AS openings
             FROM jobs
-            WHERE sector IS NOT NULL
+            WHERE sector IS NOT NULL AND is_hidden = false
             GROUP BY sector, week
             ORDER BY sector, week ASC
         """)

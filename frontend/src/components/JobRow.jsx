@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Chip from './Chip';
+import { hideJob, unhideJob } from '../services/jobsApi';
 
 const TONES = ['indigo', 'warm', 'brick', 'gold', 'slate', 'plum', 'teal', 'rust'];
 function toneFor(name) {
@@ -26,7 +28,8 @@ function formatPosted(postedAt) {
   return `${Math.floor(days / 30)} months ago`;
 }
 
-export default function JobRow({ job, active, onClick, filters = {}, onFilterChange }) {
+export default function JobRow({ job, active, onClick, filters = {}, onFilterChange, isAdmin = false, onHidden, onUnhidden }) {
+  const [hiding, setHiding] = useState(false);
   const logo = job.employer_name?.[0]?.toUpperCase() ?? '?';
   const logoTone = toneFor(job.employer_name);
   const salary = formatSalary(job.salary_min, job.salary_max);
@@ -86,6 +89,35 @@ export default function JobRow({ job, active, onClick, filters = {}, onFilterCha
         {salary
           ? <span className="salary">{salary}</span>
           : <span className="salary na">Salary not listed</span>}
+        {isAdmin && (
+          <button
+            onClick={async e => {
+              e.stopPropagation();
+              setHiding(true);
+              try {
+                if (job.is_hidden) {
+                  await unhideJob(job.id);
+                  onUnhidden?.(job.id);
+                } else {
+                  await hideJob(job.id);
+                  onHidden?.(job.id);
+                }
+              } finally {
+                setHiding(false);
+              }
+            }}
+            disabled={hiding}
+            style={{
+              marginTop: 6, fontSize: 11, padding: '3px 10px',
+              borderRadius: 'var(--radius-full)',
+              border: `1px solid ${job.is_hidden ? 'var(--verified)' : 'var(--danger)'}`,
+              color: job.is_hidden ? 'var(--verified)' : 'var(--danger)',
+              background: 'var(--paper)', cursor: 'pointer', opacity: hiding ? 0.5 : 1,
+            }}
+          >
+            {hiding ? '…' : job.is_hidden ? 'Unhide' : 'Hide'}
+          </button>
+        )}
       </div>
     </div>
   );

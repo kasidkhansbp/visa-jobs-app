@@ -76,7 +76,7 @@ async def get_jobs(
     Return job listings from the DB.
     All filter parameters are optional and can be combined.
     """
-    stmt = select(Job)
+    stmt = select(Job).where(Job.is_hidden == False)
 
     if source:
         stmt = stmt.where(Job.source == source)
@@ -110,19 +110,46 @@ async def get_jobs(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ── DELETE /api/jobs/{id} ──────────────────────────────────────────────────────
+# ── DELETE /api/jobs/{id} — soft delete (admin only) ──────────────────────────
+
+from ..auth import get_current_user
+
+ADMIN_EMAIL = "kasidkhan@gmail.com"
+
 
 @router.delete("/{job_id}")
-async def delete_job(
+async def hide_job(
     job_id: uuid.UUID,
+    current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ) -> Response:
+    if current_user.get("email") != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     result = await db.execute(select(Job).where(Job.id == job_id))
     job = result.scalar_one_or_none()
-
     if job is None:
         raise HTTPException(status_code=404, detail="Job not found")
 
-    await db.execute(delete(Job).where(Job.id == job_id))
+    job.is_hidden = True
     await db.commit()
     return Response(status_code=204)
+
+
+@router.patch("/{job_id}/unhide")
+async def unhide_job(
+    job_id: uuid.UUID,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+) -> dict:
+    if current_user.get("email") != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    result = await db.execute(select(Job).where(Job.id == job_id))
+    job = result.scalar_one_or_none()
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    job.is_hidden = False
+    await db.commit()
+    return {"status": "visible"}

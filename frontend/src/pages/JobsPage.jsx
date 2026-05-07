@@ -1,3 +1,6 @@
+import { useAuth } from '../context/AuthContext';
+import { fetchHiddenJobs } from '../services/jobsApi';
+const ADMIN_EMAIL = 'kasidkhan@gmail.com';
 import { useState, useEffect } from 'react';
 import { useJobs } from '../hooks/useJobs';
 import useSEO from '../hooks/useSEO';
@@ -44,6 +47,10 @@ export default function JobsPage() {
   const [activeId, setActiveId] = useState(null);
   const [offset, setOffset] = useState(0);
   const [allJobs, setAllJobs] = useState([]);
+  const { user } = useAuth();
+  const isAdmin = user?.email === ADMIN_EMAIL;
+  const [showHidden, setShowHidden] = useState(false);
+  const [hiddenJobs, setHiddenJobs] = useState([]);
 
   const apiFilters = { ...buildApiFilters(filters), limit: PAGE_SIZE, offset };
   const { data: page = [], isLoading, isFetching, isError } = useJobs(apiFilters);
@@ -87,14 +94,37 @@ export default function JobsPage() {
         <div>
           <div className="results-head">
             <h2>London jobs</h2>
-            <span className="sort">
-              Sort by{' '}
-              <select defaultValue="recent">
-                <option value="recent">Most recent</option>
-                <option>Salary high to low</option>
-                <option>Best match</option>
-              </select>
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {isAdmin && (
+                <button
+                  onClick={async () => {
+                    const next = !showHidden;
+                    setShowHidden(next);
+                    if (next && hiddenJobs.length === 0) {
+                      const jobs = await fetchHiddenJobs();
+                      setHiddenJobs(jobs);
+                    }
+                  }}
+                  style={{
+                    fontSize: 12, padding: '4px 12px',
+                    borderRadius: 'var(--radius-full)',
+                    border: `1px solid ${showHidden ? 'var(--danger)' : 'var(--line)'}`,
+                    color: showHidden ? 'var(--danger)' : 'var(--ink-4)',
+                    background: 'var(--paper)', cursor: 'pointer',
+                  }}
+                >
+                  {showHidden ? 'Hide hidden' : 'Show hidden'}
+                </button>
+              )}
+              <span className="sort">
+                Sort by{' '}
+                <select defaultValue="recent">
+                  <option value="recent">Most recent</option>
+                  <option>Salary high to low</option>
+                  <option>Best match</option>
+                </select>
+              </span>
+            </div>
           </div>
           {!isLoading && !isError && (
             <div className="count-line">
@@ -124,8 +154,34 @@ export default function JobsPage() {
                 onClick={() => setActiveId(activeId === j.id ? null : j.id)}
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                isAdmin={isAdmin}
+                onHidden={id => setAllJobs(prev => prev.filter(job => job.id !== id))}
+                onUnhidden={() => {}}
               />
             ))}
+            {showHidden && hiddenJobs.length > 0 && (
+              <div style={{ borderTop: '2px dashed var(--danger)', marginTop: 16, paddingTop: 16 }}>
+                <div style={{ fontSize: 12, color: 'var(--danger)', fontWeight: 600, marginBottom: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                  Hidden jobs ({hiddenJobs.length})
+                </div>
+                {hiddenJobs.map(j => (
+                  <JobRow
+                    key={j.id}
+                    job={{ ...j, is_hidden: true }}
+                    active={false}
+                    onClick={() => {}}
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    isAdmin={isAdmin}
+                    onHidden={() => {}}
+                    onUnhidden={id => {
+                      setHiddenJobs(prev => prev.filter(job => job.id !== id));
+                      setAllJobs(prev => [...prev, { ...hiddenJobs.find(h => h.id === id), is_hidden: false }]);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
             {hasMore && (
               <div style={{ textAlign: 'center', padding: '24px 0' }}>
                 <button

@@ -41,12 +41,26 @@ export async function fetchJobs(filters = {}) {
  *
  * @param {string} jobId - UUID of the job to delete
  */
-export async function deleteJob(jobId) {
+export async function hideJob(jobId) {
   const response = await fetch(`${API_BASE}/api/jobs/${jobId}`, {
     method: "DELETE",
+    credentials: "include",
   });
+  if (!response.ok) throw new Error(`Failed to hide job: ${response.status}`);
+}
 
-  if (!response.ok) {
-    throw new Error(`Failed to delete job: ${response.status}`);
-  }
+export async function unhideJob(jobId) {
+  const response = await fetch(`${API_BASE}/api/jobs/${jobId}/unhide`, {
+    method: "PATCH",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error(`Failed to unhide job: ${response.status}`);
+}
+
+export async function fetchHiddenJobs() {
+  const response = await fetch(`${API_BASE}/api/admin/jobs/hidden`, {
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error(`Failed to fetch hidden jobs: ${response.status}`);
+  return response.json();
 }

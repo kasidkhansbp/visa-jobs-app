@@ -124,6 +124,32 @@ async def get_stats(
     )
 
 
+import uuid as _uuid
+
+
+class HiddenJobOut(BaseModel):
+    id: str
+    title: str
+    employer_name: str
+    source: str
+
+
+@router.get("/jobs/hidden", response_model=list[HiddenJobOut])
+async def list_hidden_jobs(
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> list[HiddenJobOut]:
+    if current_user.get("email") != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    result = await session.execute(
+        select(Job.id, Job.title, Job.employer_name, Job.source)
+        .where(Job.is_hidden.is_(True))
+        .order_by(Job.fetched_at.desc())
+    )
+    return [HiddenJobOut(id=str(row[0]), title=row[1], employer_name=row[2], source=row[3]) for row in result]
+
+
 @router.get("/users", response_model=list[UserRow])
 async def list_users(
     current_user: dict = Depends(get_current_user),

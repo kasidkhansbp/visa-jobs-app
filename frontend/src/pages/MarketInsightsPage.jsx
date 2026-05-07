@@ -1,10 +1,73 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import useSEO from '../hooks/useSEO';
 import { getMarketSummary, getMarketHeatmap } from '../services/marketApi';
 
+// ── Animation CSS ─────────────────────────────────────────────────────────────
+
+const ANIM_STYLES = `
+  @keyframes mi-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes mi-spark-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes mi-spark-dot {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  @keyframes mi-spark-ripple {
+    0%   { transform: scale(0.6); opacity: 0.55; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+  @keyframes mi-spark-glow {
+    0%,100% { filter: drop-shadow(0 0 0px currentColor); }
+    50%      { filter: drop-shadow(0 0 3px currentColor); }
+  }
+  .mi-rise {
+    opacity: 0;
+    animation: mi-rise 600ms cubic-bezier(0.22,1,0.36,1) forwards;
+    animation-delay: var(--mi-d, 0ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mi-rise { animation: none !important; opacity: 1 !important; }
+  }
+`;
+
+// ── Count-up hook ─────────────────────────────────────────────────────────────
+
+function useCountUp(target, { duration = 1100, delay = 0, trigger = 0 } = {}) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (typeof target !== 'number' || isNaN(target)) { setValue(target); return; }
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { setValue(target); return; }
+    let raf, startTs;
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const tick = ts => {
+      if (startTs == null) startTs = ts;
+      const elapsed = ts - startTs - delay;
+      if (elapsed < 0) { raf = requestAnimationFrame(tick); return; }
+      const t = Math.min(1, elapsed / duration);
+      setValue(Math.round(target * ease(t)));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    setValue(0);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, trigger]);
+  return value;
+}
+
+function CountUp({ value, delay = 0, trigger = 0 }) {
+  const animated = useCountUp(typeof value === 'number' ? value : 0, { delay, trigger });
+  if (typeof value !== 'number') return <>{value}</>;
+  return <>{animated.toLocaleString()}</>;
+}
+
 // ── Sparkline SVG ─────────────────────────────────────────────────────────────
 
-function Sparkline({ data, color = '#22c55e' }) {
+function Sparkline({ data, color = '#22c55e', delay = 0, animKey = 0 }) {
   if (!data || data.length < 2) return <span style={{ color: 'var(--ink-4)' }}>—</span>;
 
   const values = data.map(d => d.openings);
@@ -12,25 +75,59 @@ function Sparkline({ data, color = '#22c55e' }) {
   const max = Math.max(...values);
   const range = max - min || 1;
 
-  const W = 80;
-  const H = 28;
-  const pad = 2;
+  const W = 80, H = 28, P = 2;
 
-  const points = values.map((v, i) => {
-    const x = pad + (i / (values.length - 1)) * (W - pad * 2);
-    const y = H - pad - ((v - min) / range) * (H - pad * 2);
-    return `${x},${y}`;
-  }).join(' ');
+  const pts = values.map((v, i) => {
+    const x = P + (i / (values.length - 1)) * (W - P * 2);
+    const y = H - P - ((v - min) / range) * (H - P * 2);
+    return [x, y];
+  });
+
+  const d = pts.map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`)).join(' ');
+
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i][0] - pts[i-1][0], dy = pts[i][1] - pts[i-1][1];
+    len += Math.sqrt(dx*dx + dy*dy);
+  }
+
+  const last = pts[pts.length - 1];
+  const lineDur = 900, stepDur = 70;
 
   return (
-    <svg width={W} height={H} style={{ display: 'block' }}>
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+    <svg key={animKey} width={W} height={H} style={{ display: 'block', overflow: 'visible' }}>
+      <path
+        d={d} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+        style={{
+          strokeDasharray: len,
+          strokeDashoffset: len,
+          animation: `mi-spark-draw 900ms cubic-bezier(0.22,1,0.36,1) ${delay}ms forwards`,
+        }}
+      />
+      {pts.slice(0, -1).map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r="1.5"
+          fill="var(--paper)" stroke={color} strokeWidth="1.25"
+          style={{
+            transformOrigin: 'center', transformBox: 'fill-box',
+            opacity: 0,
+            animation: `mi-spark-dot 320ms cubic-bezier(0.34,1.56,0.64,1) ${delay + lineDur * 0.55 + i * stepDur}ms forwards`,
+          }}
+        />
+      ))}
+      <circle cx={last[0]} cy={last[1]} r="3"
+        fill="none" stroke={color} strokeWidth="1"
+        style={{
+          transformOrigin: 'center', transformBox: 'fill-box',
+          opacity: 0, color,
+          animation: `mi-spark-ripple 1500ms ease-out ${delay + lineDur * 0.55 + (pts.length-1)*stepDur + 600}ms infinite`,
+        }}
+      />
+      <circle cx={last[0]} cy={last[1]} r="2.4" fill={color}
+        style={{
+          transformOrigin: 'center', transformBox: 'fill-box',
+          opacity: 0, color,
+          animation: `mi-spark-dot 360ms cubic-bezier(0.34,1.56,0.64,1) ${delay + lineDur * 0.55 + (pts.length-1)*stepDur}ms forwards, mi-spark-glow 1500ms ease-out ${delay + lineDur * 0.55 + (pts.length-1)*stepDur + 600}ms infinite`,
+        }}
       />
     </svg>
   );
@@ -48,9 +145,10 @@ function DemandBar({ pct, color = '#22c55e' }) {
 
 // ── Headline cards ────────────────────────────────────────────────────────────
 
-function HeadlineCard({ label, value, sub, subColor }) {
+function HeadlineCard({ label, value, sub, subColor, delay = 0 }) {
   return (
-    <div style={{
+    <div className="mi-rise" style={{
+      '--mi-d': `${delay}ms`,
       border: '1px solid var(--line)',
       borderRadius: 'var(--radius-md)',
       padding: '20px 24px',
@@ -61,7 +159,7 @@ function HeadlineCard({ label, value, sub, subColor }) {
         {label}
       </div>
       <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ink)', lineHeight: 1, marginBottom: 6 }}>
-        {value ?? '—'}
+        {typeof value === 'number' ? <CountUp value={value} delay={delay + 60} /> : (value ?? '—')}
       </div>
       {sub && (
         <div style={{ fontSize: 12, color: subColor ?? 'var(--ink-4)', fontWeight: 500 }}>{sub}</div>
@@ -78,26 +176,10 @@ function HeadlineCards({ summary }) {
 
   return (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40 }}>
-      <HeadlineCard
-        label="Live TPM openings"
-        value={summary.total_openings?.toLocaleString()}
-        sub="All sectors · London"
-      />
-      <HeadlineCard
-        label="Infrastructure"
-        value={summary.by_sector?.['Infrastructure'] ?? 0}
-        sub="Cloud, DC, networks"
-      />
-      <HeadlineCard
-        label="Cybersecurity"
-        value={summary.by_sector?.['Cybersecurity'] ?? 0}
-        sub="SecOps, GRC, identity"
-      />
-      <HeadlineCard
-        label="AI / ML"
-        value={summary.by_sector?.['AI / ML'] ?? 0}
-        sub="LLM infra, MLOps"
-      />
+      <HeadlineCard label="Live TPM openings" value={summary.total_openings} sub="All sectors · London" delay={0} />
+      <HeadlineCard label="Infrastructure" value={summary.by_sector?.['Infrastructure'] ?? 0} sub="Cloud, DC, networks" delay={90} />
+      <HeadlineCard label="Cybersecurity" value={summary.by_sector?.['Cybersecurity'] ?? 0} sub="SecOps, GRC, identity" delay={180} />
+      <HeadlineCard label="AI / ML" value={summary.by_sector?.['AI / ML'] ?? 0} sub="LLM infra, MLOps" delay={270} />
       {summary.hottest_sector && (
         <HeadlineCard
           label="Hottest sector"
@@ -232,10 +314,13 @@ function HeatmapTable({ rows, loading }) {
           const dir = DIRECTION_CONFIG[row.direction] ?? DIRECTION_CONFIG.stable;
           const wowColor = row.week_on_week_pct > 0 ? '#22c55e' : row.week_on_week_pct < 0 ? 'var(--danger)' : 'var(--ink-4)';
 
+          const rowDelay = 200 + i * 50;
           return (
             <div
               key={row.name}
+              className="mi-rise"
               style={{
+                '--mi-d': `${rowDelay}ms`,
                 display: 'grid',
                 gridTemplateColumns: '2fr 100px 120px 100px 80px 80px',
                 gap: 0, padding: '14px 20px',
@@ -249,7 +334,7 @@ function HeatmapTable({ rows, loading }) {
                 <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>{row.subtitle}</div>
               </div>
               <div style={{ textAlign: 'right', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
-                {row.latest_openings.toLocaleString()}
+                <CountUp value={row.latest_openings} delay={rowDelay + 100} />
               </div>
               <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 600, color: wowColor }}>
                 {row.week_on_week_pct > 0 ? '+' : ''}{row.week_on_week_pct}%
@@ -261,7 +346,7 @@ function HeatmapTable({ rows, loading }) {
                 {row.overall_trend_pct > 0 ? '+' : ''}{row.overall_trend_pct}% {dir.label}
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Sparkline data={row.weekly_data} color={dir.color} />
+                <Sparkline data={row.weekly_data} color={dir.color} delay={rowDelay + 150} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <DemandBar pct={row.demand_pct} color={dir.color} />
@@ -300,6 +385,7 @@ export default function MarketInsightsPage() {
 
   return (
     <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
+      <style>{ANIM_STYLES}</style>
       <div className="eyebrow" style={{ marginBottom: 10 }}>MARKET INSIGHTS</div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
         <h1 style={{ margin: 0 }}>London TPM job market.</h1>

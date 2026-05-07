@@ -1,0 +1,417 @@
+/* TPMguild — Market Insights
+ * Sector demand viz: KPI strip + sector heatmap with sparklines.
+ * Generous whitespace, hairline rules, no card chrome where rules will do.
+ */
+
+/* ---------- Entrance animations ----------
+ * Restrained, editorial — quick fade + small upward translate; sparklines
+ * draw on via stroke-dashoffset; ordered staggers via inline --d delays.
+ */
+@keyframes mi-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mi-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes mi-spark-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes mi-spark-dot {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes mi-rule-grow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Animation state on individual elements ---- */
+.mi-anim-rise {
+  opacity: 0;
+  animation: mi-rise 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+.mi-anim-fade {
+  opacity: 0;
+  animation: mi-fade 500ms ease-out forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mi-anim-rise, .mi-anim-fade,
+  .mi-spark path, .mi-spark circle,
+  .mi-kpis::before, .mi-kpis::after {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+.mi-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--s-10) var(--s-9) var(--s-11);
+  width: 100%;
+}
+
+/* ---------- Header ---------- */
+.mi-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s-7);
+  align-items: end;
+  padding-bottom: var(--s-7);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--s-9);
+}
+.mi-head .eyebrow { margin-bottom: var(--s-4); }
+.mi-head h1 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0 0 var(--s-3);
+}
+.mi-head p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--ink-3);
+  max-width: 520px;
+  line-height: 1.55;
+  margin: 0;
+}
+.mi-head-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: right;
+  white-space: nowrap;
+  line-height: 1.7;
+}
+.mi-head-meta b {
+  font-family: var(--font-mono);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- KPI strip — borderless, separated by hairline rules ---------- */
+.mi-kpis-section {
+  margin-bottom: var(--s-10);
+}
+.mi-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.mi-kpi {
+  padding: var(--s-6) var(--s-5);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.mi-kpi:last-child { border-right: 0; }
+.mi-kpi:first-child { padding-left: 0; }
+.mi-kpi:last-child  { padding-right: 0; }
+.mi-kpi-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.mi-kpi-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.mi-kpi-delta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+.mi-kpi-delta.up   { color: var(--verified); }
+.mi-kpi-delta.down { color: var(--danger);   }
+.mi-kpi-delta.flat { color: var(--ink-3);    }
+.mi-kpi-delta.stat { color: var(--ink);      }
+.mi-kpi-ctx {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.3;
+}
+
+/* ---------- Heatmap section ---------- */
+.mi-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-5);
+  margin-bottom: var(--s-5);
+}
+.mi-section-head h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.mi-section-head .mi-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mi-legend {
+  display: flex;
+  gap: var(--s-5);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--ink-3);
+  align-items: center;
+}
+.mi-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Filter / sort row — split groups */
+.mi-controls {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-5);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--line);
+}
+.mi-controls-group {
+  display: inline-flex;
+  gap: 0;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.mi-controls-group .mi-pill {
+  border-radius: 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+}
+.mi-controls-group .mi-pill:last-child { border-right: 0; }
+.mi-controls-spacer { flex: 1; }
+.mi-controls-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-right: var(--s-2);
+}
+.mi-pill {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  background: var(--paper);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--dur-micro) var(--ease-out);
+  white-space: nowrap;
+  border: 0;
+}
+.mi-pill:hover { background: var(--paper-2); color: var(--ink); }
+.mi-pill.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ---------- Heatmap rows (CSS grid, not table) ----------
+ * Switching off table to get airier rows + simpler responsive collapse.
+ */
+.mi-rows {
+  display: flex;
+  flex-direction: column;
+}
+.mi-rowhead, .mi-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 110px 100px 160px;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-4) 0;
+}
+.mi-rowhead {
+  padding: var(--s-2) 0 var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.mi-rowhead > div {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.mi-rowhead .num { text-align: right; }
+.mi-row {
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur-micro) var(--ease-out);
+}
+.mi-row:hover { background: var(--paper-2); }
+.mi-row:last-child { border-bottom: 1px solid var(--line); }
+
+.mi-rank {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.mi-sector { min-width: 0; }
+.mi-sector-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 2px;
+}
+.mi-sector-tags {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.mi-openings {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-weight: 500;
+}
+
+.mi-trend {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  font-weight: 500;
+}
+.mi-trend.up   { color: var(--verified); }
+.mi-trend.down { color: var(--danger);   }
+.mi-trend.flat { color: var(--ink-3);    }
+
+.mi-spark { display: block; overflow: visible; }
+.mi-spark .mi-spark-line {
+  stroke-dasharray: var(--len, 200);
+  stroke-dashoffset: var(--len, 200);
+  animation: mi-spark-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+/* Datapoint dots — pop in left-to-right after the line lays down */
+.mi-spark .mi-spark-pt {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: mi-spark-dot 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--d, 0ms) + var(--pt-d, 0ms));
+}
+/* Trailing "live" dot — animates in last, then pulses softly forever */
+.mi-spark .mi-spark-end {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation:
+    mi-spark-dot 360ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    mi-spark-end-glow 1500ms ease-out infinite;
+  animation-delay:
+    calc(var(--d, 0ms) + var(--pt-d, 0ms)),
+    calc(var(--d, 0ms) + var(--pt-d, 0ms) + 600ms);
+}
+/* Outer halo ripple on the live dot */
+.mi-spark .mi-spark-ripple {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: mi-spark-ripple 1500ms ease-out infinite;
+  animation-delay: calc(var(--d, 0ms) + var(--pt-d, 0ms) + 600ms);
+}
+@keyframes mi-spark-end-glow {
+  0%   { filter: drop-shadow(0 0 0 currentColor); }
+  50%  { filter: drop-shadow(0 0 3px currentColor); }
+  100% { filter: drop-shadow(0 0 0 currentColor); }
+}
+@keyframes mi-spark-ripple {
+  0%   { transform: scale(0.6); opacity: 0.55; }
+  100% { transform: scale(2.6); opacity: 0;    }
+}
+
+/* ---------- Empty state ---------- */
+.mi-empty {
+  padding: var(--s-10) 0;
+  text-align: center;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+/* ---------- Footnote ---------- */
+.mi-foot {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mi-foot a {
+  color: var(--ink-3);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-2);
+  padding-bottom: 1px;
+  margin-left: var(--s-3);
+  transition: color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+}
+.mi-foot a:hover { color: var(--ink); border-color: var(--ink-3); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .mi-kpis { grid-template-columns: repeat(2, 1fr); }
+  .mi-kpi { border-right: 0; border-bottom: 1px solid var(--line); padding: var(--s-5) var(--s-5); }
+  .mi-kpi:nth-child(odd)  { padding-left: 0; border-right: 1px solid var(--line); }
+  .mi-kpi:nth-child(even) { padding-right: 0; }
+  .mi-kpi:nth-last-child(-n+2) { border-bottom: 0; }
+  .mi-rowhead, .mi-row { grid-template-columns: 28px 1fr 90px 90px; gap: var(--s-3); }
+  .mi-rowhead .col-spark, .mi-row .col-spark { display: none; }
+}
+@media (max-width: 720px) {
+  .mi-kpis { grid-template-columns: 1fr; }
+  .mi-kpi { border-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
+  .mi-kpi:last-child { border-bottom: 0; }
+  .mi-rowhead, .mi-row { grid-template-columns: 1fr 80px 80px; }
+  .mi-rowhead .col-rank, .mi-row .mi-rank { display: none; }
+}

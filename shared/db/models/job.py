@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -49,6 +49,7 @@ class Job(Base):
 
     is_sponsor_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_frequent_sponsor: Mapped[bool] = mapped_column(default=False, nullable=False)
+    is_hidden: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     sector: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     __table_args__ = (

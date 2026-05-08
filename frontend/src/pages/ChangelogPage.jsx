@@ -3,6 +3,26 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '08 May 2026',
+    items: [
+      {
+        title: 'Sponsor register — animated charts',
+        tag: 'IMPROVED',
+        description: 'Hovering a segment on the visa routes donut chart enlarges it, shows the route name and percentage in the centre, and dims all other segments. Page header and stat cards now animate in on load with count-up numbers.',
+      },
+      {
+        title: 'Admin — user login tracking',
+        tag: 'IMPROVED',
+        description: 'Admin page now shows login count and last login date per user, sorted by most active users first.',
+      },
+      {
+        title: 'Mobile nav — hamburger menu',
+        tag: 'IMPROVED',
+        description: 'On mobile, the navigation collapses into a hamburger menu that opens a full-screen drawer with all links.',
+      },
+    ],
+  },
+  {
     date: '07 May 2026',
     items: [
       {

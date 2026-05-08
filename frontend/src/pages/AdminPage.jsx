@@ -111,6 +111,8 @@ export default function AdminPage() {
                 <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--ink-3)' }}>Name</th>
                 <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--ink-3)' }}>Email</th>
                 <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--ink-3)' }}>Joined</th>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--ink-3)' }}>Last login</th>
+                <th style={{ padding: '10px 16px', textAlign: 'center', fontWeight: 600, color: 'var(--ink-3)' }}>Logins</th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +121,8 @@ export default function AdminPage() {
                   <td style={{ padding: '10px 16px', color: 'var(--ink)' }}>{u.name}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--ink-3)' }}>{u.email}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--ink-4)' }}>{new Date(u.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--ink-4)' }}>{u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</td>
+                  <td style={{ padding: '10px 16px', textAlign: 'center', fontWeight: 600, color: 'var(--ink)' }}>{u.login_count ?? 0}</td>
                 </tr>
               ))}
             </tbody>

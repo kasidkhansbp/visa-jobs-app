@@ -3,6 +3,61 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '07 May 2026',
+    items: [
+      {
+        title: 'Market Insights — animated heatmap',
+        tag: 'IMPROVED',
+        description: 'Numbers count up on page load, sparklines draw left to right with animated dots, and a pulsing live dot marks the latest data point. Rows stagger in sequentially.',
+      },
+      {
+        title: 'Globe on hero',
+        tag: 'NEW',
+        description: 'A rotating wireframe globe with a pulsing London pin now sits beside the hero headline.',
+      },
+      {
+        title: 'Admin — hide job listings',
+        tag: 'NEW',
+        description: 'Admin can now hide individual job listings from the jobs page without deleting them from the database. A "Show hidden" toggle reveals hidden jobs with an Unhide option.',
+      },
+    ],
+  },
+  {
+    date: '06 May 2026',
+    items: [
+      {
+        title: 'Job Tracker — open to all users',
+        tag: 'IMPROVED',
+        description: 'Gmail connection is now available to all logged-in users. Previously restricted to an allowlist.',
+      },
+    ],
+  },
+  {
+    date: '05 May 2026',
+    items: [
+      {
+        title: 'Market Insights',
+        tag: 'NEW',
+        description: 'Weekly London TPM job market report — sector heatmap with openings, week-on-week change, trajectory sparklines and demand bars. Requires sign-in.',
+      },
+      {
+        title: 'Sector classification',
+        tag: 'NEW',
+        description: 'Jobs are now classified into sectors (Infrastructure, Cybersecurity, AI/ML, Fintech, Data platforms, DevOps, E-commerce, Product, Software Delivery) using keyword matching on title and description.',
+      },
+    ],
+  },
+  {
+    date: '04 May 2026',
+    items: [
+      {
+        title: 'Job Tracker — manual applications',
+        tag: 'IMPROVED',
+        description: 'Users can now add job applications manually and update the status of any application (Applied, Interview, Rejected, Offer, Withdrawn, No Response) via a dropdown on each card.',
+      },
+    ],
+  },
+  {
     date: '03 May 2026',
     items: [
       {

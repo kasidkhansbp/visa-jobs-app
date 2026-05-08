@@ -49,6 +49,8 @@ class UserRow(BaseModel):
     name: str
     email: str
     created_at: datetime
+    last_login_at: datetime | None
+    login_count: int
 
 
 @router.get("/stats", response_model=AdminStatsOut)
@@ -159,6 +161,10 @@ async def list_users(
         raise HTTPException(status_code=403, detail="Forbidden")
 
     result = await session.execute(
-        select(User.name, User.email, User.created_at).order_by(User.created_at.desc())
+        select(User.name, User.email, User.created_at, User.last_login_at, User.login_count)
+        .order_by(User.login_count.desc())
     )
-    return [UserRow(name=row[0], email=row[1], created_at=row[2]) for row in result]
+    return [
+        UserRow(name=row[0], email=row[1], created_at=row[2], last_login_at=row[3], login_count=row[4] or 0)
+        for row in result
+    ]

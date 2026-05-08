@@ -114,6 +114,7 @@ async def callback(
         user.name = name
         user.picture = picture
         user.last_login_at = datetime.now(timezone.utc)
+        user.login_count = (user.login_count or 0) + 1
 
     await session.commit()
     await session.refresh(user)

@@ -1,5 +1,45 @@
 /* Sponsor Register page styles */
 
+/* ---------- Entrance animations ---------- */
+@keyframes sr-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sr-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.sr-anim-rise {
+  opacity: 0;
+  animation: sr-rise 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--sr-d, 0ms);
+}
+.sr-anim-fade {
+  opacity: 0;
+  animation: sr-fade 500ms ease-out forwards;
+  animation-delay: var(--sr-d, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+@keyframes sr-bar-grow {
+  from { width: 0; }
+  to   { width: var(--sr-bar-w); }
+}
+@keyframes sr-donut-draw {
+  from { stroke-dashoffset: var(--sr-dash-total); }
+  to   { stroke-dashoffset: var(--sr-dash-offset); }
+}
+.sr-bar-animated {
+  animation: sr-bar-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--sr-d, 0ms);
+  width: 0;
+}
+.sr-donut-seg {
+  animation: sr-donut-draw 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--sr-d, 0ms);
+}
+  .sr-anim-rise, .sr-anim-fade { animation: none !important; opacity: 1 !important; }
+}
+
 .sr-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

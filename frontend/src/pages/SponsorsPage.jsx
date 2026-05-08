@@ -15,26 +15,30 @@ export default function SponsorsPage() {
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 56px' }}>
-      <div className="eyebrow" style={{ marginBottom: 10 }}>Sponsor Register</div>
-      <h1 style={{ margin: '0 0 12px' }}>Every licensed UK visa sponsor.</h1>
-      <p style={{ fontSize: 16, color: 'var(--ink-3)', maxWidth: 640, marginBottom: 32 }}>
+      <div className="eyebrow sr-anim-rise" style={{ marginBottom: 10, '--sr-d': '0ms' }}>Sponsor Register</div>
+      <h1 className="sr-anim-rise" style={{ margin: '0 0 12px', '--sr-d': '80ms' }}>Every licensed UK visa sponsor.</h1>
+      <p className="sr-anim-fade" style={{ fontSize: 16, color: 'var(--ink-3)', maxWidth: 640, marginBottom: 32, '--sr-d': '180ms' }}>
         The UK Home Office register of licensed Skilled Worker sponsors, refreshed monthly
         and searchable by name, city, route, and rating.
       </p>
 
       <StatCards stats={isLoading ? null : stats} />
 
-      <ActiveSponsors
-        active={stats?.active_sponsors}
-        onFilter={value => setMinRoutes(value)}
-      />
+      <div className="sr-anim-fade" style={{ '--sr-d': '500ms' }}>
+        <ActiveSponsors
+          active={stats?.active_sponsors}
+          onFilter={value => setMinRoutes(value)}
+        />
+      </div>
 
-      <div className="sr-charts">
+      <div className="sr-charts sr-anim-fade" style={{ '--sr-d': '600ms' }}>
         <CitiesChart cities={stats?.by_city ?? []} />
         <RoutesDonut routes={stats?.by_route ?? []} />
       </div>
 
-      <SponsorTable defaultMinRoutes={minRoutes} />
+      <div className="sr-anim-fade" style={{ '--sr-d': '700ms' }}>
+        <SponsorTable defaultMinRoutes={minRoutes} />
+      </div>
     </div>
   );
 }

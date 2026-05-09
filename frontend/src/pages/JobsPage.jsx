@@ -92,15 +92,22 @@ export default function JobsPage() {
       />
       {/* Mobile filter overlay */}
       {showMobileFilters && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--paper)', zIndex: 20, overflowY: 'auto', padding: '16px 20px 32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid var(--line)' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--paper)', zIndex: 20, display: 'flex', flexDirection: 'column' }}>
+          {/* Fixed header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 12px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
             <span style={{ fontWeight: 600, fontSize: 18 }}>Filters</span>
             <button onClick={() => setShowMobileFilters(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, color: 'var(--ink-3)', lineHeight: 1 }}>✕</button>
           </div>
-          <FilterRail filters={filters} onChange={(f) => { handleFilterChange(f); }} />
-          <button onClick={() => setShowMobileFilters(false)} style={{ width: '100%', marginTop: 24, padding: '13px', background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 'var(--radius-full)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-            Show results
-          </button>
+          {/* Scrollable filter content */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+            <FilterRail filters={filters} onChange={(f) => { handleFilterChange(f); }} />
+          </div>
+          {/* Fixed footer button */}
+          <div style={{ padding: '12px 20px 24px', borderTop: '1px solid var(--line)', flexShrink: 0 }}>
+            <button onClick={() => setShowMobileFilters(false)} style={{ width: '100%', padding: '13px', background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 'var(--radius-full)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+              Show results
+            </button>
+          </div>
         </div>
       )}
 

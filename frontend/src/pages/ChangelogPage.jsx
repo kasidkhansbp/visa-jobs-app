@@ -1,7 +1,20 @@
+import { useState } from 'react';
 import useSEO from '../hooks/useSEO';
 import PageLayout from '../components/PageLayout';
 
+const PAGE_SIZE = 5;
+
 const ENTRIES = [
+  {
+    date: '10 May 2026',
+    items: [
+      {
+        title: 'Changelog — pagination',
+        tag: 'IMPROVED',
+        description: 'Changelog now shows 5 entries per page with Newer/Older navigation buttons. Page indicator shows current position.',
+      },
+    ],
+  },
   {
     date: '09 May 2026',
     items: [
@@ -286,6 +299,9 @@ const TAG_STYLE = {
 
 export default function ChangelogPage() {
   useSEO({ title: 'Changelog', description: 'What has shipped on TPMguild and when.' });
+  const [page, setPage] = useState(0);
+  const totalPages = Math.ceil(ENTRIES.length / PAGE_SIZE);
+  const visible = ENTRIES.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
     <PageLayout>
@@ -296,7 +312,7 @@ export default function ChangelogPage() {
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-        {ENTRIES.map(group => (
+        {visible.map(group => (
           <div key={group.date}>
             <div style={{
               fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
@@ -337,6 +353,39 @@ export default function ChangelogPage() {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 48, paddingTop: 24, borderTop: '1px solid var(--line)' }}>
+          <button
+            onClick={() => { setPage(p => p - 1); window.scrollTo(0, 0); }}
+            disabled={page === 0}
+            style={{
+              fontSize: 13, fontWeight: 500, padding: '7px 18px',
+              borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+              background: 'var(--paper)', color: 'var(--ink-2)', cursor: page === 0 ? 'default' : 'pointer',
+              opacity: page === 0 ? 0.4 : 1,
+            }}
+          >
+            ← Newer
+          </button>
+          <span style={{ fontSize: 12, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            onClick={() => { setPage(p => p + 1); window.scrollTo(0, 0); }}
+            disabled={page === totalPages - 1}
+            style={{
+              fontSize: 13, fontWeight: 500, padding: '7px 18px',
+              borderRadius: 'var(--radius-full)', border: '1px solid var(--line)',
+              background: 'var(--paper)', color: 'var(--ink-2)', cursor: page === totalPages - 1 ? 'default' : 'pointer',
+              opacity: page === totalPages - 1 ? 0.4 : 1,
+            }}
+          >
+            Older →
+          </button>
+        </div>
+      )}
     </PageLayout>
   );
 }

@@ -222,6 +222,19 @@ export default function JobsPage() {
         </div>
         {activeJob && <JobDetail job={activeJob}/>}
       </main>
+
+      {/* Mobile job detail — full screen overlay */}
+      {activeJob && (
+        <div className="mobile-job-detail">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 12px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
+            <span style={{ fontWeight: 600, fontSize: 16, color: 'var(--ink)' }}>{activeJob.employer_name}</span>
+            <button onClick={() => setActiveId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, color: 'var(--ink-3)', lineHeight: 1 }}>✕</button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <JobDetail job={activeJob}/>
+          </div>
+        </div>
+      )}
       <SourcesSection/>
     </>
   );

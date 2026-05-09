@@ -45,6 +45,9 @@ body { margin: 0; }
 .nav-burger { display: none; background: none; border: none; cursor: pointer; color: var(--ink-2); padding: 4px; line-height: 1; }
 .nav-desktop-auth { display: flex; align-items: center; }
 
+/* Mobile job detail overlay — hidden on desktop */
+.mobile-job-detail { display: none; }
+
 /* Mobile filter button — hidden on desktop */
 .mobile-filter-btn {
   display: none;
@@ -404,8 +407,8 @@ body { margin: 0; }
   /* Hide filter rail sidebar on mobile */
   .main .rail { display: none; }
 
-  /* Hide job detail panel on mobile */
-  .detail { display: none; }
+  /* Hide job detail panel inside main grid on mobile */
+  .main .detail { display: none; }
 
   /* Job rows — simplify layout */
   .jobrow { padding: 16px 0; gap: 12px; }
@@ -432,6 +435,16 @@ body { margin: 0; }
 
   /* Show filter button on mobile */
   .mobile-filter-btn { display: inline-flex; }
+
+  /* Mobile job detail overlay */
+  .mobile-job-detail {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--paper);
+    z-index: 20;
+  }
 
   /* Hide data sources section on mobile */
   .sources-grid { display: none; }

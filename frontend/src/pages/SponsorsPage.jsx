@@ -14,7 +14,7 @@ export default function SponsorsPage() {
   const [minRoutes, setMinRoutes] = useState(null);
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 56px' }}>
+    <div className="sponsors-page-wrap">
       <div className="eyebrow sr-anim-rise" style={{ marginBottom: 10, '--sr-d': '0ms' }}>Sponsor Register</div>
       <h1 className="sr-anim-rise" style={{ margin: '0 0 12px', '--sr-d': '80ms' }}>Every licensed UK visa sponsor.</h1>
       <p className="sr-anim-fade" style={{ fontSize: 16, color: 'var(--ink-3)', maxWidth: 640, marginBottom: 32, '--sr-d': '180ms' }}>

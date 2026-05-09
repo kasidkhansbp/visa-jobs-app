@@ -42,6 +42,16 @@ body { margin: 0; }
   height: 2px; background: var(--ink);
 }
 .nav .spacer { flex: 1; }
+.nav-burger { display: none; background: none; border: none; cursor: pointer; color: var(--ink-2); padding: 4px; line-height: 1; }
+.nav-desktop-auth { display: flex; align-items: center; }
+
+@media (max-width: 768px) {
+  .nav { padding: 0 16px; }
+  .nav .menu { display: none; }
+  .nav .spacer { display: none; }
+  .nav-desktop-auth { display: none; }
+  .nav-burger { display: flex; margin-left: auto; }
+}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -330,5 +340,99 @@ body { margin: 0; }
 /* ---------- Count line ---------- */
 .count-line {
   font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); margin-bottom: 16px;
+}
+
+/* ---------- Page layout ---------- */
+.page-layout {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 64px 56px 96px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE — 768px and below
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Page layout */
+  .page-layout { padding: 32px 20px 64px; }
+
+  /* Nav */
+  .nav { padding: 0 16px; }
+  .nav .menu { display: none; }
+  .nav .spacer { display: none; }
+  .nav-burger { display: flex; margin-left: auto; }
+  .nav-desktop-auth { display: none; }
+
+  /* Hero */
+  .hero { padding: 40px 20px 32px; }
+  .hero h1 { font-size: 36px; line-height: 1.1; }
+  .hero .sub { font-size: 16px; margin-bottom: 24px; }
+
+  /* Searchbar — stack vertically */
+  .searchbar {
+    grid-template-columns: 1fr;
+    border-radius: 8px;
+  }
+  .searchbar .field {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 0 16px;
+  }
+  .searchbar .field:last-of-type { border-bottom: none; }
+  .searchbar input, .searchbar select { padding: 12px 0; }
+  .searchbar .submit { padding: 14px; font-size: 16px; }
+
+  /* Main layout — single column, no sidebar */
+  .main {
+    grid-template-columns: 1fr !important;
+    padding: 0 16px 48px;
+    gap: 0;
+  }
+
+  /* Hide filter rail on mobile */
+  .rail { display: none; }
+
+  /* Hide job detail panel on mobile */
+  .detail { display: none; }
+
+  /* Job rows — simplify layout */
+  .jobrow { padding: 16px 0; gap: 12px; }
+  .jobrow .right { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+
+  /* Results head */
+  .results-head { padding-bottom: 12px; margin-bottom: 12px; }
+  .results-head h2 { font-size: 22px; }
+
+  /* Footer — stack to single column */
+  .footer .inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 40px 20px;
+  }
+  .footer .colophon {
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 20px 0;
+    margin-top: 24px;
+  }
+  .footer ul { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .footer li { padding: 0; }
+
+  /* Hide data sources section on mobile */
+  .sources-grid { display: none; }
+}
+
+/* ============================================================
+   SMALL PHONES — 480px and below
+   ============================================================ */
+@media (max-width: 480px) {
+  .hero { padding: 28px 16px 24px; }
+  .hero h1 { font-size: 30px; }
+  .hero .sub { font-size: 15px; }
+  .main { padding: 0 12px 40px; }
+  .results-head h2 { font-size: 20px; }
 }
 .count-line b { font-family: var(--font-mono); color: var(--ink); }

@@ -3,6 +3,31 @@ import PageLayout from '../components/PageLayout';
 
 const ENTRIES = [
   {
+    date: '09 May 2026',
+    items: [
+      {
+        title: 'Mobile — responsive layout',
+        tag: 'IMPROVED',
+        description: 'Major mobile improvements across the site. Hero font scales down, search bar stacks vertically, data sources section hidden on mobile, page padding reduced, and footer stacks to single column.',
+      },
+      {
+        title: 'Mobile — filter drawer',
+        tag: 'IMPROVED',
+        description: 'On mobile, a "Filters" button opens a full-screen filter overlay with a scrollable filter rail and a fixed "Show results" button at the bottom that never overlaps content.',
+      },
+      {
+        title: 'Mobile — job detail overlay',
+        tag: 'IMPROVED',
+        description: 'Tapping a job listing on mobile now opens a full-screen overlay showing the full job description and link to apply — same information as the desktop detail panel.',
+      },
+      {
+        title: 'Mobile — hamburger menu',
+        tag: 'IMPROVED',
+        description: 'Navigation collapses to a hamburger menu on mobile. Tapping it opens a dropdown with all links and the sign in/out button.',
+      },
+    ],
+  },
+  {
     date: '08 May 2026',
     items: [
       {

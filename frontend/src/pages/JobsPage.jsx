@@ -51,6 +51,7 @@ export default function JobsPage() {
   const isAdmin = user?.email === ADMIN_EMAIL;
   const [showHidden, setShowHidden] = useState(false);
   const [hiddenJobs, setHiddenJobs] = useState([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const apiFilters = { ...buildApiFilters(filters), limit: PAGE_SIZE, offset };
   const { data: page = [], isLoading, isFetching, isError } = useJobs(apiFilters);
@@ -89,12 +90,29 @@ export default function JobsPage() {
         initialLocation={filters.location}
         onSearch={handleSearch}
       />
+      {/* Mobile filter overlay */}
+      {showMobileFilters && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--paper)', zIndex: 20, overflowY: 'auto', padding: '16px 20px 32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid var(--line)' }}>
+            <span style={{ fontWeight: 600, fontSize: 18 }}>Filters</span>
+            <button onClick={() => setShowMobileFilters(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, color: 'var(--ink-3)', lineHeight: 1 }}>✕</button>
+          </div>
+          <FilterRail filters={filters} onChange={(f) => { handleFilterChange(f); }} />
+          <button onClick={() => setShowMobileFilters(false)} style={{ width: '100%', marginTop: 24, padding: '13px', background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 'var(--radius-full)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+            Show results
+          </button>
+        </div>
+      )}
+
       <main className="main" style={activeJob ? { gridTemplateColumns: '240px 1fr 400px' } : {}}>
         <FilterRail filters={filters} onChange={handleFilterChange}/>
         <div>
           <div className="results-head">
             <h2>London jobs</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button className="mobile-filter-btn" onClick={() => setShowMobileFilters(true)}>
+                Filters
+              </button>
               {isAdmin && (
                 <button
                   onClick={async () => {

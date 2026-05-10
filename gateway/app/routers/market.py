@@ -70,7 +70,15 @@ async def _get_weekly_counts(session: AsyncSession) -> dict[str, list[tuple[str,
                 DATE_TRUNC('week', fetched_at)::date AS week,
                 COUNT(*) AS openings
             FROM jobs
-            WHERE sector IS NOT NULL AND is_hidden = false
+            WHERE sector IS NOT NULL
+              AND is_hidden = false
+              AND (
+                title ILIKE '%technical program manager%'
+                OR title ILIKE '%technical programme manager%'
+                OR title ILIKE '% tpm %'
+                OR title ILIKE 'tpm %'
+                OR title ILIKE '% tpm'
+              )
             GROUP BY sector, week
             ORDER BY sector, week ASC
         """)

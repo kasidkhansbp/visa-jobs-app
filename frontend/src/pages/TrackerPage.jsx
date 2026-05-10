@@ -160,6 +160,8 @@ export default function TrackerPage() {
   const [disconnecting, setDisconnecting] = useState(false);
   const [notAllowed, setNotAllowed] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(0);
+  const PAGE_SIZE = 10;
   const [showAddForm, setShowAddForm] = useState(false);
   const [addCompany, setAddCompany] = useState('');
   const [addRole, setAddRole] = useState('');
@@ -318,7 +320,7 @@ export default function TrackerPage() {
         Automatically tracked from your Gmail inbox.
       </p>
       <p style={{ fontSize: 14, color: 'var(--ink-4)', lineHeight: 1.7, marginBottom: 40, maxWidth: 580 }}>
-        Connect your Gmail and the agent monitors your inbox hourly. When it detects a job application confirmation,
+        AI Agent Orion will monitor your inbox hourly. When it detects a job application confirmation,
         interview invite, or rejection, it automatically creates or updates a record here — no manual input needed.
       </p>
 
@@ -430,6 +432,8 @@ export default function TrackerPage() {
             const filtered = activeTab === 'all'
               ? applications
               : applications.filter(a => a.status === activeTab);
+            const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+            const paginated = filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
 
             return (
               <>
@@ -443,7 +447,7 @@ export default function TrackerPage() {
                     return (
                       <button
                         key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
+                        onClick={() => { setActiveTab(tab.key); setCurrentPage(0); }}
                         style={{
                           fontSize: 12, fontWeight: 500,
                           padding: '5px 14px',
@@ -469,11 +473,34 @@ export default function TrackerPage() {
                     No {activeTab === 'all' ? '' : activeTab.replace('_', ' ')} applications.
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {filtered.map(app => (
-                      <ApplicationCard key={app.id} app={app} onStatusChange={handleStatusChange} />
-                    ))}
-                  </div>
+                  <>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {paginated.map(app => (
+                        <ApplicationCard key={app.id} app={app} onStatusChange={handleStatusChange} />
+                      ))}
+                    </div>
+                    {totalPages > 1 && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+                        <button
+                          onClick={() => setCurrentPage(p => p - 1)}
+                          disabled={currentPage === 0}
+                          style={{ fontSize: 13, fontWeight: 500, padding: '6px 16px', borderRadius: 'var(--radius-full)', border: '1px solid var(--line)', background: 'var(--paper)', color: 'var(--ink-2)', cursor: currentPage === 0 ? 'default' : 'pointer', opacity: currentPage === 0 ? 0.4 : 1 }}
+                        >
+                          ← Newer
+                        </button>
+                        <span style={{ fontSize: 12, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
+                          {currentPage + 1} / {totalPages} · {filtered.length} total
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage(p => p + 1)}
+                          disabled={currentPage === totalPages - 1}
+                          style={{ fontSize: 13, fontWeight: 500, padding: '6px 16px', borderRadius: 'var(--radius-full)', border: '1px solid var(--line)', background: 'var(--paper)', color: 'var(--ink-2)', cursor: currentPage === totalPages - 1 ? 'default' : 'pointer', opacity: currentPage === totalPages - 1 ? 0.4 : 1 }}
+                        >
+                          Older →
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             );

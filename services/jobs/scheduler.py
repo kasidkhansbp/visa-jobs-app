@@ -81,8 +81,73 @@ async def _fetch_adzuna(config: JobsConfig) -> None:
 
 _CHUNK_SIZE = 500  # stays well under PostgreSQL's 65535 parameter limit
 
+# ── Title filtering ────────────────────────────────────────────────────────────
+
+_EXACT_TITLES = {t.lower() for t in [
+    "Technical Program Manager",
+    "Senior Technical Program Manager",
+    "Staff Technical Program Manager",
+    "Principal Technical Program Manager",
+    "Engineering Program Manager",
+    "Senior Engineering Program Manager",
+]}
+
+_PHRASE_MATCHES = [t.lower() for t in [
+    "Program Manager",
+    "Programme Manager",
+]]
+
+_EXCLUDE_KEYWORDS = [t.lower() for t in [
+    "Project Manager",
+    "Mechanical",
+    "Electrical",
+    "Construction",
+    "Design",
+    "Fitness",
+    "Nurse",
+    "Sales",
+    "Room",
+    "Driver",
+    "Surveyor",
+    "Planner",
+    "Site Manager",
+    "Trainer",
+    "Commissioning",
+    "Bid Manager",
+    "Commercial",
+    "Contracts",
+    "Risk Manager",
+]]
+
+
+def _is_relevant(title: str) -> bool:
+    """Return True if the job title is a TPM-relevant role."""
+    t = title.lower().strip()
+
+    # Exact match — always include
+    if t in _EXACT_TITLES:
+        return True
+
+    # Phrase match — include unless an exclude keyword is present
+    for phrase in _PHRASE_MATCHES:
+        if phrase in t:
+            for excl in _EXCLUDE_KEYWORDS:
+                if excl in t:
+                    return False
+            return True
+
+    return False
+
 
 async def _store(jobs: list[JobListing]) -> None:
+    if not jobs:
+        return
+
+    # Filter to relevant TPM roles only
+    before = len(jobs)
+    jobs = [j for j in jobs if _is_relevant(j.title)]
+    logger.info("Title filter: %d → %d jobs (removed %d irrelevant titles)", before, len(jobs), before - len(jobs))
+
     if not jobs:
         return
 

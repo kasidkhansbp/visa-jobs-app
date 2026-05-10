@@ -73,11 +73,19 @@ async def _get_weekly_counts(session: AsyncSession) -> dict[str, list[tuple[str,
             WHERE sector IS NOT NULL
               AND is_hidden = false
               AND (
+                -- Tier 1: Exact TPM roles
                 title ILIKE '%technical program manager%'
                 OR title ILIKE '%technical programme manager%'
                 OR title ILIKE '% tpm %'
                 OR title ILIKE 'tpm %'
                 OR title ILIKE '% tpm'
+                -- Tier 2: Closely related roles
+                OR title ILIKE '%program manager%'
+                OR title ILIKE '%programme manager%'
+                OR title ILIKE '%oracle fusion program manager%'
+                OR title ILIKE '%pmo manager%'
+                OR title ILIKE '%head of pmo%'
+                OR title ILIKE '%project director%'
               )
             GROUP BY sector, week
             ORDER BY sector, week ASC

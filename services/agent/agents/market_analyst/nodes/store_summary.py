@@ -40,10 +40,17 @@ async def store_summary(state: MarketAnalystState) -> dict:
         s for s in heatmap_data
         if abs(s["week_on_week_pct"]) > 20 and abs(s["overall_trend_pct"]) < 5
     ]
-    headline_signal = (
-        f"Batch event detected in {batch_events[0]['sector']} — not structural"
-        if batch_events else None
-    )
+    if batch_events:
+        b = batch_events[0]
+        direction = "drop" if b["week_on_week_pct"] < 0 else "spike"
+        pct = abs(b["week_on_week_pct"])
+        headline_signal = (
+            f"{b['sector']} had a large {direction} in job openings this week "
+            f"({pct:.0f}% WoW) but the overall trend is flat — likely roles filled or "
+            f"expired in one go, not a sign the market is {'cooling' if direction == 'drop' else 'overheating'}."
+        )
+    else:
+        headline_signal = None
 
     database_url = os.environ["DATABASE_URL"]
     if database_url.startswith("postgresql://"):

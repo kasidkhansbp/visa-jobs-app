@@ -5,12 +5,12 @@ import { useStories } from '../context/StoriesContext';
 
 const NAV_ITEMS = [
   { path: '/jobs',      label: 'Jobs' },
-  { path: '/sponsors',  label: 'Sponsors' },
-  { path: '/sources',   label: 'Sources' },
-  { path: '/resources', label: 'Resources' },
-  { path: '/cv',        label: 'CV Box' },
-  { path: '/stories',   label: 'Stories' },
   { path: '/insights',  label: 'Market Insights' },
+  { path: '/resources', label: 'Resources' },
+  { path: '/stories',   label: 'Stories' },
+  { path: '/sources',   label: 'Sources' },
+  { path: '/cv',        label: 'CV Box' },
+  { path: '/sponsors',  label: 'Sponsors' },
   { path: '/about',     label: 'About' },
 ];
 

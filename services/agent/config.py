@@ -13,6 +13,7 @@ class AgentConfig(BaseSettings):
     profile_agent_model: str = "claude-haiku-4-5-20251001"
     email_tracker_model: str = "claude-haiku-4-5-20251001"
     company_research_model: str = "claude-haiku-4-5-20251001"
+    market_analyst_model: str = "claude-sonnet-4-6"  # Sonnet for better prose quality
 
     # Gmail OAuth
     gmail_client_id: str = ""

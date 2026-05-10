@@ -413,40 +413,109 @@ export default function MarketInsightsPage() {
       )}
 
       {/* Weekly AI Summary */}
-      {weeklySummary && (
-        <div style={{
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--radius-md)',
-          padding: '24px 28px',
-          background: 'var(--paper)',
-          marginBottom: 40,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="eyebrow" style={{ margin: 0 }}>WEEKLY ANALYST SUMMARY</div>
-              {weeklySummary.headline_sector && (
-                <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 'var(--radius-full)', background: 'var(--verified-wash)', color: 'var(--verified)' }}>
-                  {weeklySummary.headline_sector}
+      {weeklySummary && (() => {
+        const paragraphs = weeklySummary.summary_text
+          .split(/\n\n+/)
+          .map(p => p.trim())
+          .filter(Boolean);
+        const labels = [
+          { text: 'Overall',   color: '#2E3BE6' },
+          { text: 'Movements', color: '#2F7A4F' },
+          { text: 'Advice',    color: '#C0392B' },
+        ];
+
+        return (
+          <div style={{
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--radius-md)',
+            background: 'var(--paper-2)',
+            marginBottom: 40,
+            overflow: 'hidden',
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '16px 24px', borderBottom: '1px solid var(--line)',
+              background: 'var(--paper)', flexWrap: 'wrap', gap: 8,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div className="eyebrow" style={{ margin: 0, color: 'var(--ink)', fontWeight: 700 }}>WEEKLY ANALYST SUMMARY</div>
+                {weeklySummary.headline_sector && (
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 'var(--radius-full)', background: 'var(--verified-wash)', color: 'var(--verified)' }}>
+                    {weeklySummary.headline_sector}
+                  </span>
+                )}
+              </div>
+              <span style={{ fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
+                Week of {weeklySummary.week_start}
+              </span>
+            </div>
+
+            {/* Headline signal callout */}
+            {weeklySummary.headline_signal && (
+              <div style={{
+                padding: '12px 24px',
+                background: 'var(--accent-wash)',
+                borderBottom: '1px solid var(--line)',
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <span style={{ fontSize: 16 }}>⚡</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>
+                  {weeklySummary.headline_signal}
                 </span>
-              )}
+              </div>
+            )}
+
+            {/* 3 labelled paragraphs */}
+            <div style={{ padding: '8px 0' }}>
+              {paragraphs.map((para, i) => (
+                <div key={i} style={{
+                  display: 'grid',
+                  gridTemplateColumns: '80px 1fr',
+                  gap: '0 20px',
+                  padding: '16px 24px',
+                  borderBottom: i < paragraphs.length - 1 ? '1px solid var(--line)' : 'none',
+                  alignItems: 'start',
+                }}>
+                  <div style={{
+                    fontSize: 9, fontWeight: 300, letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    color: labels[i]?.color ?? 'var(--ink-4)',
+                    fontFamily: 'Arial, sans-serif', paddingTop: 3,
+                  }}>
+                    {labels[i]?.text ?? `Part ${i + 1}`}
+                  </div>
+                  <p style={{
+                    fontSize: 16, lineHeight: 1.8,
+                    color: 'var(--ink)', margin: 0,
+                    fontFamily: 'Arial, sans-serif',
+                  }}>
+                    {para}
+                  </p>
+                </div>
+              ))}
             </div>
-            <span style={{ fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
-              Week of {weeklySummary.week_start}
-            </span>
-          </div>
-          {weeklySummary.headline_signal && (
-            <div style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500, marginBottom: 14, fontStyle: 'italic' }}>
-              {weeklySummary.headline_signal}
+
+            {/* Footer — Bodhi attribution */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '12px 24px',
+              borderTop: '1px solid var(--line)',
+              background: 'var(--paper)',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--ink-4)', flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.4"/>
+                <path d="M8 12a4 4 0 018 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                <circle cx="9" cy="10" r="1" fill="currentColor"/>
+                <circle cx="15" cy="10" r="1" fill="currentColor"/>
+              </svg>
+              <span style={{ fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
+                Generated by Bodhi
+              </span>
             </div>
-          )}
-          <p style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--ink-2)', margin: 0, whiteSpace: 'pre-line' }}>
-            {weeklySummary.summary_text}
-          </p>
-          <div style={{ marginTop: 16, fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
-            Generated by {weeklySummary.model}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <div className="eyebrow" style={{ marginBottom: 16 }}>SECTOR HEAT MAP</div>
       <HeatmapTable rows={heatmap} loading={loadingHeatmap} />

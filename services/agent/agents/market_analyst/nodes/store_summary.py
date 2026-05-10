@@ -6,10 +6,11 @@ Uses upsert on week_start so re-running overwrites the existing summary.
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -58,7 +59,7 @@ async def store_summary(state: MarketAnalystState) -> dict:
                  sector_insights, headline_sector, headline_signal, status)
             VALUES
                 (:id, :week_start, :generated_at, :model, :summary_text,
-                 :sector_insights::json, :headline_sector, :headline_signal, 'published')
+                 CAST(:sector_insights AS json), :headline_sector, :headline_signal, 'published')
             ON CONFLICT (week_start)
             DO UPDATE SET
                 generated_at   = EXCLUDED.generated_at,
@@ -69,11 +70,11 @@ async def store_summary(state: MarketAnalystState) -> dict:
                 headline_signal = EXCLUDED.headline_signal
         """), {
             "id": str(uuid.uuid4()),
-            "week_start": week_start,
+            "week_start": date.fromisoformat(week_start),
             "generated_at": datetime.now(timezone.utc),
             "model": config.market_analyst_model,
             "summary_text": summary_text,
-            "sector_insights": str(heatmap_data).replace("'", '"'),
+            "sector_insights": json.dumps(heatmap_data),
             "headline_sector": headline_sector,
             "headline_signal": headline_signal,
         })

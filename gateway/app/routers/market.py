@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from datetime import date
 from collections import defaultdict
+from datetime import date, datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.db.connection import get_session
 from shared.db.models.job import Job
+from shared.db.models.market_weekly_summary import MarketWeeklySummary
 
 router = APIRouter(prefix="/api/market", tags=["market"])
 
@@ -212,3 +213,80 @@ async def get_heatmap(
     # Sort by latest openings descending
     rows.sort(key=lambda r: r.latest_openings, reverse=True)
     return rows
+
+
+# ── Weekly summary models ─────────────────────────────────────────────────────
+
+class WeeklySummaryOut(BaseModel):
+    id: str
+    week_start: str
+    generated_at: datetime
+    model: str
+    summary_text: str
+    sector_insights: list
+    headline_sector: str | None
+    headline_signal: str | None
+
+
+class WeeklySummaryListItem(BaseModel):
+    id: str
+    week_start: str
+    generated_at: datetime
+    headline_sector: str | None
+    headline_signal: str | None
+    summary_preview: str          # first 200 chars of summary_text
+
+
+# ── Weekly summary endpoints ──────────────────────────────────────────────────
+
+@router.get('/summary/latest', response_model=WeeklySummaryOut)
+async def get_latest_summary(
+    session: AsyncSession = Depends(get_session),
+) -> WeeklySummaryOut:
+    """Returns the most recent weekly market summary."""
+    result = await session.execute(
+        select(MarketWeeklySummary)
+        .where(MarketWeeklySummary.status == 'published')
+        .order_by(MarketWeeklySummary.week_start.desc())
+        .limit(1)
+    )
+    summary = result.scalar_one_or_none()
+    if not summary:
+        raise HTTPException(status_code=404, detail='No summary available yet')
+
+    return WeeklySummaryOut(
+        id=str(summary.id),
+        week_start=str(summary.week_start),
+        generated_at=summary.generated_at,
+        model=summary.model,
+        summary_text=summary.summary_text,
+        sector_insights=summary.sector_insights or [],
+        headline_sector=summary.headline_sector,
+        headline_signal=summary.headline_signal,
+    )
+
+
+@router.get('/summary/history', response_model=list[WeeklySummaryListItem])
+async def get_summary_history(
+    session: AsyncSession = Depends(get_session),
+) -> list[WeeklySummaryListItem]:
+    """Returns the last 12 weekly summaries — most recent first."""
+    result = await session.execute(
+        select(MarketWeeklySummary)
+        .where(MarketWeeklySummary.status == 'published')
+        .order_by(MarketWeeklySummary.week_start.desc())
+        .limit(12)
+    )
+    summaries = result.scalars().all()
+
+    return [
+        WeeklySummaryListItem(
+            id=str(s.id),
+            week_start=str(s.week_start),
+            generated_at=s.generated_at,
+            headline_sector=s.headline_sector,
+            headline_signal=s.headline_signal,
+            summary_preview=s.summary_text[:200] + ('...' if len(s.summary_text) > 200 else ''),
+        )
+        for s in summaries
+    ]

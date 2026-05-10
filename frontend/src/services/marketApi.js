@@ -11,3 +11,10 @@ export async function getMarketHeatmap() {
   if (!res.ok) throw new Error('Failed to fetch market heatmap');
   return res.json();
 }
+
+export async function getWeeklySummary() {
+  const res = await fetch(`${BASE}/api/market/summary/latest`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to fetch weekly summary');
+  return res.json();
+}

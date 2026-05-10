@@ -56,7 +56,8 @@ def _get_model(agent: str) -> str:
         "email_tracker": config.email_tracker_model,
         "profile": config.profile_agent_model,
         "company_research": config.company_research_model,
+        "market_analyst": config.market_analyst_model,
     }
     if agent not in model_map:
-        raise ValueError(f"Unknown agent: {agent}. Must be email_tracker | profile | company_research")
+        raise ValueError(f"Unknown agent: {agent}. Must be email_tracker | profile | company_research | market_analyst")
     return model_map[agent]

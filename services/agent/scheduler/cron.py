@@ -16,7 +16,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from ..config import AgentConfig
-from .runner import _run_email_tracker
+from .runner import _run_email_tracker, _run_market_analyst
 
 logger = logging.getLogger(__name__)
 config = AgentConfig()  # type: ignore[call-arg]
@@ -32,7 +32,7 @@ async def _start() -> None:
 
     scheduler.add_job(
         func=_run_email_tracker,
-        trigger=IntervalTrigger(hours=config.email_tracker_interval_hours),
+        trigger=IntervalTrigger(hours=config.email_tracker_interval_hours),  # type: ignore[call-arg]
         id="email_tracker",
         name="Email Tracker Agent",
         max_instances=1,
@@ -40,9 +40,23 @@ async def _start() -> None:
         next_run_time=datetime.now(timezone.utc),  # run immediately on startup
     )
 
+    # Market analyst — every Monday at 6am UTC
+    scheduler.add_job(
+        func=_run_market_analyst,
+        trigger="cron",
+        day_of_week="mon",
+        hour=6,
+        minute=0,
+        timezone="UTC",
+        id="market_analyst",
+        name="Market Analyst Agent",
+        max_instances=1,
+        replace_existing=True,
+    )
+
     scheduler.start()
     logger.info(
-        "Scheduler started — email_tracker runs now then every %d hour(s)",
+        "Scheduler started — email_tracker every %d hour(s), market_analyst every Monday 6am UTC",
         config.email_tracker_interval_hours,
     )
 

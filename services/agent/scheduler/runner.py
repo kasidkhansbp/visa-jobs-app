@@ -8,11 +8,32 @@ from __future__ import annotations
 
 import logging
 
+from datetime import date, timedelta
+
 from shared.db.connection import AsyncSessionLocal
 from ..agents.email_tracker.graph import email_tracker_graph
+from ..agents.market_analyst.graph import market_analyst_graph
 from ..db.queries import get_eligible_gmail_users, mark_gmail_token_invalid
 
 logger = logging.getLogger(__name__)
+
+
+async def _run_market_analyst() -> None:
+    """Generate weekly market summary using Claude."""
+    # week_start = most recent Monday
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    logger.info("market_analyst runner — generating summary for week %s", week_start)
+    try:
+        await market_analyst_graph.ainvoke({
+            "week_start": str(week_start),
+            "heatmap_data": [],
+            "summary_text": "",
+            "stored": False,
+        })
+        logger.info("market_analyst runner — completed for week %s", week_start)
+    except Exception as e:
+        logger.exception("market_analyst runner — failed: %s", e)
 
 
 async def _run_email_tracker() -> None:

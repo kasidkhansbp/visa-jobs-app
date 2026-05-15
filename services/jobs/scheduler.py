@@ -22,15 +22,16 @@ _scheduler = AsyncIOScheduler()
 def start(config: JobsConfig) -> None:
     """Register jobs and start the scheduler. Call once at app startup."""
 
-    _scheduler.add_job(
-        _fetch_reed,
-        trigger="interval",
-        hours=24,
-        args=[config],
-        id="reed_fetch",
-        name="Reed — fetch TPM jobs",
-        replace_existing=True,
-    )
+    # paused: Reed returning 403
+    # _scheduler.add_job(
+    #     _fetch_reed,
+    #     trigger="interval",
+    #     hours=24,
+    #     args=[config],
+    #     id="reed_fetch",
+    #     name="Reed — fetch TPM jobs",
+    #     replace_existing=True,
+    # )
 
     _scheduler.add_job(
         _fetch_adzuna,
@@ -44,7 +45,7 @@ def start(config: JobsConfig) -> None:
 
     _scheduler.start()
     logger.info(
-        "Scheduler started — Reed every 24 h, Adzuna every 23 h"
+        "Scheduler started — Adzuna every 23 h (Reed paused)"
     )
 
 

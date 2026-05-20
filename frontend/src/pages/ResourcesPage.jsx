@@ -1,5 +1,6 @@
 import useSEO from '../hooks/useSEO';
 import PageLayout from '../components/PageLayout';
+import QuestionBank from '../components/QuestionBank';
 
 const GPT_TOOLS = [
   {
@@ -115,7 +116,9 @@ export default function ResourcesPage() {
   useSEO({ title: 'TPM Toolkit', description: 'AI-powered tools and document templates built for Technical Program Managers.' });
   return (
     <PageLayout>
-      <div className="eyebrow" style={{ marginBottom: 10 }}>TPM Toolkit</div>
+      <QuestionBank />
+
+      <div className="eyebrow" style={{ marginBottom: 10, marginTop: 56 }}>TPM Toolkit</div>
       <h1 style={{ margin: '0 0 16px' }}>Tools built for TPMs.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 48 }}>
         A collection of AI-powered tools and document templates to help you write better,

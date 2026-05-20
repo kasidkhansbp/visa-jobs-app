@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -168,12 +168,12 @@ async def update_question(
     )
 
 
-@router.delete("/{question_id}", status_code=204)
+@router.delete("/{question_id}", status_code=204, response_class=Response)
 async def delete_question(
     question_id: str,
     current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
-) -> None:
+) -> Response:
     if current_user.get("email") != ADMIN_EMAIL:
         raise HTTPException(status_code=403, detail="Forbidden")
 
@@ -186,3 +186,4 @@ async def delete_question(
 
     await session.delete(question)
     await session.commit()
+    return Response(status_code=204)

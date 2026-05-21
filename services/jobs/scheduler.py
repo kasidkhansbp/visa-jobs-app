@@ -13,6 +13,8 @@ from .clients.adzuna import AdzunaClient
 from .clients.reed import ReedClient
 from .config import JobsConfig
 from .models.job import JobListing
+from .ingest_sponsors import _match_jobs
+from .classify_sectors import main as classify_sectors
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +80,19 @@ async def _fetch_adzuna(config: JobsConfig) -> None:
         logger.info("Adzuna fetch complete — %d jobs", len(jobs))
     except Exception:
         logger.exception("Adzuna fetch failed")
+        return
+
+    try:
+        await _match_jobs(full_reset=False)
+        logger.info("Sponsor matching complete")
+    except Exception:
+        logger.exception("Sponsor matching failed")
+
+    try:
+        await classify_sectors()
+        logger.info("Sector classification complete")
+    except Exception:
+        logger.exception("Sector classification failed")
 
 
 _CHUNK_SIZE = 500  # stays well under PostgreSQL's 65535 parameter limit

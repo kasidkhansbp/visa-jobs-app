@@ -21,7 +21,7 @@ class AgentConfig(BaseSettings):
     gmail_encryption_key: str = ""          # Fernet key — generate with Fernet.generate_key()
 
     # Comma-separated list of emails allowed to use Gmail feature
-    # e.g. "kasidkhan@gmail.com,user2@gmail.com"
+    # e.g. "kasidkhan@gmail.com"
     gmail_feature_allowlist: str = ""
 
     # Scheduler intervals

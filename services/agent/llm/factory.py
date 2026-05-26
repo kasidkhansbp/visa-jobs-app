@@ -35,6 +35,7 @@ def get_llm(agent: str):
             api_key=SecretStr(config.anthropic_api_key),
             timeout=60,
             stop=None,
+            model_kwargs={"extra_headers": {"anthropic-beta": "prompt-caching-2024-07-31"}},
         )
     elif provider == "openai":
         return ChatOpenAI(  # type: ignore[call-arg]

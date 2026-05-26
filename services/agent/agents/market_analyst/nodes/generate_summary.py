@@ -27,7 +27,11 @@ async def generate_summary(state: MarketAnalystState) -> dict:
     llm = get_llm("market_analyst")
 
     response = await llm.ainvoke([
-        SystemMessage(content=SYSTEM_PROMPT),
+        SystemMessage(content=[{
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }]),
         HumanMessage(content=build_prompt(heatmap_data)),
     ])
 

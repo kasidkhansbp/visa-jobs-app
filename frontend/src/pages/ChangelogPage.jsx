@@ -6,6 +6,36 @@ const PAGE_SIZE = 5;
 
 const ENTRIES = [
   {
+    date: '02 Jun 2026',
+    items: [
+      {
+        title: 'Creator page',
+        tag: 'NEW',
+        description: 'New /creator page with the builder\'s bio, background, and links — accessible from the footer. About page repurposed as a step-by-step guide to using TPMguild.',
+      },
+      {
+        title: 'About page — how to use TPMguild',
+        tag: 'IMPROVED',
+        description: 'About page now walks through the four steps of using TPMguild: build your CV Box, write your stories, prepare your answers, and apply to jobs.',
+      },
+      {
+        title: 'Nav — Sources removed',
+        tag: 'IMPROVED',
+        description: 'Sources link removed from the top navigation to reduce clutter. The page remains accessible via the footer.',
+      },
+      {
+        title: 'Job logos — unified blue',
+        tag: 'IMPROVED',
+        description: 'All company logo tiles in job listings now use a single bright blue colour matching the search button, replacing the previous multi-colour rotation.',
+      },
+      {
+        title: 'TPMguild logo — blue variant',
+        tag: 'IMPROVED',
+        description: 'The nav logo mark now uses the accent blue background, consistent with the site\'s primary colour.',
+      },
+    ],
+  },
+  {
     date: '10 May 2026',
     items: [
       {

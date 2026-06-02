@@ -21,7 +21,7 @@ export default function Hero({ initialTitle = '', initialLocation = '', onSearch
         <div className="divider"/>
         <div className="eyebrow">Updated daily · sponsor-verified roles</div>
       </div>
-      <h1>Jobs that will sponsor<br /><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><em>your visa.</em><Globe size={52} /></span></h1>
+      <h1>Jobs that will sponsor<br /><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><em style={{ color: 'var(--accent)' }}>your visa.</em><Globe size={52} /></span></h1>
       <p className="sub">
         Every listing cross-referenced against the UK Home Office register of licensed
         Skilled Worker sponsors. No dead ends.

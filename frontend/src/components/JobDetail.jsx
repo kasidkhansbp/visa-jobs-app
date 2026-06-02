@@ -1,6 +1,5 @@
 import { Icon } from './Icon';
 
-const LOGO_TONES = { reed: 'warm', adzuna: 'indigo' };
 
 function formatPosted(postedAt) {
   if (!postedAt) return null;
@@ -27,12 +26,11 @@ export default function JobDetail({ job }) {
   if (!job) return null;
 
   const logo = job.employer_name?.[0]?.toUpperCase() ?? '?';
-  const logoTone = LOGO_TONES[job.source] ?? 'indigo';
 
   return (
     <div className="detail">
       <div className="head">
-        <div className={`logo ${logoTone}`}>{logo}</div>
+        <div className="logo azure">{logo}</div>
         <div>
           <h2>{job.title}</h2>
           <div className="company">{job.employer_name} · {job.location}</div>

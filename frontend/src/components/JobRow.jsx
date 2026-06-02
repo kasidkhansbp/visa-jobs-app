@@ -2,11 +2,6 @@ import { useState } from 'react';
 import Chip from './Chip';
 import { hideJob, unhideJob } from '../services/jobsApi';
 
-const TONES = ['indigo', 'warm', 'brick', 'gold', 'slate', 'plum', 'teal', 'rust', 'azure'];
-function toneFor(name) {
-  const code = (name ?? '').charCodeAt(0) || 0;
-  return TONES[code % TONES.length];
-}
 
 function formatSalary(min, max) {
   if (!min && !max) return null;
@@ -31,7 +26,6 @@ function formatPosted(postedAt) {
 export default function JobRow({ job, active, onClick, filters = {}, onFilterChange, isAdmin = false, onHidden, onUnhidden }) {
   const [hiding, setHiding] = useState(false);
   const logo = job.employer_name?.[0]?.toUpperCase() ?? '?';
-  const logoTone = toneFor(job.employer_name);
   const salary = formatSalary(job.salary_min, job.salary_max);
   const posted = formatPosted(job.posted_at);
   const stale = job.posted_at
@@ -40,7 +34,7 @@ export default function JobRow({ job, active, onClick, filters = {}, onFilterCha
 
   return (
     <div className={`jobrow ${active ? 'active' : ''}`} onClick={onClick}>
-      <div className={`logo ${logoTone}`}>{logo}</div>
+      <div className="logo azure">{logo}</div>
       <div>
         <h3>{job.title}</h3>
         <div className="company">

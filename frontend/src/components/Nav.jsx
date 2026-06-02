@@ -38,7 +38,7 @@ export default function Nav() {
     <>
       <header className="nav">
         <Link className="brand" to="/jobs" onClick={close}>
-          <img src="/logo-mark.svg" alt="TPMguild"/>
+          <img src="/logo-mark-blue.svg" alt="TPMguild"/>
           <span>TPMguild</span>
         </Link>
 

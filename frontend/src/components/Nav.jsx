@@ -8,8 +8,7 @@ const NAV_ITEMS = [
   { path: '/insights',  label: 'Market Insights' },
   { path: '/resources', label: 'Resources' },
   { path: '/stories',   label: 'Stories' },
-  { path: '/sources',   label: 'Sources' },
-  { path: '/cv',        label: 'CV Box' },
+{ path: '/cv',        label: 'CV Box' },
   { path: '/sponsors',  label: 'Sponsors' },
   { path: '/about',     label: 'About' },
 ];

@@ -229,6 +229,7 @@ body { margin: 0; }
 .jobrow .logo.plum    { background: #5a2d6e; }
 .jobrow .logo.teal    { background: #1a5c5a; }
 .jobrow .logo.rust    { background: #8b3a1e; }
+.jobrow .logo.azure   { background: #2E3BE6; }
 .jobrow h3 {
   font-family: var(--font-display); font-size: 19px; line-height: 1.25;
   letter-spacing: -0.005em; font-weight: 600; margin: 0 0 2px;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Chip from './Chip';
 import { hideJob, unhideJob } from '../services/jobsApi';
 
-const TONES = ['indigo', 'warm', 'brick', 'gold', 'slate', 'plum', 'teal', 'rust'];
+const TONES = ['indigo', 'warm', 'brick', 'gold', 'slate', 'plum', 'teal', 'rust', 'azure'];
 function toneFor(name) {
   const code = (name ?? '').charCodeAt(0) || 0;
   return TONES[code % TONES.length];

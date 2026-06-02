@@ -14,6 +14,7 @@ import ContactPage from './pages/ContactPage';
 import ResourcesPage from './pages/ResourcesPage';
 import SourcesSection from './components/SourcesSection';
 import AboutPage from './pages/AboutPage';
+import CreatorPage from './pages/CreatorPage';
 import CvBoxPage from './pages/CvBoxPage';
 import CvSharePage from './pages/CvSharePage';
 import AdminPage from './pages/AdminPage';
@@ -70,6 +71,7 @@ function AppInner() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/saved" element={<SavedView />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/creator" element={<CreatorPage />} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
         <Route path="/cv" element={<CvBoxPage />} />
         <Route path="/cv/share/:username/:token" element={<CvSharePage />} />

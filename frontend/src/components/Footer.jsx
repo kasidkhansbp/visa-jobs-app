@@ -40,6 +40,7 @@ export default function Footer() {
             <li><Link to="/privacy">Privacy</Link></li>
             <li><Link to="/terms">Terms</Link></li>
             <li><Link to="/changelog">Changelog</Link></li>
+            <li><Link to="/creator">Creator</Link></li>
           </ul>
         </div>
       </div>

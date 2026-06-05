@@ -28,7 +28,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from shared.db.models.job import Job
-from services.jobs.config import JobsConfig
+from .config import JobsConfig
 
 logging.basicConfig(
     level=logging.INFO,

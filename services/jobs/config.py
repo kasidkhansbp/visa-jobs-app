@@ -4,11 +4,14 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-_ENV_FILE = Path(__file__).parent / ".env"
+_ROOT_ENV = Path(__file__).parent.parent.parent / ".env"
+_SERVICE_ENV = Path(__file__).parent / ".env"
 
 
 class JobsConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_file=_ENV_FILE, extra="ignore")
+    model_config = SettingsConfigDict(env_file=[str(_ROOT_ENV), str(_SERVICE_ENV)], extra="ignore")
+
+    database_url: str
 
     # API credentials
     reed_api_key: str

@@ -22,13 +22,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from shared.db.models.job import Job
+from services.jobs.config import JobsConfig
 
 logging.basicConfig(
     level=logging.INFO,
@@ -125,7 +125,7 @@ def classify(title: str, description: str) -> str:
 
 
 async def main() -> None:
-    database_url = os.environ["DATABASE_URL"]
+    database_url = JobsConfig().database_url
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 

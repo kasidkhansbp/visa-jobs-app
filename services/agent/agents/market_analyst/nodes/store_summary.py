@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import uuid
 from datetime import date, datetime, timezone
 
@@ -52,7 +51,7 @@ async def store_summary(state: MarketAnalystState) -> dict:
     else:
         headline_signal = None
 
-    database_url = os.environ["DATABASE_URL"]
+    database_url = config.database_url
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 

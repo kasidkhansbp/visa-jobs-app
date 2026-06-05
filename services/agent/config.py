@@ -1,10 +1,18 @@
 """
 Environment variables and model selection for the agent service.
 """
-from pydantic_settings import BaseSettings
+from __future__ import annotations
+
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_SERVICE_ENV = Path(__file__).parent / ".env"
 
 
 class AgentConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_file=str(_SERVICE_ENV), extra="ignore")
+
     database_url: str
     llm_provider: str = "anthropic"         # anthropic | openai | google
     anthropic_api_key: str = ""
@@ -27,9 +35,6 @@ class AgentConfig(BaseSettings):
     # Scheduler intervals
     profile_agent_interval_hours: int = 6
     email_tracker_interval_hours: int = 1
-
-    class Config:
-        env_file = ".env"
 
     def is_gmail_allowed(self, email: str) -> bool:
         allowed = [e.strip() for e in self.gmail_feature_allowlist.split(",") if e.strip()]

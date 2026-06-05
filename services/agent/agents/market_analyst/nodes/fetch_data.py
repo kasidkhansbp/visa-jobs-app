@@ -7,18 +7,19 @@ Same query as GET /api/market/heatmap — all sectors with full weekly data.
 from __future__ import annotations
 
 import logging
-import os
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from ....agents.market_analyst.state import MarketAnalystState
+from ....config import AgentConfig
 
 logger = logging.getLogger(__name__)
+config = AgentConfig()  # type: ignore[call-arg]
 
 
 async def fetch_data(state: MarketAnalystState) -> dict:
-    database_url = os.environ["DATABASE_URL"]
+    database_url = config.database_url
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 

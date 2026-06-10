@@ -14,7 +14,7 @@ import SourcesSection from '../components/SourcesSection';
 const PAGE_SIZE = 50;
 
 const DEFAULT_FILTERS = {
-  title: 'Technical program manager',
+  title: 'program',
   location: 'London',
   source: '',
   posted_days: 30,

@@ -10,6 +10,7 @@ function StatCard({ label, value, sub }) {
   return (
     <div style={{
       border: '1px solid var(--line)',
+      borderTop: '3px solid var(--accent)',
       borderRadius: 'var(--radius-md)',
       padding: '12px 16px',
       background: 'var(--paper)',
@@ -30,7 +31,7 @@ function StatCard({ label, value, sub }) {
 function Section({ title, children }) {
   return (
     <div style={{ marginBottom: 40 }}>
-      <div className="eyebrow" style={{ marginBottom: 16 }}>{title}</div>
+      <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--accent)' }}>{title}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
         {children}
       </div>
@@ -77,7 +78,7 @@ export default function AdminPage() {
 
   return (
     <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
-      <div className="eyebrow" style={{ marginBottom: 10 }}>ADMIN</div>
+      <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>ADMIN</div>
       <h1 style={{ margin: '0 0 48px' }}>Site stats</h1>
 
       <Section title="Users">
@@ -103,7 +104,7 @@ export default function AdminPage() {
       </Section>
 
       <div style={{ marginTop: 8 }}>
-        <div className="eyebrow" style={{ marginBottom: 16 }}>Registered users</div>
+        <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--accent)' }}>Registered users</div>
         <div style={{ border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>

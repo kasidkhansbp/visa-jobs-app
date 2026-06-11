@@ -425,7 +425,7 @@ function UploadSection({ onUploaded, pushToast }) {
       border: '1px solid var(--line)', borderRadius: 'var(--radius-md)',
       padding: '24px', background: 'var(--paper)', marginBottom: 32,
     }}>
-      <div className="eyebrow" style={{ marginBottom: 16 }}>Upload CV</div>
+      <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--accent)' }}>Upload CV</div>
       <form onSubmit={handleSubmit}>
         {/* Drop zone */}
         <div
@@ -701,8 +701,8 @@ export default function CvBoxPage() {
     <>
       <ToastStack toasts={toasts} dismiss={dismiss} />
       <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
-        <div className="eyebrow" style={{ marginBottom: 10 }}>CV BOX</div>
-        <h1 style={{ margin: '0 0 8px' }}>One career, many CVs.</h1>
+        <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>CV BOX</div>
+        <h1 style={{ margin: '0 0 8px' }}>One <span style={{ color: 'var(--accent)' }}>career</span>, many <span style={{ color: 'var(--accent)' }}>CVs</span>.</h1>
         <p style={{ fontSize: 15, color: 'var(--ink-3)', marginBottom: 40 }}>
           A single CV rarely wins across different industries. Store tailored versions here, one per role type, and share the right one with every recruiter.
         </p>
@@ -718,7 +718,7 @@ export default function CvBoxPage() {
             ) : (
               <>
                 <div style={{ fontSize: 12, color: 'var(--ink-4)', marginBottom: 10 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{cvs.length}</span>{' '}
+                  <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{cvs.length}</span>{' '}
                   {cvs.length === 1 ? 'version' : 'versions'} · {formatSize(totalSize)} total
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

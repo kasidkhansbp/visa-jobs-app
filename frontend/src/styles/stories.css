@@ -263,7 +263,7 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-4);
+  color: var(--accent);
 }
 .st-prompt-help {
   font-family: var(--font-body);

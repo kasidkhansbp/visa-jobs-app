@@ -34,7 +34,7 @@ export default function AboutPage() {
   return (
     <PageLayout>
 
-      <div className="eyebrow" style={{ marginBottom: 10 }}>HOW TO USE TPMGUILD</div>
+      <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>HOW TO USE TPMGUILD</div>
       <h1 style={{ margin: '0 0 16px', fontSize: 36 }}>Your job search, step by step.</h1>
       <p style={{ fontSize: 16, color: 'var(--ink-3)', maxWidth: 580, margin: '0 0 56px', lineHeight: 1.7 }}>
         TPMguild is a job board, a CV tool, a story editor, and an interview prep resource — built for UK TPM roles that will sponsor your visa. Here is how to use all of it.

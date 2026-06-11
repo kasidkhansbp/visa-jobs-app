@@ -17,7 +17,7 @@ const DEFAULT_FILTERS = {
   title: 'program',
   location: 'London',
   source: '',
-  posted_days: 30,
+  posted_days: null,
   contract_type: '',
   job_type: '',
   sponsor_verified: false,
@@ -153,7 +153,7 @@ export default function JobsPage() {
           </div>
           {!isLoading && !isError && (
             <div className="count-line">
-              <b>{allJobs.length}</b> sponsor-verified results
+              <b style={{ color: 'var(--accent)' }}>{allJobs.length}</b> results
             </div>
           )}
           <ActiveFilters filters={filters} onChange={handleFilterChange}/>

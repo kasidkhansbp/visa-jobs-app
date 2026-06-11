@@ -149,6 +149,7 @@ function HeadlineCard({ label, value, sub, subColor, delay = 0 }) {
   return (
     <div className="mi-rise" style={{
       '--mi-d': `${delay}ms`,
+      borderTop: '3px solid var(--accent)',
       border: '1px solid var(--line)',
       borderRadius: 'var(--radius-md)',
       padding: '20px 24px',
@@ -391,9 +392,9 @@ export default function MarketInsightsPage() {
   return (
     <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
       <style>{ANIM_STYLES}</style>
-      <div className="eyebrow" style={{ marginBottom: 10 }}>MARKET INSIGHTS</div>
+      <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>MARKET INSIGHTS</div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
-        <h1 style={{ margin: 0 }}>London TPM job market.</h1>
+        <h1 style={{ margin: 0 }}>London <span style={{ color: 'var(--accent)' }}>TPM job</span> market.</h1>
         {summary?.updated_at && (
           <div style={{ fontSize: 12, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)' }}>
             Updated weekly · {summary.updated_at}
@@ -517,7 +518,7 @@ export default function MarketInsightsPage() {
         );
       })()}
 
-      <div className="eyebrow" style={{ marginBottom: 16 }}>SECTOR HEAT MAP</div>
+      <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--accent)' }}>SECTOR HEAT MAP</div>
       <HeatmapTable rows={heatmap} loading={loadingHeatmap} />
     </div>
   );

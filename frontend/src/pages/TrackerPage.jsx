@@ -271,7 +271,7 @@ export default function TrackerPage() {
   if (!user) {
     return (
       <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
-        <div className="eyebrow" style={{ marginBottom: 10 }}>JOB TRACKER</div>
+        <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>JOB TRACKER</div>
         <h1 style={{ margin: '0 0 8px' }}>Track your applications.</h1>
         <p style={{ fontSize: 15, color: 'var(--ink-3)', marginBottom: 40 }}>
           Sign in to connect Gmail and automatically track your job applications.
@@ -290,7 +290,7 @@ export default function TrackerPage() {
 
   return (
     <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>
-      <div className="eyebrow" style={{ marginBottom: 10 }}>JOB TRACKER</div>
+      <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--accent)' }}>JOB TRACKER</div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
         <h1 style={{ margin: 0 }}>Your applications.</h1>
         {gmailStatus?.connected && (

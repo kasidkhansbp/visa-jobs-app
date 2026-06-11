@@ -221,7 +221,7 @@ export default function QuestionBank() {
       <div className="rs-head">
         <div>
           <div className="eyebrow" style={{ marginBottom: 'var(--s-4)' }}>Interview Prep</div>
-          <h2>What they <em>actually</em> ask.</h2>
+          <h2>What they <em style={{ color: 'var(--accent)' }}>actually</em> ask.</h2>
           <p>A question bank for UK TPM interviews — five rounds, with answers written the way a senior TPM would answer them in the room.</p>
         </div>
         <div className="rs-head-meta">
@@ -278,7 +278,7 @@ export default function QuestionBank() {
             <>
               <header className="rs-section-head" key={active}>
                 <div className="rs-section-num">Round {section.num} · {section.label.toUpperCase()}</div>
-                <h3>{section.label}</h3>
+                <h3 style={{ color: 'var(--accent)' }}>{section.label}</h3>
                 <p>{section.desc}</p>
               </header>
               {filtered.items.length === 0 ? (

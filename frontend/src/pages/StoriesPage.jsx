@@ -339,7 +339,7 @@ function StoriesView() {
       {/* Page header */}
       <div style={{ marginBottom: 40 }}>
         <div className="eyebrow" style={{ marginBottom: 10 }}>STORIES</div>
-        <h1 style={{ margin: '0 0 8px' }}>Career stories, sharpened.</h1>
+        <h1 style={{ margin: '0 0 8px' }}>Career <span style={{ color: 'var(--accent)' }}>stories</span>, sharpened.</h1>
         <p style={{ fontSize: 15, color: 'var(--ink-3)', margin: 0 }}>
           Capture the messy real version, then break it into the beats interviewers ask for.
         </p>

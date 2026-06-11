@@ -118,14 +118,14 @@ export default function ResourcesPage() {
     <PageLayout>
       <QuestionBank />
 
-      <div className="eyebrow" style={{ marginBottom: 10, marginTop: 56 }}>TPM Toolkit</div>
+      <div className="eyebrow" style={{ marginBottom: 10, marginTop: 56, color: 'var(--accent)' }}>TPM Toolkit</div>
       <h1 style={{ margin: '0 0 16px' }}>Tools built for TPMs.</h1>
       <p style={{ fontSize: 17, color: 'var(--ink-3)', maxWidth: 600, marginBottom: 48 }}>
         A collection of AI-powered tools and document templates to help you write better,
         communicate more clearly, and move faster.
       </p>
 
-      <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
+      <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
         AI Assistants
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
@@ -134,7 +134,7 @@ export default function ResourcesPage() {
         ))}
       </div>
 
-      <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
+      <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
         Document Templates
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>

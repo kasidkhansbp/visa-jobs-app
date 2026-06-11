@@ -15,7 +15,7 @@ export default function SponsorsPage() {
 
   return (
     <div className="sponsors-page-wrap">
-      <div className="eyebrow sr-anim-rise" style={{ marginBottom: 10, '--sr-d': '0ms' }}>Sponsor Register</div>
+      <div className="eyebrow sr-anim-rise" style={{ marginBottom: 10, '--sr-d': '0ms', color: 'var(--accent)' }}>Sponsor Register</div>
       <h1 className="sr-anim-rise" style={{ margin: '0 0 12px', '--sr-d': '80ms' }}>Every licensed UK visa sponsor.</h1>
       <p className="sr-anim-fade" style={{ fontSize: 16, color: 'var(--ink-3)', maxWidth: 640, marginBottom: 32, '--sr-d': '180ms' }}>
         The UK Home Office register of licensed Skilled Worker sponsors, refreshed monthly

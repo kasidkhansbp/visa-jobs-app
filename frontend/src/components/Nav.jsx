@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { path: '/resources', label: 'Resources' },
   { path: '/stories',   label: 'Stories' },
 { path: '/cv',        label: 'CV Box' },
-  { path: '/recruiter', label: 'Recruiter' },
   { path: '/sponsors',  label: 'Sponsors' },
   { path: '/about',     label: 'About' },
 ];
@@ -49,6 +48,7 @@ export default function Nav() {
             <Link key={i.path} to={i.path} className={isActive(i.path) ? 'active' : ''}>{i.label}</Link>
           ))}
           {user && <Link to="/tracker" className={pathname === '/tracker' ? 'active' : ''}>Tracker</Link>}
+          {user?.email === 'kasidkhan@gmail.com' && <Link to="/recruiter" className={pathname === '/recruiter' ? 'active' : ''}>Recruiter</Link>}
           {user?.email === 'kasidkhan@gmail.com' && <Link to="/admin" className={pathname === '/admin' ? 'active' : ''}>Admin</Link>}
         </nav>
 
@@ -105,6 +105,9 @@ export default function Nav() {
           ))}
           {user && (
             <Link to="/tracker" onClick={close} style={{ padding: '12px 24px', fontSize: 16, fontWeight: 500, color: pathname === '/tracker' ? 'var(--ink)' : 'var(--ink-2)', textDecoration: 'none', borderBottom: '1px solid var(--line)' }}>Tracker</Link>
+          )}
+          {user?.email === 'kasidkhan@gmail.com' && (
+            <Link to="/recruiter" onClick={close} style={{ padding: '12px 24px', fontSize: 16, fontWeight: 500, color: pathname === '/recruiter' ? 'var(--ink)' : 'var(--ink-2)', textDecoration: 'none', borderBottom: '1px solid var(--line)' }}>Recruiter</Link>
           )}
           {user?.email === 'kasidkhan@gmail.com' && (
             <Link to="/admin" onClick={close} style={{ padding: '12px 24px', fontSize: 16, fontWeight: 500, color: pathname === '/admin' ? 'var(--ink)' : 'var(--ink-2)', textDecoration: 'none', borderBottom: '1px solid var(--line)' }}>Admin</Link>

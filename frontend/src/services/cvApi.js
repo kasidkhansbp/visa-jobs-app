@@ -95,13 +95,13 @@ export async function setPrimary(cvId) {
 }
 
 export async function listRecruiterCvs() {
-  const res = await fetch(`${BASE}/public/recruiter/cvs`);
+  const res = await fetch(`${BASE}/public/recruiter/cvs`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch recruiter CVs');
   return res.json();
 }
 
 export async function downloadRecruiterCv(cvId, filename) {
-  const res = await fetch(`${BASE}/public/recruiter/cv/${cvId}/download`);
+  const res = await fetch(`${BASE}/public/recruiter/cv/${cvId}/download`, { credentials: 'include' });
   if (!res.ok) throw new Error('Download failed');
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);

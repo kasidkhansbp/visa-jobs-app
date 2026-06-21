@@ -13,9 +13,12 @@ from shared.db.connection import get_session
 from shared.db.models.cv_file import CvFile
 from shared.db.models.cv_share import CvShare
 from shared.db.models.user import User
+from ..auth import get_current_user
 from ..storage import download_file
 
 router = APIRouter(prefix="/public", tags=["public"])
+
+RECRUITER_EMAILS = {"kasidkhan@gmail.com"}
 
 
 class PublicCvShareOut(BaseModel):
@@ -70,8 +73,11 @@ class RecruiterCvOut(BaseModel):
 
 @router.get("/recruiter/cvs", response_model=list[RecruiterCvOut])
 async def list_recruiter_cvs(
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[RecruiterCvOut]:
+    if current_user.get("email") not in RECRUITER_EMAILS:
+        raise HTTPException(status_code=403, detail="Forbidden")
     result = await session.execute(
         select(CvFile, User.name)
         .join(User, User.id == CvFile.user_id)
@@ -94,8 +100,11 @@ async def list_recruiter_cvs(
 @router.get("/recruiter/cv/{cv_id}/download")
 async def download_recruiter_cv(
     cv_id: str,
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
+    if current_user.get("email") not in RECRUITER_EMAILS:
+        raise HTTPException(status_code=403, detail="Forbidden")
     result = await session.execute(
         select(CvFile).where(
             CvFile.id == uuid.UUID(cv_id),

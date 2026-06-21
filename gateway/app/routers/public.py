@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -50,6 +51,60 @@ async def download_shared_cv(
     share.view_count += 1
     share.last_viewed_at = datetime.now(timezone.utc)
     await session.commit()
+
+    data = download_file(cv.storage_key)
+    return Response(
+        content=data,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{cv.filename}"'},
+    )
+
+
+class RecruiterCvOut(BaseModel):
+    id: str
+    label: str
+    owner_name: str
+    file_size: int
+    uploaded_at: datetime
+
+
+@router.get("/recruiter/cvs", response_model=list[RecruiterCvOut])
+async def list_recruiter_cvs(
+    session: AsyncSession = Depends(get_session),
+) -> list[RecruiterCvOut]:
+    result = await session.execute(
+        select(CvFile, User.name)
+        .join(User, User.id == CvFile.user_id)
+        .where(CvFile.is_primary.is_(True))
+        .order_by(CvFile.uploaded_at.desc())
+    )
+    rows = result.all()
+    return [
+        RecruiterCvOut(
+            id=str(cv.id),
+            label=cv.label,
+            owner_name=name,
+            file_size=cv.file_size,
+            uploaded_at=cv.uploaded_at,
+        )
+        for cv, name in rows
+    ]
+
+
+@router.get("/recruiter/cv/{cv_id}/download")
+async def download_recruiter_cv(
+    cv_id: str,
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    result = await session.execute(
+        select(CvFile).where(
+            CvFile.id == uuid.UUID(cv_id),
+            CvFile.is_primary.is_(True),
+        )
+    )
+    cv = result.scalar_one_or_none()
+    if cv is None:
+        raise HTTPException(status_code=404, detail="CV not found")
 
     data = download_file(cv.storage_key)
     return Response(

@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import Response
 from pydantic import BaseModel
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shared.db.connection import get_session
@@ -30,6 +30,7 @@ class CvFileOut(BaseModel):
     filename: str
     file_size: int
     uploaded_at: datetime
+    is_primary: bool
 
 
 class CvShareOut(BaseModel):
@@ -58,6 +59,7 @@ async def list_cvs(
             filename=cv.filename,
             file_size=cv.file_size,
             uploaded_at=cv.uploaded_at,
+            is_primary=cv.is_primary,
         )
         for cv in cvs
     ]
@@ -102,6 +104,7 @@ async def upload_cv(
         filename=cv.filename,
         file_size=cv.file_size,
         uploaded_at=cv.uploaded_at,
+        is_primary=cv.is_primary,
     )
 
 
@@ -157,6 +160,45 @@ async def rename_cv(
         filename=cv.filename,
         file_size=cv.file_size,
         uploaded_at=cv.uploaded_at,
+        is_primary=cv.is_primary,
+    )
+
+
+@router.patch("/{cv_id}/primary", response_model=CvFileOut)
+async def set_primary(
+    cv_id: str,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> CvFileOut:
+    user_id = uuid.UUID(current_user["sub"])
+
+    result = await session.execute(
+        select(CvFile).where(
+            CvFile.id == uuid.UUID(cv_id),
+            CvFile.user_id == user_id,
+        )
+    )
+    cv = result.scalar_one_or_none()
+    if cv is None:
+        raise HTTPException(status_code=404, detail="CV not found")
+
+    await session.execute(
+        update(CvFile)
+        .where(CvFile.user_id == user_id)
+        .values(is_primary=False)
+    )
+
+    cv.is_primary = True
+    await session.commit()
+    await session.refresh(cv)
+
+    return CvFileOut(
+        id=str(cv.id),
+        label=cv.label,
+        filename=cv.filename,
+        file_size=cv.file_size,
+        uploaded_at=cv.uploaded_at,
+        is_primary=cv.is_primary,
     )
 
 

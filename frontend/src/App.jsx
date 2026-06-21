@@ -17,6 +17,7 @@ import AboutPage from './pages/AboutPage';
 import CreatorPage from './pages/CreatorPage';
 import CvBoxPage from './pages/CvBoxPage';
 import CvSharePage from './pages/CvSharePage';
+import RecruiterPage from './pages/RecruiterPage';
 import AdminPage from './pages/AdminPage';
 import TrackerPage from './pages/TrackerPage';
 import TermsPage from './pages/TermsPage';
@@ -75,6 +76,7 @@ function AppInner() {
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
         <Route path="/cv" element={<CvBoxPage />} />
         <Route path="/cv/share/:username/:token" element={<CvSharePage />} />
+        <Route path="/recruiter" element={<RecruiterPage />} />
         <Route path="/changelog" element={<ChangelogPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/tracker" element={<TrackerPage />} />

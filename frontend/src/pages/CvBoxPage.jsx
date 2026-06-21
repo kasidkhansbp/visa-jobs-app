@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 
-import { listCvs, uploadCv, downloadCv, deleteCv, renameCv, createShare, listShares, revokeShare } from '../services/cvApi';
+import { listCvs, uploadCv, downloadCv, deleteCv, renameCv, createShare, listShares, revokeShare, setPrimary } from '../services/cvApi';
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -208,11 +208,12 @@ function ShareRow({ share, onRevoke }) {
   );
 }
 
-function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
+function CvCard({ cv, onDelete, onDownload, onRenamed, onSetPrimary, pushToast }) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [settingPrimary, setSettingPrimary] = useState(false);
   const [shares, setShares] = useState([]);
   const [loadingShares, setLoadingShares] = useState(true);
   const [showShares, setShowShares] = useState(false);
@@ -229,6 +230,16 @@ function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
     if (!confirming) { setConfirming(true); return; }
     setDeleting(true);
     await onDelete(cv.id);
+  }
+
+  async function handleSetPrimary() {
+    if (cv.is_primary) return;
+    setSettingPrimary(true);
+    try {
+      await onSetPrimary(cv.id);
+    } finally {
+      setSettingPrimary(false);
+    }
   }
 
   async function handleDownload() {
@@ -288,6 +299,27 @@ function CvCard({ cv, onDelete, onDownload, onRenamed, pushToast }) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+          <button
+            onClick={handleSetPrimary}
+            disabled={cv.is_primary || settingPrimary}
+            style={{
+              fontSize: 12, fontWeight: 500, padding: '5px 12px',
+              borderRadius: 'var(--radius-full)', border: '1px solid',
+              borderColor: cv.is_primary ? 'var(--verified)' : 'var(--line)',
+              color: cv.is_primary ? 'var(--verified)' : 'var(--ink-2)',
+              background: cv.is_primary ? 'var(--verified-wash)' : 'var(--paper)',
+              cursor: cv.is_primary ? 'default' : 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              {cv.is_primary
+                ? <path d="M3 8l4 4 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                : <path d="M8 1l2.2 4.6L15 6.3l-3.5 3.5.8 4.9L8 12.5 3.7 14.7l.8-4.9L1 6.3l4.8-.7L8 1z" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+              }
+            </svg>
+            {settingPrimary ? 'Setting…' : cv.is_primary ? 'Primary' : 'Set primary'}
+          </button>
           <button
             onClick={handleDownload}
             disabled={downloading}
@@ -693,6 +725,16 @@ export default function CvBoxPage() {
     pushToast(`Renamed to "${newLabel}"`);
   }
 
+  async function handleSetPrimary(id) {
+    try {
+      await setPrimary(id);
+      setCvs(prev => prev.map(c => ({ ...c, is_primary: c.id === id })));
+      pushToast('Primary CV updated');
+    } catch {
+      pushToast('Failed to set primary CV', 'error');
+    }
+  }
+
   const totalSize = cvs.reduce((sum, c) => sum + c.file_size, 0);
 
   if (user === undefined) return null; // auth still loading
@@ -729,6 +771,7 @@ export default function CvBoxPage() {
                       onDelete={handleDelete}
                       onDownload={handleDownload}
                       onRenamed={handleRenamed}
+                      onSetPrimary={handleSetPrimary}
                       pushToast={pushToast}
                     />
                   ))}

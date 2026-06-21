@@ -85,6 +85,33 @@ export async function getShareInfo(username, token) {
   return res.json();
 }
 
+export async function setPrimary(cvId) {
+  const res = await fetch(`${BASE}/api/cv/${cvId}/primary`, {
+    method: 'PATCH',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to set primary CV');
+  return res.json();
+}
+
+export async function listRecruiterCvs() {
+  const res = await fetch(`${BASE}/public/recruiter/cvs`);
+  if (!res.ok) throw new Error('Failed to fetch recruiter CVs');
+  return res.json();
+}
+
+export async function downloadRecruiterCv(cvId, filename) {
+  const res = await fetch(`${BASE}/public/recruiter/cv/${cvId}/download`);
+  if (!res.ok) throw new Error('Download failed');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export async function getAdminStats() {
   const res = await fetch(`${BASE}/api/admin/stats`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch stats');

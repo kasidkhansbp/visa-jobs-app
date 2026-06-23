@@ -24,6 +24,7 @@ import TermsPage from './pages/TermsPage';
 import MarketInsightsPage from './pages/MarketInsightsPage';
 import StoriesPage from './pages/StoriesPage';
 import ChangelogPage from './pages/ChangelogPage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function SavedView() {
@@ -82,6 +83,7 @@ function AppInner() {
         <Route path="/tracker" element={<TrackerPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/stories" element={<StoriesPage />} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/insights" element={<ProtectedRoute><MarketInsightsPage /></ProtectedRoute>} />
       </Routes>
       <Footer />

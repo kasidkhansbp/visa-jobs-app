@@ -47,6 +47,7 @@ export default function Nav() {
           {NAV_ITEMS.map(i => (
             <Link key={i.path} to={i.path} className={isActive(i.path) ? 'active' : ''}>{i.label}</Link>
           ))}
+          {user && <Link to="/profile" className={pathname === '/profile' ? 'active' : ''}>Profile</Link>}
           {user && <Link to="/tracker" className={pathname === '/tracker' ? 'active' : ''}>Tracker</Link>}
           {user?.email === 'kasidkhan@gmail.com' && <Link to="/recruiter" className={pathname === '/recruiter' ? 'active' : ''}>Recruiter</Link>}
           {user?.email === 'kasidkhan@gmail.com' && <Link to="/admin" className={pathname === '/admin' ? 'active' : ''}>Admin</Link>}
@@ -103,6 +104,9 @@ export default function Nav() {
               background: isActive(i.path) ? 'var(--paper-2)' : 'transparent',
             }}>{i.label}</Link>
           ))}
+          {user && (
+            <Link to="/profile" onClick={close} style={{ padding: '12px 24px', fontSize: 16, fontWeight: 500, color: pathname === '/profile' ? 'var(--ink)' : 'var(--ink-2)', textDecoration: 'none', borderBottom: '1px solid var(--line)' }}>Profile</Link>
+          )}
           {user && (
             <Link to="/tracker" onClick={close} style={{ padding: '12px 24px', fontSize: 16, fontWeight: 500, color: pathname === '/tracker' ? 'var(--ink)' : 'var(--ink-2)', textDecoration: 'none', borderBottom: '1px solid var(--line)' }}>Tracker</Link>
           )}

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import date, datetime, timezone
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -20,6 +20,7 @@ class UserProfile(Base):
     )
 
     headline: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     years_experience: Mapped[int | None] = mapped_column(Integer, nullable=True)
     open_to_work: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

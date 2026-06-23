@@ -38,6 +38,7 @@ class ProfileOut(BaseModel):
 
     # from user_profiles table
     headline: str | None
+    summary: str | None
     location: str | None
     years_experience: int | None
     open_to_work: bool
@@ -75,6 +76,7 @@ class ProfileUpdate(BaseModel):
 
     # identity
     headline: str | None = Field(default=None, max_length=255)
+    summary: str | None = Field(default=None, max_length=2000)
     location: str | None = Field(default=None, max_length=255)
     years_experience: int | None = Field(default=None, ge=0, le=99)
     open_to_work: bool | None = None
@@ -158,6 +160,7 @@ async def get_profile(
         picture=user.picture,
         created_at=user.created_at,
         headline=profile.headline,
+        summary=profile.summary,
         location=profile.location,
         years_experience=profile.years_experience,
         open_to_work=profile.open_to_work,
@@ -228,6 +231,8 @@ async def update_profile(
     # Identity
     if "headline" in sent:
         profile.headline = body.headline
+    if "summary" in sent:
+        profile.summary = body.summary
     if "location" in sent:
         profile.location = body.location
     if "years_experience" in sent:
@@ -276,6 +281,7 @@ async def update_profile(
         picture=user.picture,
         created_at=user.created_at,
         headline=profile.headline,
+        summary=profile.summary,
         location=profile.location,
         years_experience=profile.years_experience,
         open_to_work=profile.open_to_work,

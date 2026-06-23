@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useSEO from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { listRecruiterCvs, downloadRecruiterCv } from '../services/cvApi';
+
+const RECRUITER_EMAIL = 'kasidkhan@gmail.com';
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -103,30 +106,26 @@ function EmptyState() {
 export default function RecruiterPage() {
   useSEO({ title: 'Recruiter — CVs', description: 'Browse primary CVs from TPM candidates with UK visa sponsorship experience.' });
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [cvs, setCvs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const allowed = user?.email === 'kasidkhan@gmail.com';
+  const allowed = user?.email === RECRUITER_EMAIL;
 
   useEffect(() => {
-    if (!allowed) { setLoading(false); return; }
+    if (user === undefined) return;
+    if (user === null || user.email !== RECRUITER_EMAIL) {
+      navigate('/', { replace: true });
+      return;
+    }
     listRecruiterCvs()
       .then(setCvs)
       .catch(() => setError('Failed to load CVs'))
       .finally(() => setLoading(false));
-  }, [allowed]);
+  }, [user, navigate]);
 
-  if (user === undefined) return null;
-
-  if (!allowed) {
-    return (
-      <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px', textAlign: 'center' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink-2)', marginBottom: 6 }}>Access restricted</div>
-        <div style={{ fontSize: 13, color: 'var(--ink-4)' }}>This page is only available to approved recruiters.</div>
-      </div>
-    );
-  }
+  if (user === undefined || !allowed) return null;
 
   return (
     <div style={{ maxWidth: 'var(--max-w)', margin: '0 auto', padding: '64px var(--s-9) 96px' }}>

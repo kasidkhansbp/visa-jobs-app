@@ -81,7 +81,6 @@ async def list_recruiter_cvs(
     result = await session.execute(
         select(CvFile, User.name)
         .join(User, User.id == CvFile.user_id)
-        .where(CvFile.is_primary.is_(True))
         .order_by(CvFile.uploaded_at.desc())
     )
     rows = result.all()
@@ -108,7 +107,6 @@ async def download_recruiter_cv(
     result = await session.execute(
         select(CvFile).where(
             CvFile.id == uuid.UUID(cv_id),
-            CvFile.is_primary.is_(True),
         )
     )
     cv = result.scalar_one_or_none()

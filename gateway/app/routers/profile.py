@@ -4,7 +4,7 @@ import uuid
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +42,8 @@ class ProfileOut(BaseModel):
     location: str | None
     years_experience: int | None
     open_to_work: bool
+    linkedin_url: str | None
+    github_url: str | None
     target_level: str | None
     salary_min: int | None
     salary_max: int | None
@@ -81,6 +83,10 @@ class ProfileUpdate(BaseModel):
     years_experience: int | None = Field(default=None, ge=0, le=99)
     open_to_work: bool | None = None
 
+    # social links
+    linkedin_url: str | None = Field(default=None, max_length=255)
+    github_url: str | None = Field(default=None, max_length=255)
+
     # search preferences
     target_level: str | None = Field(default=None, max_length=100)
     salary_min: int | None = Field(default=None, ge=0, le=1_000_000)
@@ -96,6 +102,18 @@ class ProfileUpdate(BaseModel):
 
     # competencies
     skills: list[SkillItem] | None = Field(default=None, max_length=20)
+
+    @field_validator("linkedin_url", "github_url")
+    @classmethod
+    def _validate_url(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        v = v.strip()
+        if not v:
+            return None
+        if not (v.startswith("http://") or v.startswith("https://")):
+            raise ValueError("URL must start with http:// or https://")
+        return v
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -164,6 +182,8 @@ async def get_profile(
         location=profile.location,
         years_experience=profile.years_experience,
         open_to_work=profile.open_to_work,
+        linkedin_url=profile.linkedin_url,
+        github_url=profile.github_url,
         target_level=profile.target_level,
         salary_min=profile.salary_min,
         salary_max=profile.salary_max,
@@ -239,6 +259,10 @@ async def update_profile(
         profile.years_experience = body.years_experience
     if "open_to_work" in sent:
         profile.open_to_work = body.open_to_work
+    if "linkedin_url" in sent:
+        profile.linkedin_url = body.linkedin_url
+    if "github_url" in sent:
+        profile.github_url = body.github_url
 
     # Search preferences
     if "target_level" in sent:
@@ -285,6 +309,8 @@ async def update_profile(
         location=profile.location,
         years_experience=profile.years_experience,
         open_to_work=profile.open_to_work,
+        linkedin_url=profile.linkedin_url,
+        github_url=profile.github_url,
         target_level=profile.target_level,
         salary_min=profile.salary_min,
         salary_max=profile.salary_max,

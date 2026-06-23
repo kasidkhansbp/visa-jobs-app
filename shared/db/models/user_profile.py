@@ -25,6 +25,9 @@ class UserProfile(Base):
     years_experience: Mapped[int | None] = mapped_column(Integer, nullable=True)
     open_to_work: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
+    linkedin_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    github_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
     target_level: Mapped[str | None] = mapped_column(String(100), nullable=True)
     salary_min: Mapped[int | None] = mapped_column(Integer, nullable=True)
     salary_max: Mapped[int | None] = mapped_column(Integer, nullable=True)

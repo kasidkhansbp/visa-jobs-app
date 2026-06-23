@@ -58,6 +58,57 @@
 .pf-id-sub b { color: var(--ink-2); font-weight: 500; }
 .pf-id-sub .sep { margin: 0 8px; color: var(--line-2); }
 
+/* Social links */
+.pf-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--s-3);
+}
+.pf-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+.pf-link:hover { opacity: 0.78; }
+.pf-link-linkedin { color: #0A66C2; }
+.pf-link-github { color: #181717; }
+.pf-links-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink-4);
+  opacity: 0.7;
+  transition: color 0.15s, opacity 0.15s;
+}
+.pf-links:hover .pf-links-edit,
+.pf-links-edit:hover,
+.pf-links-edit:focus-visible { opacity: 1; color: var(--ink-2); }
+.pf-links-editor { margin-top: var(--s-3); }
+.pf-links-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.pf-links-field { display: flex; flex-direction: column; gap: 4px; }
+.pf-links-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.pf-links-field .pf-input { min-width: 240px; }
+
 /* Open-to-work toggle */
 .pf-status {
   display: flex;

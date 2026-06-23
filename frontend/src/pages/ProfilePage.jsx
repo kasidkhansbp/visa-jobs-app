@@ -89,6 +89,18 @@ const Pencil = () => (
   </svg>
 );
 
+const LinkedInIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.74v20.52C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.74V1.74C24 .78 23.2 0 22.22 0z"/>
+  </svg>
+);
+
+const GitHubIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.57.1.78-.25.78-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.75.4-1.27.73-1.56-2.55-.3-5.24-1.28-5.24-5.7 0-1.26.45-2.3 1.19-3.1-.12-.3-.51-1.48.11-3.08 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.18-1.18 3.18-1.18.62 1.6.23 2.78.11 3.08.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.36.78 1.07.78 2.16v3.2c0 .31.2.67.79.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/>
+  </svg>
+);
+
 /* Inline editor for a single field. Defined at module scope so React keeps the
  * input mounted (and focused) while editing instead of remounting each render. */
 function FieldInput({ field, value, onChange, onSubmit, onCancel, saving, error, variant = 'inline' }) {
@@ -143,6 +155,12 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  // Social links: a single combined editor for LinkedIn + GitHub.
+  const [editingLinks, setEditingLinks] = useState(false);
+  const [linkDraft, setLinkDraft] = useState({ linkedin_url: '', github_url: '' });
+  const [linksSaving, setLinksSaving] = useState(false);
+  const [linksError, setLinksError] = useState(null);
+
   useEffect(() => {
     if (!user) { setLoading(false); return; }
     Promise.all([getProfile(), getPipeline()])
@@ -173,6 +191,35 @@ export default function ProfilePage() {
       setError(e.message || 'Update failed');
     } finally {
       setSaving(false);
+    }
+  }
+
+  function startLinksEdit() {
+    setLinksError(null);
+    setLinkDraft({ linkedin_url: profile.linkedin_url ?? '', github_url: profile.github_url ?? '' });
+    setEditingLinks(true);
+  }
+
+  function cancelLinksEdit() {
+    setEditingLinks(false);
+    setLinksError(null);
+  }
+
+  async function commitLinksEdit() {
+    if (linksSaving) return;
+    setLinksSaving(true);
+    setLinksError(null);
+    try {
+      const updated = await updateProfile({
+        linkedin_url: linkDraft.linkedin_url.trim() || null,
+        github_url: linkDraft.github_url.trim() || null,
+      });
+      setProfile(updated);
+      setEditingLinks(false);
+    } catch (e) {
+      setLinksError(e.message || 'Update failed');
+    } finally {
+      setLinksSaving(false);
     }
   }
 
@@ -285,6 +332,56 @@ export default function ProfilePage() {
               {renderSeg('headline')}
               {renderSeg('location')}
               {renderSeg('years_experience')}
+            </div>
+          )}
+
+          {/* Social links — one combined editor; icons show only when set */}
+          {editingLinks ? (
+            <div className="pf-links-editor">
+              <form className="pf-links-form" onSubmit={e => { e.preventDefault(); commitLinksEdit(); }}>
+                <label className="pf-links-field">
+                  <span className="pf-links-label">LinkedIn</span>
+                  <input
+                    type="url" className="pf-input" autoFocus maxLength={255}
+                    placeholder="https://linkedin.com/in/your-handle"
+                    value={linkDraft.linkedin_url}
+                    onChange={e => setLinkDraft(d => ({ ...d, linkedin_url: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); cancelLinksEdit(); } }}
+                  />
+                </label>
+                <label className="pf-links-field">
+                  <span className="pf-links-label">GitHub</span>
+                  <input
+                    type="url" className="pf-input" maxLength={255}
+                    placeholder="https://github.com/your-handle"
+                    value={linkDraft.github_url}
+                    onChange={e => setLinkDraft(d => ({ ...d, github_url: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); cancelLinksEdit(); } }}
+                  />
+                </label>
+                <div className="pf-edit-actions">
+                  <button type="submit" className="pf-save" disabled={linksSaving}>{linksSaving ? 'Saving…' : 'Save'}</button>
+                  <button type="button" className="pf-cancel" onClick={cancelLinksEdit} disabled={linksSaving}>Cancel</button>
+                </div>
+              </form>
+              {linksError && <span className="pf-edit-err">{linksError}</span>}
+            </div>
+          ) : (
+            <div className="pf-links">
+              {profile.linkedin_url && (
+                <a className="pf-link pf-link-linkedin" href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+                  <LinkedInIcon />
+                </a>
+              )}
+              {profile.github_url && (
+                <a className="pf-link pf-link-github" href={profile.github_url} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+                  <GitHubIcon />
+                </a>
+              )}
+              <button className="pf-links-edit" onClick={startLinksEdit}>
+                <Pencil />
+                {!profile.linkedin_url && !profile.github_url && <span>Add LinkedIn / GitHub</span>}
+              </button>
             </div>
           )}
         </div>
